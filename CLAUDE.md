@@ -175,7 +175,7 @@ Run a single test file: `dart test test/barriers/barrier_test.dart`
 name: example_scene
 setup:
   hot_restart: true
-  navigate_to: /route
+  navigate_to: /route            # Deep link: sends ooda://showcase/route via ADB
   setup_delay_ms: 500
 steps:
   - checkpoint: initial_view
@@ -191,6 +191,8 @@ barriers:
     timeout_ms: 5000
     consecutive_matches: 3
 ```
+
+Note: `navigate_to` uses Android deep links. The target app must register a handler for `ooda://showcase/*` intents (see `examples/ooda_showcase/android/app/src/main/AndroidManifest.xml`).
 
 ### Interaction Types (ooda_shared)
 

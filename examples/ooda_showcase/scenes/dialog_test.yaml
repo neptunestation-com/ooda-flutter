@@ -4,24 +4,27 @@ description: Test dialog overlay detection
 setup:
   hot_restart: true
   navigate_to: /dialogs
-  setup_delay_ms: 300
+  setup_delay_ms: 500
 
 steps:
   - checkpoint: initial
     description: Dialogs screen before any dialogs
 
   # Tap "Show AlertDialog" button (first button)
+  # Button center at approximately y=390 on 1080x2340 screen
   - tap:
       x: 540
-      y: 300
+      y: 390
 
   - wait: visual_stability
 
   - checkpoint: alert_dialog_open
     description: AlertDialog is visible (overlay detected)
 
-  # Dismiss with back button
-  - key_event: back
+  # Dismiss by tapping OK button (right side of dialog)
+  - tap:
+      x: 620
+      y: 850
 
   - wait: visual_stability
 
@@ -29,17 +32,20 @@ steps:
     description: After dismissing AlertDialog
 
   # Tap "Show BottomSheet" button (second button)
+  # Button center at approximately y=510 on 1080x2340 screen
   - tap:
       x: 540
-      y: 400
+      y: 510
 
   - wait: visual_stability
 
   - checkpoint: bottom_sheet_open
     description: BottomSheet is visible
 
-  # Dismiss with back button
-  - key_event: back
+  # Dismiss by tapping Close button
+  - tap:
+      x: 540
+      y: 2150
 
   - wait: visual_stability
 
@@ -47,17 +53,20 @@ steps:
     description: After dismissing BottomSheet
 
   # Tap "Show DatePicker" button (third button)
+  # Button center at approximately y=630 on 1080x2340 screen
   - tap:
       x: 540
-      y: 500
+      y: 630
 
   - wait: visual_stability
 
   - checkpoint: date_picker_open
     description: DatePicker is visible
 
-  # Dismiss with back button
-  - key_event: back
+  # Dismiss by tapping Cancel button
+  - tap:
+      x: 270
+      y: 1680
 
   - wait: visual_stability
 
