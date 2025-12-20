@@ -165,6 +165,36 @@ class AdbClient {
     await shell(deviceId, 'logcat -c');
   }
 
+  /// Send a deep link intent to open a URL.
+  ///
+  /// This triggers the app's intent filter for the specified URI scheme.
+  /// Example: `sendDeepLink(deviceId, 'ooda://showcase/login')`
+  Future<void> sendDeepLink(String deviceId, String uri) async {
+    await shell(
+      deviceId,
+      'am start -a android.intent.action.VIEW -d "$uri"',
+    );
+  }
+
+  /// Start an activity with a specific intent.
+  Future<void> startActivity(
+    String deviceId, {
+    required String action,
+    String? data,
+    String? package,
+    Map<String, String>? extras,
+  }) async {
+    final args = StringBuffer('am start -a $action');
+    if (data != null) args.write(' -d "$data"');
+    if (package != null) args.write(' -n $package');
+    if (extras != null) {
+      for (final entry in extras.entries) {
+        args.write(' --es "${entry.key}" "${entry.value}"');
+      }
+    }
+    await shell(deviceId, args.toString());
+  }
+
   /// Check if a specific package is installed.
   Future<bool> isPackageInstalled(String deviceId, String packageName) async {
     final result = await shell(deviceId, 'pm list packages $packageName');

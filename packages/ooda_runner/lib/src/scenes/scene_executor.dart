@@ -135,11 +135,23 @@ class SceneExecutor {
       await Future<void>.delayed(const Duration(seconds: 1));
     }
 
-    // Navigate if requested (would require app-specific implementation)
+    // Navigate if requested via deep link
     if (setup.navigateTo != null) {
-      _emit(SceneLogEvent(message: 'Navigate to: ${setup.navigateTo}'));
-      // Navigation would typically be handled by the app itself
-      // or through a deep link mechanism
+      _emit(SceneLogEvent(message: 'Navigating to: ${setup.navigateTo}'));
+
+      // Build deep link URI: ooda://showcase/route
+      final deepLink = 'ooda://showcase${setup.navigateTo}';
+      await adb.sendDeepLink(deviceId, deepLink);
+
+      // Wait for navigation to complete
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      // Wait for visual stability after navigation
+      final barrier = VisualStabilityBarrier(
+        camera: _deviceCamera,
+        timeout: const Duration(seconds: 5),
+      );
+      await barrier.wait();
     }
 
     // Setup delay
