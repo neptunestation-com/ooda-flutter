@@ -140,13 +140,6 @@ git clone https://github.com/neptunestation-com/ooda-flutter.git
 cd ooda-flutter
 
 # Install dependencies and bootstrap
-make setup
-make bootstrap
-```
-
-Or manually:
-
-```bash
 dart pub global activate melos
 dart pub get
 dart pub global run melos bootstrap
@@ -259,45 +252,26 @@ By comparing these two images, the framework detects **overlays**—system UI el
 
 ## Development
 
-A Makefile provides convenient shortcuts for common tasks:
-
-```bash
-make help       # Show all available commands
-make test       # Run all tests
-make analyze    # Run static analysis
-make format     # Format all code
-make clean      # Clean build artifacts
-make devices    # List connected devices
-make screenshot # Take a screenshot
-make showcase   # Run the showcase app
-```
-
 ### Running Tests
 
 ```bash
-# Via Makefile
-make test
+# All tests
+dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
 
-# Or directly
-melos exec --scope="ooda_shared,ooda_runner" -- dart test
-
-# Run a specific test file
-cd packages/ooda_runner
-dart test test/barriers/barrier_test.dart
+# Single test file
+dart test packages/ooda_runner/test/barriers/barrier_test.dart
 ```
 
 ### Code Analysis
 
 ```bash
-make analyze
-# Or: melos exec -- dart analyze .
+dart pub global run melos exec -- dart analyze .
 ```
 
 ### Formatting
 
 ```bash
-make format
-# Or: melos exec -- dart format .
+dart pub global run melos exec -- dart format .
 ```
 
 ## License
@@ -311,12 +285,12 @@ Contributions are welcome! Please follow these steps:
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feature/my-feature`)
 3. Make your changes
-4. Run tests and analysis (`make test && make analyze`)
+4. Run tests and analysis
 5. Commit your changes with a descriptive message
 6. Push to your fork and open a Pull Request
 
 ### Code Style
 
-- Run `make format` before committing
-- Ensure `make analyze` passes with no issues
+- Format code before committing: `dart pub global run melos exec -- dart format .`
+- Ensure analysis passes: `dart pub global run melos exec -- dart analyze .`
 - Add tests for new functionality

@@ -114,19 +114,18 @@ Located in `examples/ooda_showcase/scenes/`:
 ### Build & Test
 
 ```bash
-make help          # Show all commands
-make setup         # Install melos, run dart pub get
-make bootstrap     # Bootstrap workspace with melos
-make test          # Run tests
-make analyze       # Static analysis
-```
+dart pub get                        # Get dependencies
+dart pub global activate melos      # Install melos (one-time)
+dart pub global run melos bootstrap # Bootstrap workspace
 
-Or without Make:
-```bash
-dart pub global activate melos
-dart pub get
-dart pub global run melos bootstrap
+# Run tests
 dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
+
+# Static analysis
+dart pub global run melos exec -- dart analyze .
+
+# Format code
+dart pub global run melos exec -- dart format .
 ```
 
 ### Package Structure
