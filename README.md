@@ -82,9 +82,9 @@ barriers:
 
 **As a CLI tool** (recommended for AI agents):
 ```bash
-# Install globally
+# Install globally (use SSH URL for non-interactive environments)
 dart pub global activate --source git \
-  https://github.com/neptunestation-com/ooda-flutter.git \
+  git@github.com:neptunestation-com/ooda-flutter.git \
   --git-path packages/ooda_runner
 
 # Now available as a global command
@@ -99,7 +99,7 @@ ooda scene -f scene.yaml
 dependencies:
   ooda_runner:
     git:
-      url: https://github.com/neptunestation-com/ooda-flutter.git
+      url: git@github.com:neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
       ref: v0.1.0  # Pin to a version tag
 ```
