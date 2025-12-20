@@ -1,5 +1,7 @@
 # CLAUDE.md
 
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
 ## What is this?
 
 **ooda-flutter** is a control plane for AI agents to interact with and observe Flutter apps on Android. It runs scenes (scripted interactions), captures observations (screenshots, widget trees, semantics), and outputs structured data for AI analysis.
@@ -49,6 +51,9 @@ Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`:
 | `scene -s <yaml> -p <project>` | Execute scene and capture observations |
 | `run -p <project> -d <device>` | Start Flutter app with OODA control |
 | `observe -d <device>` | Capture observation from running app |
+| `info` | Show built-in documentation |
+| `info --scene-yaml` | Full scene YAML format reference |
+| `info --observations` | Observation file structure details |
 
 ## Scene YAML Format
 
@@ -99,13 +104,29 @@ Located in `examples/ooda_showcase/scenes/`:
 
 ## Development Reference
 
+### Requirements
+
+- Dart SDK 3.10.0+ (required for pub workspaces)
+- Flutter SDK 3.0.0+
+- ADB (Android Debug Bridge) in PATH
+- Connected Android device or emulator
+
 ### Build & Test
 
 ```bash
 make help          # Show all commands
+make setup         # Install melos, run dart pub get
+make bootstrap     # Bootstrap workspace with melos
 make test          # Run tests
 make analyze       # Static analysis
-dart pub get       # Get dependencies (from repo root)
+```
+
+Or without Make:
+```bash
+dart pub global activate melos
+dart pub get
+dart pub global run melos bootstrap
+dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
 ```
 
 ### Package Structure
@@ -113,17 +134,17 @@ dart pub get       # Get dependencies (from repo root)
 | Package | Purpose |
 |---------|---------|
 | `ooda_shared` | Shared types: `Interaction`, `SceneDefinition`, `BarrierResult` |
-| `ooda_runner` | CLI and control plane (pure Dart) |
-| `ooda_flutter` | In-app package (placeholder) |
+| `ooda_runner` | CLI and control plane (pure Dart, no Flutter dependency) |
+| `ooda_flutter` | In-app package (placeholder for future Flutter-side integration) |
 
 ### Key Components
 
 **Scene Execution** (`packages/ooda_runner/lib/src/scenes/`):
-- `SceneParser` - Parses YAML
+- `SceneParser` - Parses YAML scene definitions
 - `SceneExecutor` - Runs steps, captures checkpoints
 
 **Observation** (`packages/ooda_runner/lib/src/observation/`):
-- `DeviceCamera` - ADB screenshots
+- `DeviceCamera` - ADB screenshots (shows system UI)
 - `FlutterCamera` - VM service screenshots + widget tree + semantics
 - `OverlayDetector` - Compares cameras to detect overlays
 
@@ -136,9 +157,23 @@ dart pub get       # Get dependencies (from repo root)
 - `AppReadyBarrier` - Wait for app to start
 - `HotReloadBarrier` - Wait for hot restart to complete
 
+### Programmatic Usage
+
+```dart
+import 'package:ooda_runner/ooda_runner.dart';
+
+final adb = AdbClient();
+final devices = await DeviceManager(adb).listDevices();
+final controller = InteractionController(adb, devices.first.id);
+await controller.tap(540, 400);
+```
+
 ### Tests
 
 ```bash
-dart test packages/ooda_runner/test/           # All runner tests
-dart test test/scenes/scene_parser_test.dart   # Single test file
+# All tests
+dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
+
+# Single test file
+dart test packages/ooda_runner/test/scenes/scene_parser_test.dart
 ```
