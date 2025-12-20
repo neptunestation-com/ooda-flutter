@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:args/command_runner.dart';
 import 'package:ooda_runner/src/commands/devices_command.dart';
+import 'package:ooda_runner/src/commands/info_command.dart';
 import 'package:ooda_runner/src/commands/observe_command.dart';
 import 'package:ooda_runner/src/commands/run_command.dart';
 import 'package:ooda_runner/src/commands/scene_command.dart';
@@ -14,6 +15,7 @@ void main(List<String> arguments) async {
           'AI-driven Flutter OODA loop - control plane for automated UI testing.',
         )
         ..addCommand(DevicesCommand())
+        ..addCommand(InfoCommand())
         ..addCommand(ObserveCommand())
         ..addCommand(RunCommand())
         ..addCommand(SceneCommand())
