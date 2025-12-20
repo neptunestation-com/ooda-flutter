@@ -48,6 +48,8 @@ dart analyze
 ```bash
 dart run bin/ooda.dart devices
 dart run bin/ooda.dart screenshot -d <device_id>
+dart run bin/ooda.dart run -p /path/to/flutter/project -d <device_id>
+dart run bin/ooda.dart observe -d <device_id>
 dart run bin/ooda.dart scene -f example/scenes/login_flow.yaml
 ```
 
@@ -79,6 +81,8 @@ dart run packages/ooda_runner/bin/ooda.dart scene \
   - Core components described below
 
 - **ooda_flutter**: In-app Flutter package for enhanced observation (currently minimal)
+
+Note: `ooda_runner` re-exports all types from `ooda_shared`, so you can import just `package:ooda_runner/ooda_runner.dart` to get all types.
 
 ### Key Components in ooda_runner
 
