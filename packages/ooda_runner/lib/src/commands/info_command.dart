@@ -13,6 +13,10 @@ class InfoCommand extends Command<int> {
       'observations',
       help: 'Show observation bundle structure.',
     );
+    argParser.addFlag(
+      'commands',
+      help: 'Show detailed CLI command reference.',
+    );
   }
 
   @override
@@ -25,11 +29,14 @@ class InfoCommand extends Command<int> {
   int run() {
     final showSceneYaml = argResults!['scene-yaml'] as bool;
     final showObservations = argResults!['observations'] as bool;
+    final showCommands = argResults!['commands'] as bool;
 
     if (showSceneYaml) {
       _printSceneYamlReference();
     } else if (showObservations) {
       _printObservationsReference();
+    } else if (showCommands) {
+      _printCommandsReference();
     } else {
       _printFullInfo();
     }
@@ -56,11 +63,12 @@ QUICK START
 COMMANDS
 --------
   devices              List connected Android devices
-  screenshot -d DEV    Capture device screenshot
-  scene -s FILE -p DIR Execute scene YAML, capture observations
-  run -p DIR -d DEV    Start Flutter app with OODA control
-  observe -d DEV       Capture observation from running app
+  screenshot           Capture device screenshot
+  scene                Execute scene YAML, capture observations
+  run                  Start Flutter app with OODA control
+  observe              Capture observation from running app
   info                 Show this documentation
+    --commands         Show detailed command options
     --scene-yaml       Show scene YAML format
     --observations     Show observation file structure
 
@@ -87,7 +95,8 @@ Enable semantics in lib/main.dart:
 
 MORE INFO
 ---------
-  ooda info --scene-yaml       Full scene YAML reference
+  ooda info --commands         All command options
+  ooda info --scene-yaml       Scene YAML format reference
   ooda info --observations     Observation file details
 ''');
   }
@@ -217,6 +226,135 @@ USING WITH AI PROMPTS
 "Look at obs/login_flow/email_entered/semantics.json - what fields exist?"
 "Compare device.png and flutter.png - is the keyboard visible?"
 "Based on widget_tree.json, what's the widget hierarchy?"
+''');
+  }
+
+  void _printCommandsReference() {
+    stdout.writeln('''
+CLI COMMAND REFERENCE
+=====================
+
+DEVICES
+-------
+List connected Android devices.
+
+  ooda devices [options]
+
+Options:
+  -r, --ready-only      Only show devices that are ready
+  -e, --emulators-only  Only show emulators
+  -j, --json            Output in JSON format
+
+Examples:
+  ooda devices
+  ooda devices --json
+  ooda devices -r
+
+SCREENSHOT
+----------
+Capture a screenshot from an Android device.
+
+  ooda screenshot [options]
+
+Options:
+  -d, --device DEV      Device ID (auto-selects if not specified)
+  -o, --output FILE     Output file path (default: screenshot.png)
+  -w, --wait-stable     Wait for screen to stabilize before capturing
+  -t, --timeout SEC     Timeout in seconds for stability wait (default: 5)
+  -r, --resize          Resize for AI API compatibility (default: true)
+  -m, --max-dimension N Max dimension in pixels when resizing
+
+Examples:
+  ooda screenshot
+  ooda screenshot -o login_screen.png
+  ooda screenshot -w -t 10
+
+SCENE
+-----
+Execute a scene from a YAML file and capture observations.
+
+  ooda scene -s FILE [options]
+
+Options:
+  -s, --scene FILE      Path to scene YAML file (required)
+  -p, --project DIR     Flutter project directory (default: .)
+  -d, --device DEV      Device ID (auto-selects if not specified)
+  -o, --output DIR      Output directory for observations (default: obs)
+  -v, --verbose         Show detailed execution logs
+      --keep-running    Keep app running after scene execution
+
+Examples:
+  ooda scene -s login_flow.yaml -p ./my_app
+  ooda scene -s test.yaml -v --keep-running
+
+RUN
+---
+Start a Flutter run session with OODA control.
+
+  ooda run [options]
+
+Options:
+  -p, --project DIR     Flutter project directory (default: .)
+  -d, --device DEV      Device ID (auto-selects if not specified)
+  -t, --target FILE     Target file to run (default: lib/main.dart)
+      --flavor NAME     Build flavor to use
+  -r, --hot-reload      Trigger hot reload after app starts
+  -s, --screenshot      Take screenshot after app starts
+      --screenshot-output FILE  Output path for screenshot
+  -w, --widget-tree     Dump widget tree after app starts
+  -i, --interactive     Keep session running for interactive commands
+
+Interactive mode keys:
+  r - Hot reload
+  R - Hot restart
+  s - Take screenshot
+  w - Dump widget tree
+  q - Quit
+
+Examples:
+  ooda run -p ./my_app
+  ooda run -i -w
+  ooda run --flavor dev
+
+OBSERVE
+-------
+Capture an observation bundle from a running Flutter app.
+
+  ooda observe [options]
+
+Options:
+  -p, --project DIR     Flutter project directory (default: .)
+  -d, --device DEV      Device ID (auto-selects if not specified)
+  -s, --scene NAME      Scene name for the observation (default: manual)
+  -c, --checkpoint NAME Checkpoint name (default: observation)
+  -o, --output DIR      Output directory (default: obs)
+  -w, --wait-stable     Wait for visual stability (default: true)
+  -t, --timeout SEC     Timeout in seconds (default: 5)
+      --start-app       Start the Flutter app if not running
+      --[no-]widget-tree   Capture widget tree (default: true)
+      --[no-]semantics     Capture semantics tree (default: true)
+      --[no-]logs          Capture device logs (default: true)
+
+Examples:
+  ooda observe --start-app -p ./my_app
+  ooda observe -c after_login -s login_flow
+  ooda observe --no-logs --no-widget-tree
+
+INFO
+----
+Display documentation and usage examples.
+
+  ooda info [options]
+
+Options:
+      --commands       Show this detailed command reference
+      --scene-yaml     Show scene YAML format reference
+      --observations   Show observation bundle structure
+
+Examples:
+  ooda info
+  ooda info --commands
+  ooda info --scene-yaml
 ''');
   }
 }

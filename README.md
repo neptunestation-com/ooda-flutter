@@ -149,22 +149,25 @@ dart pub global run melos bootstrap
 
 ### CLI Commands
 
-The `ooda` CLI tool is the main entry point:
+The `ooda` CLI tool is the main entry point. Run `ooda info --commands` for detailed options.
 
+| Command | Purpose |
+|---------|---------|
+| `devices` | List connected Android devices |
+| `screenshot` | Capture device screenshot |
+| `scene` | Execute scene YAML, capture observations |
+| `run` | Start Flutter app with OODA control |
+| `observe` | Capture observation from running app |
+| `info` | Show documentation (`--commands`, `--scene-yaml`, `--observations`) |
+
+**Quick examples:**
 ```bash
-cd packages/ooda_runner
-
-# List connected devices
-dart run bin/ooda.dart devices
-
-# Take a screenshot
-dart run bin/ooda.dart screenshot -d <device_id>
-
-# Run a scene
-dart run bin/ooda.dart scene -f path/to/scene.yaml
-
-# Run and observe a Flutter app
-dart run bin/ooda.dart run -p /path/to/flutter/project -d <device_id>
+ooda devices                              # List devices
+ooda screenshot -o screen.png             # Take screenshot
+ooda scene -s login.yaml -p ./my_app      # Run scene
+ooda run -p ./my_app -i                   # Run app interactively
+ooda observe --start-app -p ./my_app      # Start app and capture observation
+ooda info --commands                      # Show all command options
 ```
 
 ### Running Example Apps

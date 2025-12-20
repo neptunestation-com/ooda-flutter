@@ -42,18 +42,21 @@ Compare device.png and flutter.png - is the keyboard visible?
 
 ## CLI Commands
 
-Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`:
+Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`, or if installed globally, just `ooda <command>`:
 
 | Command | Purpose |
 |---------|---------|
 | `devices` | List connected Android devices |
-| `screenshot -d <device>` | Capture device screenshot |
+| `screenshot` | Capture device screenshot |
 | `scene -s <yaml> -p <project>` | Execute scene and capture observations |
-| `run -p <project> -d <device>` | Start Flutter app with OODA control |
-| `observe -d <device>` | Capture observation from running app |
+| `run -p <project>` | Start Flutter app with OODA control |
+| `observe` | Capture observation from running app |
 | `info` | Show built-in documentation |
+| `info --commands` | Detailed options for all commands |
 | `info --scene-yaml` | Full scene YAML format reference |
 | `info --observations` | Observation file structure details |
+
+Run `ooda info --commands` for all options, or `ooda <command> --help` for specific command help.
 
 ## Scene YAML Format
 
