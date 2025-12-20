@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:ooda_shared/ooda_shared.dart';
 
 import '../adb/adb_client.dart';
+import '../barriers/app_ready_barrier.dart';
 import '../barriers/visual_stability_barrier.dart';
 import '../daemon/vm_service_client.dart';
 import '../interaction/interaction_controller.dart';
@@ -57,6 +58,31 @@ class SceneExecutor {
     if (session.appInfo?.vmServiceUri != null && _vmClient == null) {
       _vmClient = await VmServiceClient.connect(session.appInfo!.vmServiceUri!);
       _flutterCamera = FlutterCamera(vmService: _vmClient!);
+
+      // Log available extensions for diagnostics
+      try {
+        final extensions = await _vmClient!.listExtensions();
+        _emit(SceneLogEvent(
+          message: 'Available VM extensions: ${extensions.length}',
+        ));
+        // Log Flutter-specific extensions
+        final flutterExtensions = extensions.where((e) => e.contains('flutter')).toList();
+        if (flutterExtensions.isEmpty) {
+          _emit(const SceneLogEvent(
+            message: 'Warning: No Flutter extensions found - Flutter camera features will not work',
+            severity: RunnerEventSeverity.warning,
+          ));
+        } else {
+          _emit(SceneLogEvent(
+            message: 'Flutter extensions: ${flutterExtensions.join(', ')}',
+          ));
+        }
+      } catch (e) {
+        _emit(SceneLogEvent(
+          message: 'Failed to list extensions: $e',
+          severity: RunnerEventSeverity.warning,
+        ));
+      }
     }
   }
 
@@ -141,8 +167,40 @@ class SceneExecutor {
     if (setup.hotRestart) {
       _emit(const SceneLogEvent(message: 'Performing hot restart...'));
       await session.hotRestart();
-      // Wait for app to settle after restart
-      await Future<void>.delayed(const Duration(seconds: 1));
+
+      // Wait for hot restart to complete via daemon events
+      _emit(const SceneLogEvent(message: 'Waiting for restart to complete...'));
+      final reloadBarrier = HotReloadBarrier(session: session);
+      final reloadResult = await reloadBarrier.wait();
+      if (!reloadResult.success) {
+        _emit(
+          const SceneLogEvent(
+            message: 'Warning: Hot restart may not have completed properly',
+            severity: RunnerEventSeverity.warning,
+          ),
+        );
+      }
+
+      // Additional delay for app to fully initialize
+      await Future<void>.delayed(const Duration(milliseconds: 500));
+
+      // Refresh VM service isolate reference (old isolate is garbage collected)
+      if (_vmClient != null) {
+        _emit(const SceneLogEvent(message: 'Refreshing VM service connection...'));
+        await _vmClient!.refreshIsolate();
+
+        // Wait for Flutter service extensions to be registered
+        _emit(const SceneLogEvent(message: 'Waiting for Flutter extensions...'));
+        final extensionsReady = await _vmClient!.waitForExtensions();
+        if (!extensionsReady) {
+          _emit(
+            const SceneLogEvent(
+              message: 'Warning: Flutter extensions not ready, some captures may fail',
+              severity: RunnerEventSeverity.warning,
+            ),
+          );
+        }
+      }
     }
 
     // Navigate if requested via deep link

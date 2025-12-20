@@ -49,15 +49,18 @@ class FlutterCamera {
     return _formatWidgetTree(tree, 0);
   }
 
-  /// Get the semantics tree as JSON.
+  /// Get the semantics tree.
+  ///
+  /// Returns the semantics tree dump wrapped in a map with 'dump' key.
+  /// Note: Flutter's semantics tree API returns a string dump, not structured JSON.
   Future<Map<String, dynamic>> getSemanticsTree() async {
-    return await _vmService.getSemanticsTree();
+    final dump = await _vmService.getSemanticsTree();
+    return {'dump': dump, 'format': 'text'};
   }
 
   /// Get the semantics tree as a formatted text string.
   Future<String> getSemanticsTreeText() async {
-    final tree = await getSemanticsTree();
-    return _formatSemanticsTree(tree, 0);
+    return await _vmService.getSemanticsTree();
   }
 
   /// Capture a complete Flutter observation.
@@ -99,38 +102,6 @@ class FlutterCamera {
     return buffer.toString();
   }
 
-  String _formatSemanticsTree(Map<String, dynamic> node, int indent) {
-    final buffer = StringBuffer();
-    final prefix = '  ' * indent;
-
-    final label = node['label'] ?? '';
-    final value = node['value'] ?? '';
-    final hint = node['hint'] ?? '';
-    final flags = node['flags'] as List<dynamic>? ?? [];
-    final actions = node['actions'] as List<dynamic>? ?? [];
-
-    final parts = <String>[];
-    if (label.isNotEmpty) parts.add('label: "$label"');
-    if (value.isNotEmpty) parts.add('value: "$value"');
-    if (hint.isNotEmpty) parts.add('hint: "$hint"');
-    if (flags.isNotEmpty) parts.add('flags: $flags');
-    if (actions.isNotEmpty) parts.add('actions: $actions');
-
-    if (parts.isNotEmpty) {
-      buffer.writeln('$prefix[${parts.join(', ')}]');
-    }
-
-    final children = node['children'] as List<dynamic>?;
-    if (children != null) {
-      for (final child in children) {
-        if (child is Map<String, dynamic>) {
-          buffer.write(_formatSemanticsTree(child, indent + 1));
-        }
-      }
-    }
-
-    return buffer.toString();
-  }
 }
 
 /// A complete observation from the Flutter camera.

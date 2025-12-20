@@ -154,6 +154,12 @@ class SceneCommand extends Command<int> {
         outputDir: outputDir,
       );
 
+      // Subscribe to events early so we can capture VM service diagnostics
+      late StreamSubscription<SceneEvent> eventSubscription;
+      eventSubscription = executor.events.listen((event) {
+        _handleEvent(event, verbose);
+      });
+
       // Connect to VM service
       stdout.write('Connecting to VM service...');
       try {
@@ -165,12 +171,6 @@ class SceneCommand extends Command<int> {
           stderr.writeln('  $e');
         }
       }
-
-      // Subscribe to events
-      late StreamSubscription<SceneEvent> eventSubscription;
-      eventSubscription = executor.events.listen((event) {
-        _handleEvent(event, verbose);
-      });
 
       // Execute scene
       stdout.writeln('');
