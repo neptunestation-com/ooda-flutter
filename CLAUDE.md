@@ -72,6 +72,14 @@ dart run bin/ooda.dart observe -d <device_id>                       # Capture ob
 dart run bin/ooda.dart scene -f example/scenes/login_flow.yaml     # Execute scene
 ```
 
+**Global CLI** (if installed via `dart pub global activate`):
+
+```bash
+ooda devices
+ooda screenshot -d <device_id>
+ooda scene -f scene.yaml
+```
+
 **Running example apps**:
 
 ```bash
@@ -122,16 +130,19 @@ Run a single test file: `dart test test/barriers/barrier_test.dart`
 
 **Barrier System** (`src/barriers/`):
 - Abstract `Barrier<T>`, `PollingBarrier<T>`, and `EventBarrier<T>` base classes for condition-waiting
-- `DeviceReadyBarrier`: Waits for device boot completion
-- `AppReadyBarrier`: Waits for Flutter app to start (listens for `app.started` event)
-- `HotReloadBarrier`: Waits for hot reload/restart to complete
-- `VmServiceReadyBarrier`: Waits for VM service WebSocket URI to be available
+- `DeviceReadyBarrier`: Waits for device boot completion (polling-based)
+- `DeviceConnectedBarrier`: Waits for a specific device to connect (polling-based)
+- `AppReadyBarrier`: Waits for Flutter app to start via `app.started` event (event-based)
+- `HotReloadBarrier`: Waits for hot reload/restart to complete via `app.progress` events (event-based)
+- `VmServiceReadyBarrier`: Waits for VM service WebSocket URI via `app.debugPort` event (event-based)
 - `VisualStabilityBarrier`: Waits for screen to stabilize (consecutive matching screenshots)
+- `DualCameraStabilityBarrier`: Waits for both device and Flutter screenshots to stabilize
 
 **Flutter Daemon** (`src/daemon/`):
-- `JsonRpcProtocol`: Parses Flutter's `--machine` JSON-RPC output
+- `JsonRpcProtocol`: Parses Flutter's `--machine` JSON-RPC output (events, responses, logs)
 - `FlutterDaemonClient`: Communicates with `flutter run --machine`
 - `VmServiceClient`: Connects to VM service for widget tree access
+- Key daemon events: `app.started`, `app.debugPort`, `app.stop`, `app.progress`, `app.log`
 
 **Session Management** (`src/runner/`):
 - `FlutterSession`: Manages `flutter run` process lifecycle, hot reload/restart, app state tracking
