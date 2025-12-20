@@ -249,4 +249,17 @@ MIT License - see [LICENSE](LICENSE) for details.
 
 ## Contributing
 
-[Add contribution guidelines here]
+Contributions are welcome! Please follow these steps:
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/my-feature`)
+3. Make your changes
+4. Run tests and analysis (`make test && make analyze`)
+5. Commit your changes with a descriptive message
+6. Push to your fork and open a Pull Request
+
+### Code Style
+
+- Run `make format` before committing
+- Ensure `make analyze` passes with no issues
+- Add tests for new functionality
