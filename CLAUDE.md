@@ -91,9 +91,11 @@ dart run packages/ooda_runner/bin/ooda.dart scene \
 - `DeviceManager`: Device discovery and selection
 
 **Barrier System** (`src/barriers/`):
-- Abstract `Barrier<T>` and `PollingBarrier<T>` base classes for condition-waiting
+- Abstract `Barrier<T>`, `PollingBarrier<T>`, and `EventBarrier<T>` base classes for condition-waiting
 - `DeviceReadyBarrier`: Waits for device boot completion
-- `AppReadyBarrier`: Waits for Flutter app to start (listens to daemon events)
+- `AppReadyBarrier`: Waits for Flutter app to start (listens for `app.started` event)
+- `HotReloadBarrier`: Waits for hot reload/restart to complete
+- `VmServiceReadyBarrier`: Waits for VM service WebSocket URI to be available
 - `VisualStabilityBarrier`: Waits for screen to stabilize (consecutive matching screenshots)
 
 **Flutter Daemon** (`src/daemon/`):
@@ -140,9 +142,20 @@ steps:
   - tap: { x: 540, y: 400 }
   - wait: visual_stability
   - input_text: "text to type"
+  - swipe: { start_x: 540, start_y: 1000, end_x: 540, end_y: 500, duration_ms: 300 }
+  - key: back                    # or: enter, home, tab, escape
   - checkpoint: after_input
 barriers:
   visual_stability:
     timeout_ms: 5000
     consecutive_matches: 3
 ```
+
+### Interaction Types (ooda_shared)
+
+The sealed `Interaction` class has these subtypes:
+- `TapInteraction`: x, y coordinates
+- `TextInputInteraction`: text string
+- `SwipeInteraction`: start/end x/y, duration_ms
+- `KeyEventInteraction`: keyCode (constants: keyBack=4, keyEnter=66, keyHome=3, keyTab=61, keyEscape=111)
+- `WaitInteraction`: barrierType, optional timeoutMs
