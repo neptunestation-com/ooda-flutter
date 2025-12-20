@@ -30,6 +30,7 @@ help:
 
 # Setup targets
 setup:
+	dart pub global activate melos
 	dart pub get
 
 bootstrap: setup

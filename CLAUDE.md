@@ -27,20 +27,23 @@ make showcase   # Run the showcase app
 **Melos commands** (direct access):
 
 ```bash
+# First-time setup: activate melos globally
+dart pub global activate melos
+
 # Get dependencies for all packages (pub workspaces - run from root)
 dart pub get
 
 # Bootstrap with melos (generates IDE files)
-melos bootstrap
+dart pub global run melos bootstrap
 
 # Run tests on specific packages (non-interactive)
-melos exec --scope="ooda_shared,ooda_runner" -- dart test
+dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
 
 # Run static analysis on all packages
-melos exec -- dart analyze .
+dart pub global run melos exec -- dart analyze .
 
 # Format all packages
-melos exec -- dart format .
+dart pub global run melos exec -- dart format .
 ```
 
 **Per-package commands** (run from within a package directory):
