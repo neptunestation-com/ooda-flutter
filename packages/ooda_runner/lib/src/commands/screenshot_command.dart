@@ -8,6 +8,7 @@ import '../adb/adb_client.dart';
 import '../adb/device_manager.dart';
 import '../barriers/device_ready_barrier.dart';
 import '../observation/device_camera.dart';
+import '../observation/image_utils.dart';
 
 /// Command to capture a screenshot from a device.
 class ScreenshotCommand extends Command<int> {
@@ -35,6 +36,18 @@ class ScreenshotCommand extends Command<int> {
       help: 'Timeout in seconds for stability wait.',
       defaultsTo: '5',
     );
+    argParser.addFlag(
+      'resize',
+      abbr: 'r',
+      help: 'Resize image to fit within max dimension (for AI API compatibility).',
+      defaultsTo: true,
+    );
+    argParser.addOption(
+      'max-dimension',
+      abbr: 'm',
+      help: 'Max dimension in pixels when resizing.',
+      defaultsTo: '${ImageUtils.defaultMaxDimension}',
+    );
   }
 
   @override
@@ -49,6 +62,8 @@ class ScreenshotCommand extends Command<int> {
     final outputPath = argResults!['output'] as String;
     final waitStable = argResults!['wait-stable'] as bool;
     final timeoutSeconds = int.parse(argResults!['timeout'] as String);
+    final resize = argResults!['resize'] as bool;
+    final maxDimension = int.parse(argResults!['max-dimension'] as String);
 
     final adb = AdbClient();
     final manager = DeviceManager(adbClient: adb);
@@ -96,11 +111,29 @@ class ScreenshotCommand extends Command<int> {
         }
 
         if (stability.screenshot != null) {
+          var bytes = stability.screenshot!;
+          if (resize) {
+            final resized = ImageUtils.resizeToFit(
+              bytes,
+              maxDimension: maxDimension,
+            );
+            if (resized != null) bytes = resized;
+          }
           final file = File(outputPath);
-          await file.writeAsBytes(stability.screenshot!);
+          await file.writeAsBytes(bytes);
+          stdout.writeln('Screenshot saved: ${p.absolute(file.path)}');
         }
       } else {
-        final file = await camera.captureToFile(outputPath);
+        var bytes = await camera.capture();
+        if (resize) {
+          final resized = ImageUtils.resizeToFit(
+            bytes,
+            maxDimension: maxDimension,
+          );
+          if (resized != null) bytes = resized;
+        }
+        final file = File(outputPath);
+        await file.writeAsBytes(bytes);
         stdout.writeln('Screenshot saved: ${p.absolute(file.path)}');
       }
 

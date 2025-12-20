@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:image/image.dart' as img;
 
 import '../adb/adb_client.dart';
+import 'image_utils.dart';
 
 /// Captures screenshots from the device via ADB.
 ///
@@ -22,6 +23,17 @@ class DeviceCamera {
   /// Capture a screenshot and return raw PNG bytes.
   Future<Uint8List> capture() async {
     return _adb.screenshot(_deviceId);
+  }
+
+  /// Capture a screenshot and resize to fit within max dimension.
+  ///
+  /// This is useful for AI APIs that have image size limits (e.g., Claude's
+  /// 2000px limit for multi-image requests).
+  Future<Uint8List?> captureResized({
+    int maxDimension = ImageUtils.defaultMaxDimension,
+  }) async {
+    final bytes = await capture();
+    return ImageUtils.resizeToFit(bytes, maxDimension: maxDimension);
   }
 
   /// Capture a screenshot and save to a file.

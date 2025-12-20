@@ -25,6 +25,7 @@ export 'src/runner/flutter_session.dart';
 // Observation
 export 'src/observation/device_camera.dart';
 export 'src/observation/flutter_camera.dart';
+export 'src/observation/image_utils.dart';
 export 'src/observation/overlay_detector.dart';
 export 'src/observation/observation_bundle.dart';
 

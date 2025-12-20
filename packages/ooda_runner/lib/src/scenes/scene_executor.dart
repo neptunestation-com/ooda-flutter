@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:ooda_shared/ooda_shared.dart';
 
@@ -9,6 +10,7 @@ import '../daemon/vm_service_client.dart';
 import '../interaction/interaction_controller.dart';
 import '../observation/device_camera.dart';
 import '../observation/flutter_camera.dart';
+import '../observation/image_utils.dart';
 import '../observation/observation_bundle.dart';
 import '../runner/flutter_session.dart';
 
@@ -19,6 +21,8 @@ class SceneExecutor {
     required this.adb,
     required this.deviceId,
     required this.outputDir,
+    this.resizeScreenshots = true,
+    this.maxScreenshotDimension = ImageUtils.defaultMaxDimension,
   }) {
     _interactionController = InteractionController(
       adb: adb,
@@ -31,6 +35,12 @@ class SceneExecutor {
   final AdbClient adb;
   final String deviceId;
   final Directory outputDir;
+
+  /// Whether to resize screenshots for AI API compatibility.
+  final bool resizeScreenshots;
+
+  /// Maximum dimension for resized screenshots.
+  final int maxScreenshotDimension;
 
   late final InteractionController _interactionController;
   late final DeviceCamera _deviceCamera;
@@ -238,8 +248,9 @@ class SceneExecutor {
     // Capture device screenshot
     if (checkpoint.captureDeviceScreenshot) {
       try {
-        final screenshot =
+        var screenshot =
             stabilityResult.value?.screenshot ?? await _deviceCamera.capture();
+        screenshot = _maybeResize(screenshot);
         builder.deviceScreenshot(screenshot);
       } catch (e) {
         _emit(
@@ -256,7 +267,8 @@ class SceneExecutor {
       // Flutter screenshot
       if (checkpoint.captureFlutterScreenshot) {
         try {
-          final screenshot = await _flutterCamera!.captureScreenshot();
+          var screenshot = await _flutterCamera!.captureScreenshot();
+          screenshot = _maybeResize(screenshot);
           builder.flutterScreenshot(screenshot);
         } catch (e) {
           _emit(
@@ -324,6 +336,16 @@ class SceneExecutor {
 
   void _emit(SceneEvent event) {
     _eventController.add(event);
+  }
+
+  /// Resize a screenshot if resizing is enabled.
+  Uint8List _maybeResize(Uint8List screenshot) {
+    if (!resizeScreenshots) return screenshot;
+    return ImageUtils.resizeToFit(
+          screenshot,
+          maxDimension: maxScreenshotDimension,
+        ) ??
+        screenshot;
   }
 
   /// Close resources.
