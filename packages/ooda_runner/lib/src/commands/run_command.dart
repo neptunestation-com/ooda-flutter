@@ -7,19 +7,12 @@ import '../adb/adb_client.dart';
 import '../adb/device_manager.dart';
 import '../barriers/app_ready_barrier.dart';
 import '../barriers/device_ready_barrier.dart';
-import '../daemon/json_rpc_protocol.dart';
 import '../daemon/vm_service_client.dart';
 import '../observation/device_camera.dart';
 import '../runner/flutter_session.dart';
 
 /// Command to start and manage a Flutter run session.
 class RunCommand extends Command<int> {
-  @override
-  final String name = 'run';
-
-  @override
-  final String description = 'Start a Flutter run session with OODA loop control.';
-
   RunCommand() {
     argParser.addOption(
       'project',
@@ -71,6 +64,12 @@ class RunCommand extends Command<int> {
       defaultsTo: false,
     );
   }
+
+  @override
+  final String name = 'run';
+
+  @override
+  final String description = 'Start a Flutter run session with OODA loop control.';
 
   @override
   Future<int> run() async {
@@ -189,7 +188,7 @@ class RunCommand extends Command<int> {
       try {
         // Device screenshot
         final deviceCamera = DeviceCamera(adb: adb, deviceId: selectedDeviceId);
-        final deviceScreenshot = await deviceCamera.captureToFile(
+        await deviceCamera.captureToFile(
           screenshotOutput.replaceAll('.png', '_device.png'),
         );
         stdout.write(' device');

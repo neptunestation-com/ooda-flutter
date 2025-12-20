@@ -8,18 +8,18 @@ import '../adb/adb_client.dart';
 ///
 /// Executes taps, text input, key events, and swipes on the device.
 class InteractionController {
-  final AdbClient _adb;
-  final String _deviceId;
-
-  /// Delay after each interaction to let the UI settle.
-  final Duration interactionDelay;
-
   InteractionController({
     required AdbClient adb,
     required String deviceId,
     this.interactionDelay = const Duration(milliseconds: 100),
   })  : _adb = adb,
         _deviceId = deviceId;
+
+  final AdbClient _adb;
+  final String _deviceId;
+
+  /// Delay after each interaction to let the UI settle.
+  final Duration interactionDelay;
 
   /// Execute an interaction.
   Future<InteractionResult> execute(Interaction interaction) async {
@@ -161,17 +161,17 @@ class InteractionController {
 
 /// Result of an interaction execution.
 class InteractionResult {
-  final bool success;
-  final Interaction interaction;
-  final Duration elapsed;
-  final String? error;
-
   InteractionResult({
     required this.success,
     required this.interaction,
     required this.elapsed,
     this.error,
   });
+
+  final bool success;
+  final Interaction interaction;
+  final Duration elapsed;
+  final String? error;
 
   @override
   String toString() {

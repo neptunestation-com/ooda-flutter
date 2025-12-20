@@ -10,17 +10,17 @@ import 'package:image/image.dart' as img;
 ///
 /// Rule: overlay_present = flutter_image != device_image
 class OverlayDetector {
+  OverlayDetector({
+    this.threshold = 0.01,
+    this.minDiffPercentage = 0.05,
+  });
+
   /// Threshold for considering images different (0.0 to 1.0).
   /// 0.0 = must be identical, 1.0 = always consider same
   final double threshold;
 
   /// Minimum percentage of pixels that must differ to detect overlay.
   final double minDiffPercentage;
-
-  OverlayDetector({
-    this.threshold = 0.01,
-    this.minDiffPercentage = 0.05,
-  });
 
   /// Compare Flutter and device screenshots to detect overlays.
   ///
@@ -173,6 +173,14 @@ class OverlayDetector {
 
 /// Result of overlay detection.
 class OverlayDetectionResult {
+  OverlayDetectionResult({
+    required this.overlayPresent,
+    required this.confidence,
+    required this.diffPercentage,
+    this.diffRegions = const [],
+    required this.reason,
+  });
+
   /// Whether an overlay was detected.
   final bool overlayPresent;
 
@@ -188,14 +196,6 @@ class OverlayDetectionResult {
   /// Human-readable reason for the result.
   final String reason;
 
-  OverlayDetectionResult({
-    required this.overlayPresent,
-    required this.confidence,
-    required this.diffPercentage,
-    this.diffRegions = const [],
-    required this.reason,
-  });
-
   @override
   String toString() {
     return 'OverlayDetectionResult(overlayPresent: $overlayPresent, '
@@ -206,11 +206,6 @@ class OverlayDetectionResult {
 
 /// A rectangular region where differences were detected.
 class DiffRegion {
-  final int x;
-  final int y;
-  final int width;
-  final int height;
-
   DiffRegion({
     required this.x,
     required this.y,
@@ -218,18 +213,23 @@ class DiffRegion {
     required this.height,
   });
 
+  final int x;
+  final int y;
+  final int width;
+  final int height;
+
   @override
   String toString() => 'DiffRegion($x, $y, ${width}x$height)';
 }
 
 class _ImageComparison {
-  final double diffPercentage;
-  final double confidence;
-  final List<DiffRegion> diffRegions;
-
   _ImageComparison({
     required this.diffPercentage,
     required this.confidence,
     required this.diffRegions,
   });
+
+  final double diffPercentage;
+  final double confidence;
+  final List<DiffRegion> diffRegions;
 }

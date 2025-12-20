@@ -3,11 +3,11 @@ import 'package:meta/meta.dart';
 /// Base class for lifecycle events.
 @immutable
 sealed class LifecycleEvent {
-  /// When this event occurred.
-  final DateTime timestamp;
-
   const LifecycleEvent({DateTime? timestamp})
       : timestamp = timestamp ?? const _CurrentDateTime();
+
+  /// When this event occurred.
+  final DateTime timestamp;
 
   /// Convert to JSON map.
   Map<String, dynamic> toJson();
@@ -72,14 +72,14 @@ class _CurrentDateTime implements DateTime {
 /// Device connected event.
 @immutable
 class DeviceConnectedEvent extends LifecycleEvent {
-  final String deviceId;
-  final bool isEmulator;
-
   const DeviceConnectedEvent({
     required this.deviceId,
     required this.isEmulator,
     super.timestamp,
   });
+
+  final String deviceId;
+  final bool isEmulator;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -93,14 +93,14 @@ class DeviceConnectedEvent extends LifecycleEvent {
 /// Device boot completed event.
 @immutable
 class DeviceBootCompleteEvent extends LifecycleEvent {
-  final String deviceId;
-  final Duration bootDuration;
-
   const DeviceBootCompleteEvent({
     required this.deviceId,
     required this.bootDuration,
     super.timestamp,
   });
+
+  final String deviceId;
+  final Duration bootDuration;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -114,16 +114,16 @@ class DeviceBootCompleteEvent extends LifecycleEvent {
 /// App started event.
 @immutable
 class AppStartedEvent extends LifecycleEvent {
-  final String deviceId;
-  final String appId;
-  final Uri? vmServiceUri;
-
   const AppStartedEvent({
     required this.deviceId,
     required this.appId,
     this.vmServiceUri,
     super.timestamp,
   });
+
+  final String deviceId;
+  final String appId;
+  final Uri? vmServiceUri;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -138,14 +138,14 @@ class AppStartedEvent extends LifecycleEvent {
 /// Hot reload completed event.
 @immutable
 class ReloadCompleteEvent extends LifecycleEvent {
-  final Duration reloadDuration;
-  final int reloadId;
-
   const ReloadCompleteEvent({
     required this.reloadDuration,
     required this.reloadId,
     super.timestamp,
   });
+
+  final Duration reloadDuration;
+  final int reloadId;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -159,14 +159,14 @@ class ReloadCompleteEvent extends LifecycleEvent {
 /// Visual stability achieved event.
 @immutable
 class VisualStabilityEvent extends LifecycleEvent {
-  final Duration stabilizationTime;
-  final int framesChecked;
-
   const VisualStabilityEvent({
     required this.stabilizationTime,
     required this.framesChecked,
     super.timestamp,
   });
+
+  final Duration stabilizationTime;
+  final int framesChecked;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -180,16 +180,16 @@ class VisualStabilityEvent extends LifecycleEvent {
 /// Checkpoint captured event.
 @immutable
 class CheckpointCapturedEvent extends LifecycleEvent {
-  final String sceneName;
-  final String checkpointName;
-  final String bundlePath;
-
   const CheckpointCapturedEvent({
     required this.sceneName,
     required this.checkpointName,
     required this.bundlePath,
     super.timestamp,
   });
+
+  final String sceneName;
+  final String checkpointName;
+  final String bundlePath;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -204,14 +204,14 @@ class CheckpointCapturedEvent extends LifecycleEvent {
 /// Session ended event.
 @immutable
 class SessionEndedEvent extends LifecycleEvent {
-  final int exitCode;
-  final String? reason;
-
   const SessionEndedEvent({
     required this.exitCode,
     this.reason,
     super.timestamp,
   });
+
+  final int exitCode;
+  final String? reason;
 
   @override
   Map<String, dynamic> toJson() => {

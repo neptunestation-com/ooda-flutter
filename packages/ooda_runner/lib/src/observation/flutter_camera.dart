@@ -16,9 +16,9 @@ import '../daemon/vm_service_client.dart';
 /// Pros: Fast, hot-reload aligned, structural truth
 /// Cons: Blind to Android IME, system dialogs, native overlays
 class FlutterCamera {
-  final VmServiceClient _vmService;
-
   FlutterCamera({required VmServiceClient vmService}) : _vmService = vmService;
+
+  final VmServiceClient _vmService;
 
   /// Capture a Flutter screenshot.
   ///
@@ -134,6 +134,12 @@ class FlutterCamera {
 
 /// A complete observation from the Flutter camera.
 class FlutterObservation {
+  FlutterObservation({
+    required this.screenshot,
+    required this.widgetTree,
+    this.semanticsTree,
+  });
+
   /// The Flutter screenshot as PNG bytes.
   final Uint8List screenshot;
 
@@ -142,12 +148,6 @@ class FlutterObservation {
 
   /// The semantics tree as JSON (may be null if not captured).
   final Map<String, dynamic>? semanticsTree;
-
-  FlutterObservation({
-    required this.screenshot,
-    required this.widgetTree,
-    this.semanticsTree,
-  });
 
   /// Get the widget tree as a JSON string.
   String get widgetTreeJson => const JsonEncoder.withIndent('  ').convert(widgetTree);

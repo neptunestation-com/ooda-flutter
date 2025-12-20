@@ -1,20 +1,19 @@
 import 'dart:async';
 
 import 'package:ooda_runner/src/barriers/barrier.dart';
-import 'package:ooda_shared/ooda_shared.dart';
 import 'package:test/test.dart';
 
 /// Test implementation of a polling barrier.
 class TestPollingBarrier extends PollingBarrier<int> {
-  final List<bool> checkResults;
-  int checkIndex = 0;
-  int _value = 0;
-
   TestPollingBarrier({
     required this.checkResults,
     super.timeout,
     super.pollingInterval,
   });
+
+  final List<bool> checkResults;
+  int checkIndex = 0;
+  int _value = 0;
 
   @override
   String get name => 'TestBarrier';
@@ -38,9 +37,9 @@ class TestPollingBarrier extends PollingBarrier<int> {
 
 /// Test implementation of an event barrier.
 class TestEventBarrier extends EventBarrier<String> {
-  final StreamController<String> _controller = StreamController<String>();
-
   TestEventBarrier({super.timeout});
+
+  final StreamController<String> _controller = StreamController<String>();
 
   @override
   String get name => 'TestEventBarrier';

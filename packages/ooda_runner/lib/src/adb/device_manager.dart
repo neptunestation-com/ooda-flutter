@@ -6,12 +6,12 @@ import 'adb_client.dart';
 
 /// Manages device discovery and selection.
 class DeviceManager {
+  DeviceManager({AdbClient? adbClient}) : _adb = adbClient ?? AdbClient();
+
   final AdbClient _adb;
 
   /// Currently selected device ID.
   String? _selectedDeviceId;
-
-  DeviceManager({AdbClient? adbClient}) : _adb = adbClient ?? AdbClient();
 
   /// Get the ADB client.
   AdbClient get adb => _adb;
@@ -99,9 +99,9 @@ class DeviceManager {
 
 /// Exception thrown when a device is not found.
 class DeviceNotFoundException implements Exception {
-  final String deviceId;
-
   DeviceNotFoundException(this.deviceId);
+
+  final String deviceId;
 
   @override
   String toString() => 'Device not found: $deviceId';
@@ -109,10 +109,10 @@ class DeviceNotFoundException implements Exception {
 
 /// Exception thrown when a device is not ready.
 class DeviceNotReadyException implements Exception {
+  DeviceNotReadyException(this.deviceId, this.state);
+
   final String deviceId;
   final DeviceState state;
-
-  DeviceNotReadyException(this.deviceId, this.state);
 
   @override
   String toString() =>

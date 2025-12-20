@@ -9,12 +9,6 @@ import 'barrier.dart';
 ///
 /// Checks `sys.boot_completed` property via ADB.
 class DeviceReadyBarrier extends PollingBarrier<bool> {
-  @override
-  final String name = 'DeviceReady';
-
-  final AdbClient _adb;
-  final String _deviceId;
-
   DeviceReadyBarrier({
     required AdbClient adb,
     required String deviceId,
@@ -22,6 +16,12 @@ class DeviceReadyBarrier extends PollingBarrier<bool> {
     super.pollingInterval = const Duration(seconds: 1),
   })  : _adb = adb,
         _deviceId = deviceId;
+
+  @override
+  final String name = 'DeviceReady';
+
+  final AdbClient _adb;
+  final String _deviceId;
 
   @override
   Future<bool> check() async {
@@ -82,13 +82,6 @@ class DeviceReadyBarrier extends PollingBarrier<bool> {
 
 /// Barrier that waits for the device to be connected via ADB.
 class DeviceConnectedBarrier extends PollingBarrier<AdbDevice> {
-  @override
-  final String name = 'DeviceConnected';
-
-  final AdbClient _adb;
-  final String _deviceId;
-  AdbDevice? _device;
-
   DeviceConnectedBarrier({
     required AdbClient adb,
     required String deviceId,
@@ -96,6 +89,13 @@ class DeviceConnectedBarrier extends PollingBarrier<AdbDevice> {
     super.pollingInterval = const Duration(seconds: 1),
   })  : _adb = adb,
         _deviceId = deviceId;
+
+  @override
+  final String name = 'DeviceConnected';
+
+  final AdbClient _adb;
+  final String _deviceId;
+  AdbDevice? _device;
 
   @override
   Future<bool> check() async {

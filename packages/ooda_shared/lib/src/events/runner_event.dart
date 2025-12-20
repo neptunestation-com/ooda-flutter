@@ -11,13 +11,13 @@ enum RunnerEventSeverity {
 /// Base class for runner events (logs and diagnostics).
 @immutable
 sealed class RunnerEvent {
-  final DateTime timestamp;
-  final RunnerEventSeverity severity;
-
   const RunnerEvent({
     DateTime? timestamp,
     this.severity = RunnerEventSeverity.info,
   }) : timestamp = timestamp ?? const _Now();
+
+  final DateTime timestamp;
+  final RunnerEventSeverity severity;
 
   Map<String, dynamic> toJson();
 }
@@ -78,15 +78,15 @@ class _Now implements DateTime {
 /// Log message event.
 @immutable
 class LogEvent extends RunnerEvent {
-  final String message;
-  final String? source;
-
   const LogEvent({
     required this.message,
     this.source,
     super.timestamp,
     super.severity,
   });
+
+  final String message;
+  final String? source;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -104,16 +104,16 @@ class LogEvent extends RunnerEvent {
 /// Progress event (for long-running operations).
 @immutable
 class ProgressEvent extends RunnerEvent {
-  final String id;
-  final String message;
-  final bool finished;
-
   const ProgressEvent({
     required this.id,
     required this.message,
     this.finished = false,
     super.timestamp,
   }) : super(severity: RunnerEventSeverity.debug);
+
+  final String id;
+  final String message;
+  final bool finished;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -128,12 +128,6 @@ class ProgressEvent extends RunnerEvent {
 /// Barrier timeout event with diagnostics.
 @immutable
 class BarrierTimeoutEvent extends RunnerEvent {
-  final String barrierName;
-  final Duration elapsed;
-  final String? diagnosticInfo;
-  final String? screenshotPath;
-  final String? logcatPath;
-
   const BarrierTimeoutEvent({
     required this.barrierName,
     required this.elapsed,
@@ -142,6 +136,12 @@ class BarrierTimeoutEvent extends RunnerEvent {
     this.logcatPath,
     super.timestamp,
   }) : super(severity: RunnerEventSeverity.error);
+
+  final String barrierName;
+  final Duration elapsed;
+  final String? diagnosticInfo;
+  final String? screenshotPath;
+  final String? logcatPath;
 
   @override
   Map<String, dynamic> toJson() => {
@@ -159,16 +159,16 @@ class BarrierTimeoutEvent extends RunnerEvent {
 /// Error event.
 @immutable
 class ErrorEvent extends RunnerEvent {
-  final String message;
-  final Object? error;
-  final StackTrace? stackTrace;
-
   const ErrorEvent({
     required this.message,
     this.error,
     this.stackTrace,
     super.timestamp,
   }) : super(severity: RunnerEventSeverity.error);
+
+  final String message;
+  final Object? error;
+  final StackTrace? stackTrace;
 
   @override
   Map<String, dynamic> toJson() => {

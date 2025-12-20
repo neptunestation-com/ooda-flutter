@@ -4,7 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('FlutterSessionConfig', () {
     test('builds basic args', () {
-      final config = FlutterSessionConfig(
+      const config = FlutterSessionConfig(
         projectPath: '/path/to/project',
       );
 
@@ -15,7 +15,7 @@ void main() {
     });
 
     test('builds args with device', () {
-      final config = FlutterSessionConfig(
+      const config = FlutterSessionConfig(
         projectPath: '/path/to/project',
         deviceId: 'emulator-5554',
       );
@@ -27,7 +27,7 @@ void main() {
     });
 
     test('builds args with flavor', () {
-      final config = FlutterSessionConfig(
+      const config = FlutterSessionConfig(
         projectPath: '/path/to/project',
         flavor: 'production',
       );
@@ -39,7 +39,7 @@ void main() {
     });
 
     test('builds args with target', () {
-      final config = FlutterSessionConfig(
+      const config = FlutterSessionConfig(
         projectPath: '/path/to/project',
         target: 'lib/main_dev.dart',
       );
@@ -51,7 +51,7 @@ void main() {
     });
 
     test('builds args with additional args', () {
-      final config = FlutterSessionConfig(
+      const config = FlutterSessionConfig(
         projectPath: '/path/to/project',
         additionalArgs: ['--verbose', '--debug'],
       );
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('builds args with all options', () {
-      final config = FlutterSessionConfig(
+      const config = FlutterSessionConfig(
         projectPath: '/path/to/project',
         deviceId: 'emulator-5554',
         flavor: 'dev',

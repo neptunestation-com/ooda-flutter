@@ -2,26 +2,19 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:ooda_shared/ooda_shared.dart' hide LogEvent, CheckpointCapturedEvent;
+import 'package:ooda_shared/ooda_shared.dart';
 import 'package:path/path.dart' as p;
 
 import '../adb/adb_client.dart';
 import '../adb/device_manager.dart';
 import '../barriers/app_ready_barrier.dart';
 import '../barriers/device_ready_barrier.dart';
-import '../daemon/vm_service_client.dart';
 import '../runner/flutter_session.dart';
 import '../scenes/scene_executor.dart';
 import '../scenes/scene_parser.dart';
 
 /// Command to execute a scene from a YAML file.
 class SceneCommand extends Command<int> {
-  @override
-  final String name = 'scene';
-
-  @override
-  final String description = 'Execute a scene from a YAML file and capture observations.';
-
   SceneCommand() {
     argParser.addOption(
       'scene',
@@ -58,6 +51,12 @@ class SceneCommand extends Command<int> {
       defaultsTo: false,
     );
   }
+
+  @override
+  final String name = 'scene';
+
+  @override
+  final String description = 'Execute a scene from a YAML file and capture observations.';
 
   @override
   Future<int> run() async {
@@ -232,10 +231,10 @@ class SceneCommand extends Command<int> {
       case SceneStartedEvent(:final sceneName):
         if (verbose) stdout.writeln('[START] Scene: $sceneName');
 
-      case SceneCompletedEvent(:final sceneName, :final observationCount):
+      case SceneCompletedEvent(:final observationCount):
         stdout.writeln('[DONE] Scene completed with $observationCount observations');
 
-      case SceneFailedEvent(:final sceneName, :final error):
+      case SceneFailedEvent(:final error):
         stderr.writeln('[FAILED] Scene failed: $error');
 
       case SetupStartedEvent():
@@ -248,14 +247,14 @@ class SceneCommand extends Command<int> {
         final desc = _stepDescription(step);
         stdout.write('  [$stepIndex] $desc...');
 
-      case StepCompletedEvent(:final stepIndex, :final step):
+      case StepCompletedEvent():
         stdout.writeln(' OK');
 
-      case StepFailedEvent(:final stepIndex, :final error):
+      case StepFailedEvent(:final error):
         stdout.writeln(' FAILED');
         stderr.writeln('      Error: $error');
 
-      case CheckpointCapturedEvent(:final checkpointName, :final bundle):
+      case SceneCheckpointEvent(:final checkpointName, :final bundle):
         if (verbose) {
           stdout.writeln('      Checkpoint captured: $checkpointName');
           stdout.writeln('      Overlay: ${bundle.overlayPresent}');
@@ -264,7 +263,7 @@ class SceneCommand extends Command<int> {
       case InteractionCompletedEvent(:final interaction):
         if (verbose) stdout.writeln('      Interaction: $interaction');
 
-      case LogEvent(:final message, :final severity):
+      case SceneLogEvent(:final message, :final severity):
         if (verbose || severity == RunnerEventSeverity.error) {
           final prefix = severity == RunnerEventSeverity.error ? 'ERROR' : 'LOG';
           stdout.writeln('      [$prefix] $message');

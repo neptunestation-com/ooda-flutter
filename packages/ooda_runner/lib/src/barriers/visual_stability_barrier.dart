@@ -1,8 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
 
-import 'package:ooda_shared/ooda_shared.dart';
-
 import '../observation/device_camera.dart';
 import 'barrier.dart';
 
@@ -11,6 +9,13 @@ import 'barrier.dart';
 /// Uses rapid ADB screenshot sampling to detect when the UI has stopped
 /// changing. This is essential for capturing reliable observations.
 class VisualStabilityBarrier extends PollingBarrier<VisualStabilityResult> {
+  VisualStabilityBarrier({
+    required DeviceCamera camera,
+    this.consecutiveMatches = 3,
+    super.timeout = const Duration(seconds: 5),
+    super.pollingInterval = const Duration(milliseconds: 100),
+  }) : _camera = camera;
+
   @override
   final String name = 'VisualStability';
 
@@ -28,13 +33,6 @@ class VisualStabilityBarrier extends PollingBarrier<VisualStabilityResult> {
   int _matchCount = 0;
   int _framesChecked = 0;
   final Stopwatch _stopwatch = Stopwatch();
-
-  VisualStabilityBarrier({
-    required DeviceCamera camera,
-    this.consecutiveMatches = 3,
-    super.timeout = const Duration(seconds: 5),
-    super.pollingInterval = const Duration(milliseconds: 100),
-  }) : _camera = camera;
 
   @override
   Future<bool> check() async {
@@ -109,6 +107,15 @@ class VisualStabilityBarrier extends PollingBarrier<VisualStabilityResult> {
 /// Waits for both Flutter and device screenshots to stabilize,
 /// then compares them for overlay detection.
 class DualCameraStabilityBarrier extends PollingBarrier<DualCameraStabilityResult> {
+  DualCameraStabilityBarrier({
+    required DeviceCamera deviceCamera,
+    required Future<Uint8List> Function() flutterScreenshot,
+    this.consecutiveMatches = 3,
+    super.timeout = const Duration(seconds: 5),
+    super.pollingInterval = const Duration(milliseconds: 150),
+  })  : _deviceCamera = deviceCamera,
+        _flutterScreenshot = flutterScreenshot;
+
   @override
   final String name = 'DualCameraStability';
 
@@ -127,15 +134,6 @@ class DualCameraStabilityBarrier extends PollingBarrier<DualCameraStabilityResul
   int _matchCount = 0;
   int _framesChecked = 0;
   final Stopwatch _stopwatch = Stopwatch();
-
-  DualCameraStabilityBarrier({
-    required DeviceCamera deviceCamera,
-    required Future<Uint8List> Function() flutterScreenshot,
-    this.consecutiveMatches = 3,
-    super.timeout = const Duration(seconds: 5),
-    super.pollingInterval = const Duration(milliseconds: 150),
-  })  : _deviceCamera = deviceCamera,
-        _flutterScreenshot = flutterScreenshot;
 
   @override
   Future<bool> check() async {
@@ -210,12 +208,6 @@ class DualCameraStabilityBarrier extends PollingBarrier<DualCameraStabilityResul
 
 /// Result of dual camera stability check.
 class DualCameraStabilityResult {
-  final bool stable;
-  final Uint8List? deviceScreenshot;
-  final Uint8List? flutterScreenshot;
-  final Duration elapsed;
-  final int framesChecked;
-
   DualCameraStabilityResult({
     required this.stable,
     this.deviceScreenshot,
@@ -223,6 +215,12 @@ class DualCameraStabilityResult {
     required this.elapsed,
     required this.framesChecked,
   });
+
+  final bool stable;
+  final Uint8List? deviceScreenshot;
+  final Uint8List? flutterScreenshot;
+  final Duration elapsed;
+  final int framesChecked;
 
   @override
   String toString() =>

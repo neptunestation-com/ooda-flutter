@@ -8,6 +8,17 @@ import '../daemon/json_rpc_protocol.dart';
 
 /// Configuration for a Flutter session.
 class FlutterSessionConfig {
+  const FlutterSessionConfig({
+    required this.projectPath,
+    this.deviceId,
+    this.flavor,
+    this.target,
+    this.additionalArgs = const [],
+    this.flutterPath = 'flutter',
+    this.workingDirectory,
+    this.environment,
+  });
+
   /// Path to the Flutter project directory.
   final String projectPath;
 
@@ -31,17 +42,6 @@ class FlutterSessionConfig {
 
   /// Environment variables.
   final Map<String, String>? environment;
-
-  const FlutterSessionConfig({
-    required this.projectPath,
-    this.deviceId,
-    this.flavor,
-    this.target,
-    this.additionalArgs = const [],
-    this.flutterPath = 'flutter',
-    this.workingDirectory,
-    this.environment,
-  });
 
   /// Build the command-line arguments for flutter run.
   List<String> buildArgs() {
@@ -76,6 +76,14 @@ enum FlutterSessionState {
 
 /// Information about the running app.
 class AppInfo {
+  AppInfo({
+    required this.appId,
+    required this.deviceId,
+    this.directory,
+    this.supportsRestart = true,
+    this.vmServiceUri,
+  });
+
   /// The app ID assigned by Flutter.
   final String appId;
 
@@ -91,14 +99,6 @@ class AppInfo {
   /// URI of the VM service (for debugging).
   final Uri? vmServiceUri;
 
-  AppInfo({
-    required this.appId,
-    required this.deviceId,
-    this.directory,
-    this.supportsRestart = true,
-    this.vmServiceUri,
-  });
-
   @override
   String toString() => 'AppInfo(appId: $appId, device: $deviceId)';
 }
@@ -111,6 +111,13 @@ class AppInfo {
 /// - Tracking app state and lifecycle events
 /// - Hot reload/restart operations
 class FlutterSession {
+  FlutterSession._({
+    required this.config,
+    required FlutterDaemonClient client,
+  }) : _client = client {
+    _eventSubscription = _client.events.listen(_handleEvent);
+  }
+
   final FlutterSessionConfig config;
   final FlutterDaemonClient _client;
 
@@ -122,13 +129,6 @@ class FlutterSession {
   final _eventController = StreamController<DaemonEvent>.broadcast();
 
   late final StreamSubscription<DaemonEvent> _eventSubscription;
-
-  FlutterSession._({
-    required this.config,
-    required FlutterDaemonClient client,
-  }) : _client = client {
-    _eventSubscription = _client.events.listen(_handleEvent);
-  }
 
   /// Current session state.
   FlutterSessionState get state => _state;
@@ -355,10 +355,10 @@ class FlutterSession {
 
 /// Exception thrown when a Flutter session operation fails.
 class FlutterSessionException implements Exception {
+  FlutterSessionException(this.message, {this.cause});
+
   final String message;
   final Object? cause;
-
-  FlutterSessionException(this.message, {this.cause});
 
   @override
   String toString() {

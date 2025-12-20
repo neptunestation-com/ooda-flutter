@@ -28,7 +28,7 @@ class _MinimalHome extends StatelessWidget {
   Widget build(BuildContext context) {
     return ListView(
       padding: const EdgeInsets.all(16),
-      children: [
+      children: const [
         _NavButton(
           title: 'Login',
           route: '/login',

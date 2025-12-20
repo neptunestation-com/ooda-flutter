@@ -39,16 +39,16 @@ abstract class Barrier<T> {
 ///
 /// Subclasses only need to implement [check] and [collectDiagnostics].
 abstract class PollingBarrier<T> extends Barrier<T> {
+  PollingBarrier({
+    this.timeout = const Duration(seconds: 30),
+    this.pollingInterval = const Duration(milliseconds: 500),
+  });
+
   @override
   final Duration timeout;
 
   @override
   final Duration pollingInterval;
-
-  PollingBarrier({
-    this.timeout = const Duration(seconds: 30),
-    this.pollingInterval = const Duration(milliseconds: 500),
-  });
 
   /// Get the value when the condition is met.
   ///
@@ -86,15 +86,15 @@ abstract class PollingBarrier<T> extends Barrier<T> {
 
 /// A barrier that waits for an event from a stream.
 abstract class EventBarrier<T> extends Barrier<T> {
+  EventBarrier({
+    this.timeout = const Duration(seconds: 30),
+  });
+
   @override
   final Duration timeout;
 
   /// The stream to listen to for events.
   Stream<dynamic> get eventStream;
-
-  EventBarrier({
-    this.timeout = const Duration(seconds: 30),
-  });
 
   @override
   Duration get pollingInterval => Duration.zero; // Not used for event barriers

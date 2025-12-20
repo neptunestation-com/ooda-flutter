@@ -11,16 +11,16 @@ import 'barrier.dart';
 ///
 /// Listens for the `app.started` event from the Flutter daemon.
 class AppReadyBarrier extends EventBarrier<AppInfo> {
+  AppReadyBarrier({
+    required FlutterSession session,
+    super.timeout = const Duration(minutes: 2),
+  }) : _session = session;
+
   @override
   final String name = 'AppReady';
 
   final FlutterSession _session;
   AppInfo? _appInfo;
-
-  AppReadyBarrier({
-    required FlutterSession session,
-    super.timeout = const Duration(minutes: 2),
-  }) : _session = session;
 
   @override
   Stream<dynamic> get eventStream => _session.events;
@@ -96,18 +96,18 @@ class AppReadyBarrier extends EventBarrier<AppInfo> {
 ///
 /// Listens for the `app.progress` event with progressId containing "reload".
 class HotReloadBarrier extends EventBarrier<Duration> {
+  HotReloadBarrier({
+    required FlutterSession session,
+    super.timeout = const Duration(seconds: 30),
+  })  : _session = session,
+        _startTime = DateTime.now();
+
   @override
   final String name = 'HotReload';
 
   final FlutterSession _session;
   final DateTime _startTime;
   String? _progressId;
-
-  HotReloadBarrier({
-    required FlutterSession session,
-    super.timeout = const Duration(seconds: 30),
-  })  : _session = session,
-        _startTime = DateTime.now();
 
   @override
   Stream<dynamic> get eventStream => _session.events;
@@ -158,16 +158,16 @@ class HotReloadBarrier extends EventBarrier<Duration> {
 
 /// Barrier that waits for the VM service to be available.
 class VmServiceReadyBarrier extends EventBarrier<Uri> {
+  VmServiceReadyBarrier({
+    required FlutterSession session,
+    super.timeout = const Duration(seconds: 30),
+  }) : _session = session;
+
   @override
   final String name = 'VmServiceReady';
 
   final FlutterSession _session;
   Uri? _vmServiceUri;
-
-  VmServiceReadyBarrier({
-    required FlutterSession session,
-    super.timeout = const Duration(seconds: 30),
-  }) : _session = session;
 
   @override
   Stream<dynamic> get eventStream => _session.events;

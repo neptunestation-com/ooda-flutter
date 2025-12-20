@@ -12,13 +12,13 @@ sealed class Interaction {
 /// A tap interaction at specific coordinates.
 @immutable
 class TapInteraction extends Interaction {
+  const TapInteraction({required this.x, required this.y});
+
   /// X coordinate of the tap.
   final int x;
 
   /// Y coordinate of the tap.
   final int y;
-
-  const TapInteraction({required this.x, required this.y});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'tap', 'x': x, 'y': y};
@@ -30,10 +30,10 @@ class TapInteraction extends Interaction {
 /// A text input interaction.
 @immutable
 class TextInputInteraction extends Interaction {
+  const TextInputInteraction({required this.text});
+
   /// The text to input.
   final String text;
-
-  const TextInputInteraction({required this.text});
 
   @override
   Map<String, dynamic> toJson() => {'type': 'text_input', 'text': text};
@@ -45,16 +45,6 @@ class TextInputInteraction extends Interaction {
 /// A key event interaction.
 @immutable
 class KeyEventInteraction extends Interaction {
-  /// The Android key code.
-  final int keyCode;
-
-  /// Named key constants.
-  static const int keyBack = 4;
-  static const int keyEnter = 66;
-  static const int keyHome = 3;
-  static const int keyTab = 61;
-  static const int keyEscape = 111;
-
   const KeyEventInteraction({required this.keyCode});
 
   /// Create a back key event.
@@ -66,6 +56,16 @@ class KeyEventInteraction extends Interaction {
   /// Create a home key event.
   const KeyEventInteraction.home() : keyCode = keyHome;
 
+  /// The Android key code.
+  final int keyCode;
+
+  /// Named key constants.
+  static const int keyBack = 4;
+  static const int keyEnter = 66;
+  static const int keyHome = 3;
+  static const int keyTab = 61;
+  static const int keyEscape = 111;
+
   @override
   Map<String, dynamic> toJson() => {'type': 'key_event', 'key_code': keyCode};
 
@@ -76,6 +76,14 @@ class KeyEventInteraction extends Interaction {
 /// A swipe/scroll interaction.
 @immutable
 class SwipeInteraction extends Interaction {
+  const SwipeInteraction({
+    required this.startX,
+    required this.startY,
+    required this.endX,
+    required this.endY,
+    this.durationMs = 300,
+  });
+
   /// Starting X coordinate.
   final int startX;
 
@@ -90,14 +98,6 @@ class SwipeInteraction extends Interaction {
 
   /// Duration of the swipe in milliseconds.
   final int durationMs;
-
-  const SwipeInteraction({
-    required this.startX,
-    required this.startY,
-    required this.endX,
-    required this.endY,
-    this.durationMs = 300,
-  });
 
   @override
   Map<String, dynamic> toJson() => {
@@ -117,16 +117,16 @@ class SwipeInteraction extends Interaction {
 /// A wait interaction for barriers.
 @immutable
 class WaitInteraction extends Interaction {
+  const WaitInteraction({
+    required this.barrierType,
+    this.timeoutMs,
+  });
+
   /// The type of barrier to wait for.
   final String barrierType;
 
   /// Optional timeout override in milliseconds.
   final int? timeoutMs;
-
-  const WaitInteraction({
-    required this.barrierType,
-    this.timeoutMs,
-  });
 
   @override
   Map<String, dynamic> toJson() => {

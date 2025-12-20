@@ -10,23 +10,10 @@ import '../interaction/interaction_controller.dart';
 import '../observation/device_camera.dart';
 import '../observation/flutter_camera.dart';
 import '../observation/observation_bundle.dart';
-import '../observation/overlay_detector.dart';
 import '../runner/flutter_session.dart';
 
 /// Executes scenes and captures observations at checkpoints.
 class SceneExecutor {
-  final FlutterSession session;
-  final AdbClient adb;
-  final String deviceId;
-  final Directory outputDir;
-
-  late final InteractionController _interactionController;
-  late final DeviceCamera _deviceCamera;
-  FlutterCamera? _flutterCamera;
-  VmServiceClient? _vmClient;
-
-  final _eventController = StreamController<SceneEvent>.broadcast();
-
   SceneExecutor({
     required this.session,
     required this.adb,
@@ -39,6 +26,18 @@ class SceneExecutor {
     );
     _deviceCamera = DeviceCamera(adb: adb, deviceId: deviceId);
   }
+
+  final FlutterSession session;
+  final AdbClient adb;
+  final String deviceId;
+  final Directory outputDir;
+
+  late final InteractionController _interactionController;
+  late final DeviceCamera _deviceCamera;
+  FlutterCamera? _flutterCamera;
+  VmServiceClient? _vmClient;
+
+  final _eventController = StreamController<SceneEvent>.broadcast();
 
   /// Stream of execution events.
   Stream<SceneEvent> get events => _eventController.stream;
@@ -75,7 +74,7 @@ class SceneExecutor {
                 checkpoint: checkpoint,
               );
               observations.add(bundle);
-              _emit(CheckpointCapturedEvent(checkpoint.name, bundle));
+              _emit(SceneCheckpointEvent(checkpoint.name, bundle));
 
             case InteractionStep(:final interaction):
               await _executeInteraction(scene, interaction);
@@ -126,11 +125,11 @@ class SceneExecutor {
   }
 
   Future<void> _executeSetup(SceneSetup setup) async {
-    _emit(SetupStartedEvent());
+    _emit(const SetupStartedEvent());
 
     // Hot restart if requested
     if (setup.hotRestart) {
-      _emit(const LogEvent(message: 'Performing hot restart...'));
+      _emit(const SceneLogEvent(message: 'Performing hot restart...'));
       await session.hotRestart();
       // Wait for app to settle after restart
       await Future<void>.delayed(const Duration(seconds: 1));
@@ -138,7 +137,7 @@ class SceneExecutor {
 
     // Navigate if requested (would require app-specific implementation)
     if (setup.navigateTo != null) {
-      _emit(LogEvent(message: 'Navigate to: ${setup.navigateTo}'));
+      _emit(SceneLogEvent(message: 'Navigate to: ${setup.navigateTo}'));
       // Navigation would typically be handled by the app itself
       // or through a deep link mechanism
     }
@@ -148,7 +147,7 @@ class SceneExecutor {
       await Future<void>.delayed(Duration(milliseconds: setup.setupDelayMs!));
     }
 
-    _emit(SetupCompletedEvent());
+    _emit(const SetupCompletedEvent());
   }
 
   Future<void> _executeInteraction(
@@ -186,7 +185,7 @@ class SceneExecutor {
         );
         final result = await barrier.wait();
         if (!result.success) {
-          _emit(LogEvent(
+          _emit(SceneLogEvent(
             message: 'Visual stability timeout: ${result.diagnosticInfo}',
             severity: RunnerEventSeverity.warning,
           ));
@@ -196,7 +195,7 @@ class SceneExecutor {
         await Future<void>.delayed(timeout);
 
       default:
-        _emit(LogEvent(
+        _emit(SceneLogEvent(
           message: 'Unknown barrier type: ${wait.barrierType}',
           severity: RunnerEventSeverity.warning,
         ));
@@ -207,7 +206,7 @@ class SceneExecutor {
     required SceneDefinition scene,
     required CheckpointDefinition checkpoint,
   }) async {
-    _emit(LogEvent(message: 'Capturing checkpoint: ${checkpoint.name}'));
+    _emit(SceneLogEvent(message: 'Capturing checkpoint: ${checkpoint.name}'));
 
     // Wait for visual stability
     final stabilityBarrier = VisualStabilityBarrier(
@@ -230,7 +229,7 @@ class SceneExecutor {
             await _deviceCamera.capture();
         builder.deviceScreenshot(screenshot);
       } catch (e) {
-        _emit(LogEvent(
+        _emit(SceneLogEvent(
           message: 'Failed to capture device screenshot: $e',
           severity: RunnerEventSeverity.error,
         ));
@@ -245,7 +244,7 @@ class SceneExecutor {
           final screenshot = await _flutterCamera!.captureScreenshot();
           builder.flutterScreenshot(screenshot);
         } catch (e) {
-          _emit(LogEvent(
+          _emit(SceneLogEvent(
             message: 'Failed to capture Flutter screenshot: $e',
             severity: RunnerEventSeverity.warning,
           ));
@@ -258,7 +257,7 @@ class SceneExecutor {
           final tree = await _flutterCamera!.getWidgetTree();
           builder.widgetTree(tree);
         } catch (e) {
-          _emit(LogEvent(
+          _emit(SceneLogEvent(
             message: 'Failed to capture widget tree: $e',
             severity: RunnerEventSeverity.warning,
           ));
@@ -271,7 +270,7 @@ class SceneExecutor {
           final tree = await _flutterCamera!.getSemanticsTree();
           builder.semanticsTree(tree);
         } catch (e) {
-          _emit(LogEvent(
+          _emit(SceneLogEvent(
             message: 'Failed to capture semantics tree: $e',
             severity: RunnerEventSeverity.warning,
           ));
@@ -285,7 +284,7 @@ class SceneExecutor {
         final logcat = await adb.logcat(deviceId, lines: 50);
         builder.addLogs(logcat.split('\n'));
       } catch (e) {
-        _emit(LogEvent(
+        _emit(SceneLogEvent(
           message: 'Failed to capture logs: $e',
           severity: RunnerEventSeverity.warning,
         ));
@@ -313,12 +312,6 @@ class SceneExecutor {
 
 /// Result of executing a scene.
 class SceneResult {
-  final String sceneName;
-  final List<ObservationBundle> observations;
-  final List<SceneError> errors;
-  final Duration elapsed;
-  final bool success;
-
   SceneResult({
     required this.sceneName,
     required this.observations,
@@ -326,6 +319,12 @@ class SceneResult {
     required this.elapsed,
     required this.success,
   });
+
+  final String sceneName;
+  final List<ObservationBundle> observations;
+  final List<SceneError> errors;
+  final Duration elapsed;
+  final bool success;
 
   @override
   String toString() {
@@ -336,15 +335,15 @@ class SceneResult {
 
 /// An error that occurred during scene execution.
 class SceneError {
-  final int step;
-  final String message;
-  final String? stackTrace;
-
   SceneError({
     required this.step,
     required this.message,
     this.stackTrace,
   });
+
+  final int step;
+  final String message;
+  final String? stackTrace;
 
   @override
   String toString() => 'SceneError(step: $step, message: $message)';
@@ -352,9 +351,9 @@ class SceneError {
 
 /// Exception thrown during scene execution.
 class SceneExecutionException implements Exception {
-  final String message;
-
   SceneExecutionException(this.message);
+
+  final String message;
 
   @override
   String toString() => 'SceneExecutionException: $message';
@@ -368,20 +367,20 @@ sealed class SceneEvent {
 }
 
 class SceneStartedEvent extends SceneEvent {
-  final String sceneName;
   const SceneStartedEvent(this.sceneName);
+  final String sceneName;
 }
 
 class SceneCompletedEvent extends SceneEvent {
+  const SceneCompletedEvent(this.sceneName, this.observationCount);
   final String sceneName;
   final int observationCount;
-  const SceneCompletedEvent(this.sceneName, this.observationCount);
 }
 
 class SceneFailedEvent extends SceneEvent {
+  const SceneFailedEvent(this.sceneName, this.error);
   final String sceneName;
   final String error;
-  const SceneFailedEvent(this.sceneName, this.error);
 }
 
 class SetupStartedEvent extends SceneEvent {
@@ -393,41 +392,41 @@ class SetupCompletedEvent extends SceneEvent {
 }
 
 class StepStartedEvent extends SceneEvent {
+  const StepStartedEvent(this.stepIndex, this.step);
   final int stepIndex;
   final SceneStep step;
-  const StepStartedEvent(this.stepIndex, this.step);
 }
 
 class StepCompletedEvent extends SceneEvent {
+  const StepCompletedEvent(this.stepIndex, this.step);
   final int stepIndex;
   final SceneStep step;
-  const StepCompletedEvent(this.stepIndex, this.step);
 }
 
 class StepFailedEvent extends SceneEvent {
+  const StepFailedEvent(this.stepIndex, this.step, this.error);
   final int stepIndex;
   final SceneStep step;
   final String error;
-  const StepFailedEvent(this.stepIndex, this.step, this.error);
 }
 
-class CheckpointCapturedEvent extends SceneEvent {
+class SceneCheckpointEvent extends SceneEvent {
+  const SceneCheckpointEvent(this.checkpointName, this.bundle);
   final String checkpointName;
   final ObservationBundle bundle;
-  const CheckpointCapturedEvent(this.checkpointName, this.bundle);
 }
 
 class InteractionCompletedEvent extends SceneEvent {
-  final Interaction interaction;
   const InteractionCompletedEvent(this.interaction);
+  final Interaction interaction;
 }
 
-class LogEvent extends SceneEvent {
-  final String message;
-  final RunnerEventSeverity severity;
-
-  const LogEvent({
+class SceneLogEvent extends SceneEvent {
+  const SceneLogEvent({
     required this.message,
     this.severity = RunnerEventSeverity.info,
   });
+
+  final String message;
+  final RunnerEventSeverity severity;
 }

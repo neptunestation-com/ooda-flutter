@@ -3,15 +3,15 @@ import 'dart:convert';
 
 /// A JSON-RPC 2.0 request.
 class JsonRpcRequest {
-  final String method;
-  final dynamic params;
-  final dynamic id;
-
   JsonRpcRequest({
     required this.method,
     this.params,
     this.id,
   });
+
+  final String method;
+  final dynamic params;
+  final dynamic id;
 
   Map<String, dynamic> toJson() {
     return {
@@ -27,18 +27,11 @@ class JsonRpcRequest {
 
 /// A JSON-RPC 2.0 response.
 class JsonRpcResponse {
-  final dynamic id;
-  final dynamic result;
-  final JsonRpcError? error;
-
   JsonRpcResponse({
     this.id,
     this.result,
     this.error,
   });
-
-  bool get isError => error != null;
-  bool get isSuccess => error == null;
 
   factory JsonRpcResponse.fromJson(Map<String, dynamic> json) {
     return JsonRpcResponse(
@@ -49,6 +42,13 @@ class JsonRpcResponse {
           : null,
     );
   }
+
+  final dynamic id;
+  final dynamic result;
+  final JsonRpcError? error;
+
+  bool get isError => error != null;
+  bool get isSuccess => error == null;
 
   @override
   String toString() {
@@ -61,10 +61,6 @@ class JsonRpcResponse {
 
 /// A JSON-RPC 2.0 error.
 class JsonRpcError {
-  final int code;
-  final String message;
-  final dynamic data;
-
   JsonRpcError({
     required this.code,
     required this.message,
@@ -79,18 +75,16 @@ class JsonRpcError {
     );
   }
 
+  final int code;
+  final String message;
+  final dynamic data;
+
   @override
   String toString() => 'JsonRpcError($code: $message)';
 }
 
 /// An event from the Flutter daemon.
 class DaemonEvent {
-  /// The event name (e.g., "app.started", "app.log").
-  final String event;
-
-  /// The event parameters.
-  final Map<String, dynamic> params;
-
   DaemonEvent({
     required this.event,
     required this.params,
@@ -102,6 +96,12 @@ class DaemonEvent {
       params: (json['params'] as Map<String, dynamic>?) ?? {},
     );
   }
+
+  /// The event name (e.g., "app.started", "app.log").
+  final String event;
+
+  /// The event parameters.
+  final Map<String, dynamic> params;
 
   /// Get a parameter value.
   T? get<T>(String key) => params[key] as T?;
@@ -196,10 +196,6 @@ class DaemonMessageParser {
 
 /// A log message from the daemon.
 class DaemonLog {
-  final String message;
-  final bool error;
-  final String? stackTrace;
-
   DaemonLog({
     required this.message,
     this.error = false,
@@ -213,6 +209,10 @@ class DaemonLog {
       stackTrace: json['stackTrace'] as String?,
     );
   }
+
+  final String message;
+  final bool error;
+  final String? stackTrace;
 
   @override
   String toString() => error ? 'ERROR: $message' : message;

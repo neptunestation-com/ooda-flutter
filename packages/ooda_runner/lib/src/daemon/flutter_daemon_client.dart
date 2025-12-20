@@ -6,10 +6,10 @@ import 'json_rpc_protocol.dart';
 
 /// Exception thrown when a daemon operation fails.
 class DaemonException implements Exception {
+  DaemonException(this.message, {this.rpcError});
+
   final String message;
   final JsonRpcError? rpcError;
-
-  DaemonException(this.message, {this.rpcError});
 
   @override
   String toString() {
@@ -25,20 +25,6 @@ class DaemonException implements Exception {
 /// The Flutter daemon is started via `flutter run --machine` and communicates
 /// using JSON-RPC 2.0 over stdin/stdout.
 class FlutterDaemonClient {
-  final Process _process;
-  final DaemonMessageParser _parser;
-  final Map<int, Completer<JsonRpcResponse>> _pendingRequests = {};
-  int _nextId = 1;
-
-  late final StreamSubscription<String> _stdoutSubscription;
-  late final StreamSubscription<String> _stderrSubscription;
-
-  final _eventController = StreamController<DaemonEvent>.broadcast();
-  final _logController = StreamController<DaemonLog>.broadcast();
-  final _stderrController = StreamController<String>.broadcast();
-
-  bool _isClosed = false;
-
   FlutterDaemonClient._(this._process)
       : _parser = DaemonMessageParser() {
     // Listen to stdout for JSON-RPC messages
@@ -76,6 +62,20 @@ class FlutterDaemonClient {
       }
     });
   }
+
+  final Process _process;
+  final DaemonMessageParser _parser;
+  final Map<int, Completer<JsonRpcResponse>> _pendingRequests = {};
+  int _nextId = 1;
+
+  late final StreamSubscription<String> _stdoutSubscription;
+  late final StreamSubscription<String> _stderrSubscription;
+
+  final _eventController = StreamController<DaemonEvent>.broadcast();
+  final _logController = StreamController<DaemonLog>.broadcast();
+  final _stderrController = StreamController<String>.broadcast();
+
+  bool _isClosed = false;
 
   /// Stream of daemon events.
   Stream<DaemonEvent> get events => _eventController.stream;

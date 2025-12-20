@@ -131,8 +131,8 @@ void main() {
       expect(event.error, 'ADB error');
     });
 
-    test('LogEvent has message and severity', () {
-      const event = executor.LogEvent(
+    test('SceneLogEvent has message and severity', () {
+      const event = executor.SceneLogEvent(
         message: 'Capturing checkpoint',
         severity: RunnerEventSeverity.info,
       );
@@ -140,8 +140,8 @@ void main() {
       expect(event.severity, RunnerEventSeverity.info);
     });
 
-    test('LogEvent defaults to info severity', () {
-      const event = executor.LogEvent(message: 'Test');
+    test('SceneLogEvent defaults to info severity', () {
+      const event = executor.SceneLogEvent(message: 'Test');
       expect(event.severity, RunnerEventSeverity.info);
     });
   });
@@ -185,7 +185,7 @@ void main() {
     });
 
     test('execute returns result with success when no errors', () async {
-      final scene = SceneDefinition(
+      const scene = SceneDefinition(
         name: 'success_scene',
         steps: [],
       );
@@ -198,9 +198,9 @@ void main() {
     });
 
     test('execute performs hot restart when setup requests it', () async {
-      final scene = SceneDefinition(
+      const scene = SceneDefinition(
         name: 'restart_scene',
-        setup: const SceneSetup(hotRestart: true),
+        setup: SceneSetup(hotRestart: true),
         steps: [],
       );
 
@@ -213,10 +213,10 @@ void main() {
     });
 
     test('execute captures checkpoints', () async {
-      final scene = SceneDefinition(
+      const scene = SceneDefinition(
         name: 'checkpoint_scene',
         steps: [
-          const CheckpointStep(CheckpointDefinition(name: 'test_checkpoint')),
+          CheckpointStep(CheckpointDefinition(name: 'test_checkpoint')),
         ],
       );
 
@@ -232,10 +232,10 @@ void main() {
     });
 
     test('execute handles interaction errors gracefully', () async {
-      final scene = SceneDefinition(
+      const scene = SceneDefinition(
         name: 'error_scene',
         steps: [
-          const InteractionStep(TapInteraction(x: 100, y: 200)),
+          InteractionStep(TapInteraction(x: 100, y: 200)),
         ],
       );
 
@@ -252,10 +252,10 @@ void main() {
     });
 
     test('execute handles tap interaction', () async {
-      final scene = SceneDefinition(
+      const scene = SceneDefinition(
         name: 'tap_scene',
         steps: [
-          const InteractionStep(TapInteraction(x: 100, y: 200)),
+          InteractionStep(TapInteraction(x: 100, y: 200)),
         ],
       );
 

@@ -24,6 +24,14 @@ enum DeviceState {
 /// Represents an Android device connected via ADB.
 @immutable
 class AdbDevice {
+  const AdbDevice({
+    required this.id,
+    required this.state,
+    this.product,
+    this.model,
+    this.transportId,
+  });
+
   /// The device serial number or identifier (e.g., "emulator-5554").
   final String id;
 
@@ -38,14 +46,6 @@ class AdbDevice {
 
   /// Optional transport ID.
   final String? transportId;
-
-  const AdbDevice({
-    required this.id,
-    required this.state,
-    this.product,
-    this.model,
-    this.transportId,
-  });
 
   /// Whether the device is ready for use.
   bool get isReady => state == DeviceState.device;

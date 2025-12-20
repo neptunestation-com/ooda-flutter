@@ -233,9 +233,9 @@ class SceneParser {
 
 /// Exception thrown when scene parsing fails.
 class SceneParseException implements Exception {
-  final String message;
-
   SceneParseException(this.message);
+
+  final String message;
 
   @override
   String toString() => 'SceneParseException: $message';

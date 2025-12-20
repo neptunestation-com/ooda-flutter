@@ -14,16 +14,11 @@ class ListScreen extends StatefulWidget {
 
 class _ListScreenState extends State<ListScreen> {
   final _scrollController = ScrollController();
-  bool _isRefreshing = false;
 
   static const _itemCount = 100;
 
   Future<void> _onRefresh() async {
-    setState(() => _isRefreshing = true);
     await Future.delayed(const Duration(seconds: 1));
-    if (mounted) {
-      setState(() => _isRefreshing = false);
-    }
   }
 
   @override

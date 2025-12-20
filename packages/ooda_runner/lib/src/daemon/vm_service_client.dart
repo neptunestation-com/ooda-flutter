@@ -13,11 +13,11 @@ import 'package:vm_service/vm_service_io.dart';
 /// - Flutter screenshots
 /// - Service extensions
 class VmServiceClient {
+  VmServiceClient._(this._service, this._uri);
+
   final VmService _service;
   final Uri _uri;
   String? _mainIsolateId;
-
-  VmServiceClient._(this._service, this._uri);
 
   /// The VM service URI.
   Uri get uri => _uri;
@@ -87,8 +87,8 @@ class VmServiceClient {
     }
 
     try {
-      // First check if semantics is enabled
-      final semanticsEnabled = await _service.callServiceExtension(
+      // Enable semantics (ignore result, just side effect)
+      await _service.callServiceExtension(
         'ext.flutter.debugSemantics',
         isolateId: _mainIsolateId,
         args: {'enabled': 'true'},
@@ -230,9 +230,9 @@ class VmServiceClient {
 
 /// Exception thrown when a VM service operation fails.
 class VmServiceClientException implements Exception {
-  final String message;
-
   VmServiceClientException(this.message);
+
+  final String message;
 
   @override
   String toString() => 'VmServiceClientException: $message';

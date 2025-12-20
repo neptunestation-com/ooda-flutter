@@ -12,14 +12,14 @@ import '../adb/adb_client.dart';
 /// It captures the actual framebuffer, including system UI, keyboard,
 /// permission dialogs, and other native overlays.
 class DeviceCamera {
-  final AdbClient _adb;
-  final String _deviceId;
-
   DeviceCamera({
     required AdbClient adb,
     required String deviceId,
   })  : _adb = adb,
         _deviceId = deviceId;
+
+  final AdbClient _adb;
+  final String _deviceId;
 
   /// Capture a screenshot and return raw PNG bytes.
   Future<Uint8List> capture() async {
@@ -114,10 +114,6 @@ class DeviceCamera {
 ///
 /// Uses rapid ADB screenshot sampling to detect visual stability.
 class VisualStabilityDetector {
-  final DeviceCamera _camera;
-  final int _consecutiveMatches;
-  final Duration _samplingInterval;
-
   VisualStabilityDetector({
     required DeviceCamera camera,
     int consecutiveMatches = 3,
@@ -125,6 +121,10 @@ class VisualStabilityDetector {
   })  : _camera = camera,
         _consecutiveMatches = consecutiveMatches,
         _samplingInterval = samplingInterval;
+
+  final DeviceCamera _camera;
+  final int _consecutiveMatches;
+  final Duration _samplingInterval;
 
   /// Wait for the screen to become stable.
   ///
@@ -185,6 +185,13 @@ class VisualStabilityDetector {
 
 /// Result of a visual stability check.
 class VisualStabilityResult {
+  VisualStabilityResult({
+    required this.stable,
+    this.screenshot,
+    required this.elapsed,
+    required this.framesChecked,
+  });
+
   /// Whether the screen became stable.
   final bool stable;
 
@@ -196,13 +203,6 @@ class VisualStabilityResult {
 
   /// Number of frames checked.
   final int framesChecked;
-
-  VisualStabilityResult({
-    required this.stable,
-    this.screenshot,
-    required this.elapsed,
-    required this.framesChecked,
-  });
 
   @override
   String toString() {

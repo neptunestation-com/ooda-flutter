@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
-import 'package:ooda_shared/ooda_shared.dart';
 import 'package:path/path.dart' as p;
 
 import '../adb/adb_client.dart';
@@ -14,17 +13,10 @@ import '../daemon/vm_service_client.dart';
 import '../observation/device_camera.dart';
 import '../observation/flutter_camera.dart';
 import '../observation/observation_bundle.dart';
-import '../observation/overlay_detector.dart';
 import '../runner/flutter_session.dart';
 
 /// Command to capture an observation bundle.
 class ObserveCommand extends Command<int> {
-  @override
-  final String name = 'observe';
-
-  @override
-  final String description = 'Capture an observation bundle from a running Flutter app.';
-
   ObserveCommand() {
     argParser.addOption(
       'project',
@@ -88,6 +80,12 @@ class ObserveCommand extends Command<int> {
       defaultsTo: true,
     );
   }
+
+  @override
+  final String name = 'observe';
+
+  @override
+  final String description = 'Capture an observation bundle from a running Flutter app.';
 
   @override
   Future<int> run() async {

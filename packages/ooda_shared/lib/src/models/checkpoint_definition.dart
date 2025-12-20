@@ -3,27 +3,6 @@ import 'package:meta/meta.dart';
 /// Definition of a checkpoint within a scene.
 @immutable
 class CheckpointDefinition {
-  /// Unique name of the checkpoint within the scene.
-  final String name;
-
-  /// Optional human-readable description.
-  final String? description;
-
-  /// Whether to capture the Flutter screenshot at this checkpoint.
-  final bool captureFlutterScreenshot;
-
-  /// Whether to capture the device screenshot at this checkpoint.
-  final bool captureDeviceScreenshot;
-
-  /// Whether to capture the widget tree at this checkpoint.
-  final bool captureWidgetTree;
-
-  /// Whether to capture the semantics tree at this checkpoint.
-  final bool captureSemanticsTree;
-
-  /// Whether to capture logs at this checkpoint.
-  final bool captureLogs;
-
   const CheckpointDefinition({
     required this.name,
     this.description,
@@ -53,6 +32,27 @@ class CheckpointDefinition {
       captureLogs: map['capture_logs'] as bool? ?? true,
     );
   }
+
+  /// Unique name of the checkpoint within the scene.
+  final String name;
+
+  /// Optional human-readable description.
+  final String? description;
+
+  /// Whether to capture the Flutter screenshot at this checkpoint.
+  final bool captureFlutterScreenshot;
+
+  /// Whether to capture the device screenshot at this checkpoint.
+  final bool captureDeviceScreenshot;
+
+  /// Whether to capture the widget tree at this checkpoint.
+  final bool captureWidgetTree;
+
+  /// Whether to capture the semantics tree at this checkpoint.
+  final bool captureSemanticsTree;
+
+  /// Whether to capture logs at this checkpoint.
+  final bool captureLogs;
 
   /// Convert to JSON map.
   Map<String, dynamic> toJson() {

@@ -7,11 +7,11 @@ import 'package:ooda_shared/ooda_shared.dart';
 
 /// Exception thrown when an ADB command fails.
 class AdbException implements Exception {
+  AdbException(this.message, {this.exitCode, this.stderr});
+
   final String message;
   final int? exitCode;
   final String? stderr;
-
-  AdbException(this.message, {this.exitCode, this.stderr});
 
   @override
   String toString() {
@@ -24,16 +24,16 @@ class AdbException implements Exception {
 
 /// Client for communicating with Android devices via ADB.
 class AdbClient {
+  AdbClient({
+    this.adbPath = 'adb',
+    this.defaultTimeout = const Duration(seconds: 30),
+  });
+
   /// Path to the ADB executable.
   final String adbPath;
 
   /// Default timeout for ADB commands.
   final Duration defaultTimeout;
-
-  AdbClient({
-    this.adbPath = 'adb',
-    this.defaultTimeout = const Duration(seconds: 30),
-  });
 
   /// List all connected devices.
   Future<List<AdbDevice>> devices() async {

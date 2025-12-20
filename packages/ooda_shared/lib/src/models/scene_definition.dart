@@ -12,9 +12,9 @@ sealed class SceneStep {
 /// A step that performs an interaction.
 @immutable
 class InteractionStep extends SceneStep {
-  final Interaction interaction;
-
   const InteractionStep(this.interaction);
+
+  final Interaction interaction;
 
   @override
   String toString() => 'InteractionStep($interaction)';
@@ -23,9 +23,9 @@ class InteractionStep extends SceneStep {
 /// A step that captures a checkpoint.
 @immutable
 class CheckpointStep extends SceneStep {
-  final CheckpointDefinition checkpoint;
-
   const CheckpointStep(this.checkpoint);
+
+  final CheckpointDefinition checkpoint;
 
   @override
   String toString() => 'CheckpointStep(${checkpoint.name})';
@@ -34,15 +34,6 @@ class CheckpointStep extends SceneStep {
 /// Setup configuration for a scene.
 @immutable
 class SceneSetup {
-  /// Whether to hot restart before the scene.
-  final bool hotRestart;
-
-  /// Optional route to navigate to.
-  final String? navigateTo;
-
-  /// Optional delay after setup in milliseconds.
-  final int? setupDelayMs;
-
   const SceneSetup({
     this.hotRestart = false,
     this.navigateTo,
@@ -57,6 +48,15 @@ class SceneSetup {
     );
   }
 
+  /// Whether to hot restart before the scene.
+  final bool hotRestart;
+
+  /// Optional route to navigate to.
+  final String? navigateTo;
+
+  /// Optional delay after setup in milliseconds.
+  final int? setupDelayMs;
+
   Map<String, dynamic> toJson() {
     return {
       'hot_restart': hotRestart,
@@ -69,15 +69,6 @@ class SceneSetup {
 /// Barrier configuration for a scene.
 @immutable
 class BarrierConfig {
-  /// Timeout in milliseconds.
-  final int timeoutMs;
-
-  /// Number of consecutive matches for visual stability.
-  final int consecutiveMatches;
-
-  /// Polling interval in milliseconds.
-  final int pollingIntervalMs;
-
   const BarrierConfig({
     this.timeoutMs = 5000,
     this.consecutiveMatches = 3,
@@ -91,6 +82,15 @@ class BarrierConfig {
       pollingIntervalMs: map['polling_interval_ms'] as int? ?? 100,
     );
   }
+
+  /// Timeout in milliseconds.
+  final int timeoutMs;
+
+  /// Number of consecutive matches for visual stability.
+  final int consecutiveMatches;
+
+  /// Polling interval in milliseconds.
+  final int pollingIntervalMs;
 
   static int? _parseDuration(dynamic value) {
     if (value == null) return null;
@@ -113,6 +113,14 @@ class BarrierConfig {
 /// Complete definition of a scene.
 @immutable
 class SceneDefinition {
+  const SceneDefinition({
+    required this.name,
+    this.description,
+    this.setup = const SceneSetup(),
+    required this.steps,
+    this.barriers = const {},
+  });
+
   /// Unique name of the scene.
   final String name;
 
@@ -127,14 +135,6 @@ class SceneDefinition {
 
   /// Barrier configurations by name.
   final Map<String, BarrierConfig> barriers;
-
-  const SceneDefinition({
-    required this.name,
-    this.description,
-    this.setup = const SceneSetup(),
-    required this.steps,
-    this.barriers = const {},
-  });
 
   /// Get all checkpoints in this scene.
   List<CheckpointDefinition> get checkpoints {

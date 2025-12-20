@@ -11,12 +11,6 @@ import '../observation/device_camera.dart';
 
 /// Command to capture a screenshot from a device.
 class ScreenshotCommand extends Command<int> {
-  @override
-  final String name = 'screenshot';
-
-  @override
-  final String description = 'Capture a screenshot from an Android device.';
-
   ScreenshotCommand() {
     argParser.addOption(
       'device',
@@ -42,6 +36,12 @@ class ScreenshotCommand extends Command<int> {
       defaultsTo: '5',
     );
   }
+
+  @override
+  final String name = 'screenshot';
+
+  @override
+  final String description = 'Capture a screenshot from an Android device.';
 
   @override
   Future<int> run() async {

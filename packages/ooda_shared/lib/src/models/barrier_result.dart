@@ -3,21 +3,6 @@ import 'package:meta/meta.dart';
 /// Result of waiting on a barrier.
 @immutable
 class BarrierResult<T> {
-  /// Whether the barrier condition was met successfully.
-  final bool success;
-
-  /// The value produced by the barrier (if any).
-  final T? value;
-
-  /// How long the wait took.
-  final Duration elapsed;
-
-  /// Diagnostic information on failure.
-  final String? diagnosticInfo;
-
-  /// Error that occurred during waiting (if any).
-  final Object? error;
-
   const BarrierResult({
     required this.success,
     this.value,
@@ -63,6 +48,21 @@ class BarrierResult<T> {
       diagnosticInfo: diagnosticInfo ?? error.toString(),
     );
   }
+
+  /// Whether the barrier condition was met successfully.
+  final bool success;
+
+  /// The value produced by the barrier (if any).
+  final T? value;
+
+  /// How long the wait took.
+  final Duration elapsed;
+
+  /// Diagnostic information on failure.
+  final String? diagnosticInfo;
+
+  /// Error that occurred during waiting (if any).
+  final Object? error;
 
   @override
   String toString() {

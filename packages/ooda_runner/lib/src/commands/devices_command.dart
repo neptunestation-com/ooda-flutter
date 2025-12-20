@@ -9,12 +9,6 @@ import '../adb/device_manager.dart';
 
 /// Command to list connected Android devices.
 class DevicesCommand extends Command<int> {
-  @override
-  final String name = 'devices';
-
-  @override
-  final String description = 'List connected Android devices.';
-
   DevicesCommand() {
     argParser.addFlag(
       'ready-only',
@@ -35,6 +29,12 @@ class DevicesCommand extends Command<int> {
       defaultsTo: false,
     );
   }
+
+  @override
+  final String name = 'devices';
+
+  @override
+  final String description = 'List connected Android devices.';
 
   @override
   Future<int> run() async {

@@ -3,6 +3,34 @@ import 'package:meta/meta.dart';
 /// Metadata for an observation bundle.
 @immutable
 class ObservationMetadata {
+  const ObservationMetadata({
+    this.schemaVersion = '1.0.0',
+    required this.sceneName,
+    required this.checkpointName,
+    required this.timestamp,
+    required this.overlayPresent,
+    this.reloadId,
+    required this.deviceId,
+    this.stabilityStatus = 'unknown',
+    this.description,
+    this.extra,
+  });
+
+  /// Create from JSON map.
+  factory ObservationMetadata.fromJson(Map<String, dynamic> json) {
+    return ObservationMetadata(
+      schemaVersion: json['schema_version'] as String? ?? '1.0.0',
+      sceneName: json['scene'] as String,
+      checkpointName: json['checkpoint'] as String,
+      timestamp: DateTime.parse(json['timestamp'] as String),
+      overlayPresent: json['overlay_present'] as bool,
+      reloadId: json['reload_id'] as int?,
+      deviceId: json['device_id'] as String,
+      stabilityStatus: json['stability_status'] as String? ?? 'unknown',
+      description: json['description'] as String?,
+    );
+  }
+
   /// Schema version for forward compatibility.
   final String schemaVersion;
 
@@ -33,19 +61,6 @@ class ObservationMetadata {
   /// Optional additional data.
   final Map<String, dynamic>? extra;
 
-  const ObservationMetadata({
-    this.schemaVersion = '1.0.0',
-    required this.sceneName,
-    required this.checkpointName,
-    required this.timestamp,
-    required this.overlayPresent,
-    this.reloadId,
-    required this.deviceId,
-    this.stabilityStatus = 'unknown',
-    this.description,
-    this.extra,
-  });
-
   /// Convert to JSON map for serialization.
   Map<String, dynamic> toJson() {
     return {
@@ -60,21 +75,6 @@ class ObservationMetadata {
       if (description != null) 'description': description,
       if (extra != null) ...extra!,
     };
-  }
-
-  /// Create from JSON map.
-  factory ObservationMetadata.fromJson(Map<String, dynamic> json) {
-    return ObservationMetadata(
-      schemaVersion: json['schema_version'] as String? ?? '1.0.0',
-      sceneName: json['scene'] as String,
-      checkpointName: json['checkpoint'] as String,
-      timestamp: DateTime.parse(json['timestamp'] as String),
-      overlayPresent: json['overlay_present'] as bool,
-      reloadId: json['reload_id'] as int?,
-      deviceId: json['device_id'] as String,
-      stabilityStatus: json['stability_status'] as String? ?? 'unknown',
-      description: json['description'] as String?,
-    );
   }
 
   @override

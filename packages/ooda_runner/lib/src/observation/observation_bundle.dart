@@ -20,6 +20,18 @@ import 'overlay_detector.dart';
 ///   meta.json           # Metadata (timestamps, overlay_present, etc.)
 /// ```
 class ObservationBundle {
+  ObservationBundle({
+    required this.sceneName,
+    required this.checkpointName,
+    this.deviceScreenshot,
+    this.flutterScreenshot,
+    this.widgetTree,
+    this.semanticsTree,
+    this.logs = const [],
+    required this.metadata,
+    this.overlayDetection,
+  });
+
   /// Name of the scene this observation belongs to.
   final String sceneName;
 
@@ -46,18 +58,6 @@ class ObservationBundle {
 
   /// Overlay detection result (if both screenshots available).
   final OverlayDetectionResult? overlayDetection;
-
-  ObservationBundle({
-    required this.sceneName,
-    required this.checkpointName,
-    this.deviceScreenshot,
-    this.flutterScreenshot,
-    this.widgetTree,
-    this.semanticsTree,
-    this.logs = const [],
-    required this.metadata,
-    this.overlayDetection,
-  });
 
   /// Whether an overlay (keyboard, dialog, etc.) was detected.
   bool get overlayPresent => overlayDetection?.overlayPresent ?? false;
@@ -231,9 +231,9 @@ class ObservationBundle {
 
 /// Exception thrown when bundle operations fail.
 class ObservationBundleException implements Exception {
-  final String message;
-
   ObservationBundleException(this.message);
+
+  final String message;
 
   @override
   String toString() => 'ObservationBundleException: $message';
@@ -241,6 +241,8 @@ class ObservationBundleException implements Exception {
 
 /// Builder for creating observation bundles.
 class ObservationBundleBuilder {
+  ObservationBundleBuilder();
+
   String? _sceneName;
   String? _checkpointName;
   Uint8List? _deviceScreenshot;
@@ -252,8 +254,6 @@ class ObservationBundleBuilder {
   int? _reloadId;
   String _stabilityStatus = 'unknown';
   String? _description;
-
-  ObservationBundleBuilder();
 
   ObservationBundleBuilder scene(String name) {
     _sceneName = name;
