@@ -83,10 +83,15 @@ barriers:
 git clone https://github.com/neptunestation-com/ooda-flutter.git
 cd ooda-flutter
 
-# Install dependencies (uses Dart pub workspaces)
-dart pub get
+# Install dependencies and bootstrap
+make setup
+make bootstrap
+```
 
-# Optional: Bootstrap with melos for IDE integration
+Or manually:
+
+```bash
+dart pub get
 melos bootstrap
 ```
 
@@ -197,30 +202,45 @@ By comparing these two images, the framework detects **overlays**—system UI el
 
 ## Development
 
+A Makefile provides convenient shortcuts for common tasks:
+
+```bash
+make help       # Show all available commands
+make test       # Run all tests
+make analyze    # Run static analysis
+make format     # Format all code
+make clean      # Clean build artifacts
+make devices    # List connected devices
+make screenshot # Take a screenshot
+make showcase   # Run the showcase app
+```
+
 ### Running Tests
 
 ```bash
-# Run all tests
+# Via Makefile
+make test
+
+# Or directly
 melos exec --scope="ooda_shared,ooda_runner" -- dart test
 
-# Run tests for a specific package
-cd packages/ooda_runner
-dart test
-
 # Run a specific test file
+cd packages/ooda_runner
 dart test test/barriers/barrier_test.dart
 ```
 
 ### Code Analysis
 
 ```bash
-melos exec -- dart analyze .
+make analyze
+# Or: melos exec -- dart analyze .
 ```
 
 ### Formatting
 
 ```bash
-melos exec -- dart format .
+make format
+# Or: melos exec -- dart format .
 ```
 
 ## License
