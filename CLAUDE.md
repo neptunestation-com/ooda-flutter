@@ -21,14 +21,14 @@ dart run packages/ooda_runner/bin/ooda.dart scene \
 
 Observations are saved to `obs/<scene_name>/<checkpoint_name>/`:
 
-| File | Contents |
-|------|----------|
-| `device.png` | What the phone displays (includes keyboard, system dialogs) |
-| `flutter.png` | What Flutter renders (app content only) |
-| `widget_tree.json` | Widget hierarchy with types and properties |
-| `semantics.json` | Accessibility tree with labels, roles, actions |
-| `meta.json` | Timestamp, overlay detection result |
-| `logs.txt` | Flutter logs during capture |
+| File               | Contents                                                    |
+|--------------------|-------------------------------------------------------------|
+| `device.png`       | What the phone displays (includes keyboard, system dialogs) |
+| `flutter.png`      | What Flutter renders (app content only)                     |
+| `widget_tree.json` | Widget hierarchy with types and properties                  |
+| `semantics.json`   | Accessibility tree with labels, roles, actions              |
+| `meta.json`        | Timestamp, overlay detection result                         |
+| `logs.txt`         | Flutter logs during capture                                 |
 
 **Overlay detection**: If `device.png` differs from `flutter.png`, a system overlay (keyboard, dialog) is present.
 
@@ -44,17 +44,17 @@ Compare device.png and flutter.png - is the keyboard visible?
 
 Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`, or if installed globally, just `ooda <command>`:
 
-| Command | Purpose |
-|---------|---------|
-| `devices` | List connected Android devices |
-| `screenshot` | Capture device screenshot |
+| Command                        | Purpose                                |
+|--------------------------------|----------------------------------------|
+| `devices`                      | List connected Android devices         |
+| `screenshot`                   | Capture device screenshot              |
 | `scene -s <yaml> -p <project>` | Execute scene and capture observations |
-| `run -p <project>` | Start Flutter app with OODA control |
-| `observe` | Capture observation from running app |
-| `info` | Show built-in documentation |
-| `info --commands` | Detailed options for all commands |
-| `info --scene-yaml` | Full scene YAML format reference |
-| `info --observations` | Observation file structure details |
+| `run -p <project>`             | Start Flutter app with OODA control    |
+| `observe`                      | Capture observation from running app   |
+| `info`                         | Show built-in documentation            |
+| `info --commands`              | Detailed options for all commands      |
+| `info --scene-yaml`            | Full scene YAML format reference       |
+| `info --observations`          | Observation file structure details     |
 
 Run `ooda info --commands` for all options, or `ooda <command> --help` for specific command help.
 
@@ -133,10 +133,10 @@ dart pub global run melos exec -- dart format .
 
 ### Package Structure
 
-| Package | Purpose |
-|---------|---------|
-| `ooda_shared` | Shared types: `Interaction`, `SceneDefinition`, `BarrierResult` |
-| `ooda_runner` | CLI and control plane (pure Dart, no Flutter dependency) |
+| Package        | Purpose                                                          |
+|----------------|------------------------------------------------------------------|
+| `ooda_shared`  | Shared types: `Interaction`, `SceneDefinition`, `BarrierResult`  |
+| `ooda_runner`  | CLI and control plane (pure Dart, no Flutter dependency)         |
 | `ooda_flutter` | In-app package (placeholder for future Flutter-side integration) |
 
 ### Key Components

@@ -151,14 +151,14 @@ dart pub global run melos bootstrap
 
 The `ooda` CLI tool is the main entry point. Run `ooda info --commands` for detailed options.
 
-| Command | Purpose |
-|---------|---------|
-| `devices` | List connected Android devices |
-| `screenshot` | Capture device screenshot |
-| `scene` | Execute scene YAML, capture observations |
-| `run` | Start Flutter app with OODA control |
-| `observe` | Capture observation from running app |
-| `info` | Show documentation (`--commands`, `--scene-yaml`, `--observations`) |
+| Command      | Purpose                                                             |
+|--------------|---------------------------------------------------------------------|
+| `devices`    | List connected Android devices                                      |
+| `screenshot` | Capture device screenshot                                           |
+| `scene`      | Execute scene YAML, capture observations                            |
+| `run`        | Start Flutter app with OODA control                                 |
+| `observe`    | Capture observation from running app                                |
+| `info`       | Show documentation (`--commands`, `--scene-yaml`, `--observations`) |
 
 **Quick examples:**
 ```bash
@@ -226,11 +226,11 @@ ooda-flutter/
 
 ### Package Overview
 
-| Package | Description |
-|---------|-------------|
-| `ooda_shared` | Shared types: `Interaction`, `BarrierResult`, `SceneDefinition`, etc. |
-| `ooda_runner` | CLI tool with ADB integration, barriers, observation, and scene execution |
-| `ooda_flutter` | Optional in-app package for enhanced observation (Flutter-side) |
+| Package        | Description                                                               |
+|----------------|---------------------------------------------------------------------------|
+| `ooda_shared`  | Shared types: `Interaction`, `BarrierResult`, `SceneDefinition`, etc.     |
+| `ooda_runner`  | CLI tool with ADB integration, barriers, observation, and scene execution |
+| `ooda_flutter` | Optional in-app package for enhanced observation (Flutter-side)           |
 
 ## How It Works
 
