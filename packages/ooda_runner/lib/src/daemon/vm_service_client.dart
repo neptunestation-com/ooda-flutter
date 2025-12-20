@@ -153,24 +153,37 @@ class VmServiceClient {
   ///
   /// Returns the debug dump of the semantics tree.
   /// Note: This returns a string representation, not structured JSON.
+  /// Returns empty string if semantics tree is not available.
   Future<String> getSemanticsTree() async {
     if (_mainIsolateId == null) {
       throw VmServiceClientException('No isolate available');
     }
 
     try {
+      // Try to enable semantics first via evaluate
+      // Flutter's semantics tree is lazy and only built when enabled
+      try {
+        await evaluate('SemanticsBinding.instance.ensureSemantics()');
+        // Brief delay for semantics tree to build
+        await Future<void>.delayed(const Duration(milliseconds: 100));
+      } catch (_) {
+        // Semantics may already be enabled or not available - continue anyway
+      }
+
       // Get the semantics tree dump
       final response = await _service.callServiceExtension(
         'ext.flutter.debugDumpSemanticsTreeInTraversalOrder',
         isolateId: _mainIsolateId,
       );
 
-      final result = response.json?['result'];
-      if (result is String) {
-        return result;
+      // The extension returns data in 'data' field, not 'result'
+      final data = response.json?['data'];
+      if (data is String && data.isNotEmpty) {
+        return data;
       }
 
-      throw VmServiceClientException('Empty response from semantics tree');
+      // Return empty string instead of throwing - semantics may legitimately be empty
+      return '';
     } catch (e) {
       throw VmServiceClientException('Failed to get semantics tree: $e');
     }
