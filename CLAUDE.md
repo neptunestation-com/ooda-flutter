@@ -8,13 +8,31 @@ OODA-Flutter is an AI-driven OODA (Observe-Orient-Decide-Act) loop framework for
 
 ## Build & Test Commands
 
-This is a Dart monorepo with three packages. All commands assume you're in the package directory.
+This is a Dart monorepo managed with [melos](https://melos.invertase.dev/).
 
 ```bash
-# Get dependencies (run in each package)
-cd packages/ooda_shared && dart pub get
-cd packages/ooda_runner && dart pub get
-cd packages/ooda_flutter && flutter pub get
+# Bootstrap all packages (links dependencies, required first time)
+melos bootstrap
+
+# Run all tests across all packages
+melos run test
+
+# Run static analysis on all packages
+melos run analyze
+
+# Format all packages
+melos run format
+
+# Clean build artifacts
+melos run clean
+```
+
+**Per-package commands** (run from within a package directory):
+
+```bash
+# Get dependencies
+dart pub get                    # For pure Dart packages
+flutter pub get                 # For Flutter packages (ooda_flutter)
 
 # Run all tests in a package
 dart test
@@ -27,11 +45,29 @@ dart test --name "test description pattern"
 
 # Analyze code (linting)
 dart analyze
+```
 
-# Run the CLI (from ooda_runner)
+**CLI commands** (from `packages/ooda_runner`):
+
+```bash
 dart run bin/ooda.dart devices
 dart run bin/ooda.dart screenshot -d <device_id>
 dart run bin/ooda.dart scene -f example/scenes/login_flow.yaml
+```
+
+**Running example apps**:
+
+```bash
+# Run the showcase app (minimal variant)
+cd examples/ooda_showcase && flutter run
+
+# Run the showcase app (polished variant)
+cd examples/ooda_showcase && flutter run -t lib/main_polished.dart
+
+# Run a scene against an example app
+dart run packages/ooda_runner/bin/ooda.dart scene \
+  -f examples/ooda_showcase/scenes/login_flow.yaml \
+  -p examples/ooda_showcase
 ```
 
 ## Architecture
