@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:ooda_shared/ooda_shared.dart' hide LogEvent, CheckpointCapturedEvent;
 import 'package:path/path.dart' as p;
 
 import '../adb/adb_client.dart';

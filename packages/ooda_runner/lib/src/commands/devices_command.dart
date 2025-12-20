@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 
 import 'package:args/command_runner.dart';
+import 'package:ooda_shared/ooda_shared.dart';
 
 import '../adb/adb_client.dart';
 import '../adb/device_manager.dart';
@@ -67,7 +68,7 @@ class DevicesCommand extends Command<int> {
     }
   }
 
-  void _printTable(List<dynamic> devices) {
+  void _printTable(List<AdbDevice> devices) {
     if (devices.isEmpty) {
       stdout.writeln('No devices found.');
       stdout.writeln('');
@@ -114,7 +115,7 @@ class DevicesCommand extends Command<int> {
     stdout.writeln('');
   }
 
-  void _printJson(List<dynamic> devices) {
+  void _printJson(List<AdbDevice> devices) {
     final json = devices
         .map((d) => {
               'id': d.id,
