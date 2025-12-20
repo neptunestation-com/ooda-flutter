@@ -78,6 +78,45 @@ barriers:
 
 ## Installation
 
+### Using in Your Flutter Project
+
+**As a CLI tool** (recommended for AI agents):
+```bash
+# Install globally
+dart pub global activate --source git \
+  https://github.com/neptunestation-com/ooda-flutter.git \
+  --git-path packages/ooda_runner
+
+# Now available as a global command
+ooda devices
+ooda screenshot -d <device_id>
+ooda scene -f scene.yaml
+```
+
+**As a library dependency**:
+```yaml
+# In your pubspec.yaml
+dependencies:
+  ooda_runner:
+    git:
+      url: https://github.com/neptunestation-com/ooda-flutter.git
+      path: packages/ooda_runner
+      ref: v0.1.0  # Pin to a version tag
+```
+
+```dart
+import 'package:ooda_runner/ooda_runner.dart';
+
+final adb = AdbClient();
+final devices = await DeviceManager(adb).listDevices();
+final controller = InteractionController(adb, devices.first.id);
+await controller.tap(540, 400);
+```
+
+### Development Setup
+
+For contributing or local development:
+
 ```bash
 # Clone the repository
 git clone https://github.com/neptunestation-com/ooda-flutter.git
@@ -91,8 +130,9 @@ make bootstrap
 Or manually:
 
 ```bash
+dart pub global activate melos
 dart pub get
-melos bootstrap
+dart pub global run melos bootstrap
 ```
 
 ## Usage
