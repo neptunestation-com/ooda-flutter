@@ -59,14 +59,14 @@ dart test --name "test description pattern"
 dart analyze
 ```
 
-**CLI commands** (from `packages/ooda_runner`):
+**CLI commands** (run from `packages/ooda_runner`):
 
 ```bash
-dart run bin/ooda.dart devices
-dart run bin/ooda.dart screenshot -d <device_id>
-dart run bin/ooda.dart run -p /path/to/flutter/project -d <device_id>
-dart run bin/ooda.dart observe -d <device_id>
-dart run bin/ooda.dart scene -f example/scenes/login_flow.yaml
+dart run bin/ooda.dart devices                                      # List devices
+dart run bin/ooda.dart screenshot -d <device_id>                    # Take screenshot
+dart run bin/ooda.dart run -p /path/to/flutter/project -d <device_id>  # Run app
+dart run bin/ooda.dart observe -d <device_id>                       # Capture observation
+dart run bin/ooda.dart scene -f example/scenes/login_flow.yaml     # Execute scene
 ```
 
 **Running example apps**:
@@ -96,9 +96,20 @@ dart run packages/ooda_runner/bin/ooda.dart scene \
   - Entry point: `bin/ooda.dart` - CLI with commands: `devices`, `screenshot`, `run`, `observe`, `scene`
   - Core components described below
 
-- **ooda_flutter**: In-app Flutter package for enhanced observation (currently minimal)
+- **ooda_flutter**: In-app Flutter package for enhanced observation (placeholder for future Flutter-side features)
 
 Note: `ooda_runner` re-exports all types from `ooda_shared`, so you can import just `package:ooda_runner/ooda_runner.dart` to get all types.
+
+### Testing
+
+Tests are located in each package's `test/` directory and mirror the `src/` structure:
+- `test/barriers/` - Barrier tests (polling, events, timeouts)
+- `test/daemon/` - JSON-RPC protocol parsing tests
+- `test/observation/` - Camera, overlay detection, bundle tests
+- `test/scenes/` - Scene parsing and execution tests
+- `test/interaction/` - Interaction controller tests
+
+Run a single test file: `dart test test/barriers/barrier_test.dart`
 
 ### Key Components in ooda_runner
 
