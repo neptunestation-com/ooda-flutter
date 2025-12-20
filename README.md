@@ -245,7 +245,7 @@ make format
 
 ## License
 
-[Add your license here]
+MIT License - see [LICENSE](LICENSE) for details.
 
 ## Contributing
 
