@@ -1,0 +1,41 @@
+# Dart/Flutter
+.dart_tool/
+.packages
+build/
+*.iml
+*.ipr
+*.iws
+.idea/
+
+# Pub
+.pub/
+pubspec.lock
+
+# Generated
+*.g.dart
+*.freezed.dart
+
+# Melos
+.melos_tool/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+*.swp
+*.swo
+*~
+.vscode/
+
+# Test output
+coverage/
+.test_coverage/
+
+# Build output
+dist/
+out/
+
+# Screenshots and observations (local testing)
+obs/
+screenshots/

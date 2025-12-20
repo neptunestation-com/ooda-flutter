@@ -1,0 +1,64 @@
+# Login Flow Scene
+# Demonstrates a typical login form interaction sequence
+
+name: login_flow
+description: Test login form UI and keyboard interaction
+
+setup:
+  hot_restart: true
+  navigate_to: /login
+  setup_delay_ms: 500
+
+steps:
+  # Capture initial state before any interaction
+  - checkpoint: initial_view
+    description: Login form before interaction
+
+  # Tap on email input field
+  - tap:
+      x: 540
+      y: 400
+
+  # Wait for keyboard to appear
+  - wait: visual_stability
+
+  # Capture with keyboard visible
+  - checkpoint: keyboard_up
+    description: Keyboard visible after focusing email field
+
+  # Enter email address
+  - input_text: "test@example.com"
+
+  # Capture after email input
+  - checkpoint: after_email_input
+    description: Email field populated
+
+  # Press tab to move to password field
+  - key_event: tab
+
+  - wait: visual_stability
+
+  # Enter password
+  - input_text: "password123"
+
+  # Capture after password input
+  - checkpoint: after_password_input
+    description: Both fields populated
+
+  # Press enter to submit
+  - key_event: enter
+
+  # Wait for form submission
+  - wait:
+      barrier: visual_stability
+      timeout_ms: 10000
+
+  # Capture final state
+  - checkpoint: after_submit
+    description: State after form submission
+
+barriers:
+  visual_stability:
+    timeout_ms: 5000
+    consecutive_matches: 3
+    polling_interval_ms: 200

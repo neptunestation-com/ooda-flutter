@@ -1,0 +1,16 @@
+include: package:lints/recommended.yaml
+
+linter:
+  rules:
+    - always_declare_return_types
+    - prefer_single_quotes
+    - sort_constructors_first
+    - unawaited_futures
+    - prefer_const_constructors
+    - prefer_const_declarations
+    - prefer_final_locals
+
+analyzer:
+  exclude:
+    - '**/*.g.dart'
+    - '**/*.freezed.dart'

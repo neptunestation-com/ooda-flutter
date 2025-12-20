@@ -1,0 +1,62 @@
+# Keyboard Interaction Test Scene
+# Tests various keyboard interaction scenarios
+
+name: keyboard_test
+description: Test keyboard interactions including key events and text input
+
+setup:
+  hot_restart: true
+
+steps:
+  # Initial state
+  - checkpoint: initial
+    description: App initial state
+    capture_widget_tree: true
+    capture_semantics_tree: true
+
+  # Focus a text field (coordinates would be app-specific)
+  - tap:
+      x: 540
+      y: 300
+
+  - wait: visual_stability
+
+  # Keyboard should be visible
+  - checkpoint: keyboard_visible
+    description: Keyboard is now visible
+
+  # Type some text
+  - input_text: "Hello World"
+
+  - wait:
+      barrier: delay
+      timeout_ms: 500
+
+  - checkpoint: text_entered
+    description: Text has been entered
+
+  # Test backspace simulation via key event
+  - key_event: 67
+
+  - wait:
+      barrier: delay
+      timeout_ms: 200
+
+  - checkpoint: after_backspace
+    description: After pressing backspace
+
+  # Dismiss keyboard with back button
+  - key_event: back
+
+  - wait: visual_stability
+
+  # Keyboard should be hidden
+  - checkpoint: keyboard_hidden
+    description: Keyboard dismissed with back button
+
+barriers:
+  visual_stability:
+    timeout_ms: 5000
+    consecutive_matches: 3
+  delay:
+    timeout_ms: 1000
