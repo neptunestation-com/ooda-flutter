@@ -1,0 +1,57 @@
+name: animation_stability
+description: Test visual stability barrier with animations
+
+setup:
+  hot_restart: true
+  setup_delay_ms: 300
+
+steps:
+  - checkpoint: initial_stable
+    description: App is stable, no animation
+
+  # Visual stability should succeed quickly when not animating
+  - wait:
+      barrier: visual_stability
+      timeout_ms: 2000
+
+  - checkpoint: confirmed_stable
+    description: Visual stability confirmed while static
+
+  # Start animation by tapping the button
+  - tap:
+      x: 540
+      y: 700
+
+  - wait:
+      barrier: delay
+      timeout_ms: 500
+
+  - checkpoint: animating
+    description: Animation is running
+
+  # Visual stability should timeout while animating
+  # (this tests the timeout behavior)
+  - wait:
+      barrier: visual_stability
+      timeout_ms: 1000
+
+  - checkpoint: during_animation
+    description: Captured during animation (stability likely timed out)
+
+  # Stop animation
+  - tap:
+      x: 540
+      y: 700
+
+  - wait: visual_stability
+
+  - checkpoint: stopped_stable
+    description: Animation stopped, stable again
+
+barriers:
+  visual_stability:
+    timeout_ms: 3000
+    consecutive_matches: 3
+    polling_interval_ms: 100
+  delay:
+    timeout_ms: 500

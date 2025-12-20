@@ -1,0 +1,88 @@
+name: form_validation
+description: Test form validation and error states
+
+setup:
+  hot_restart: true
+  navigate_to: /forms
+  setup_delay_ms: 300
+
+steps:
+  - checkpoint: form_initial
+    description: Empty form
+    capture_semantics_tree: true
+    capture_widget_tree: true
+
+  # Try to submit empty form (scroll down to find submit button)
+  - swipe:
+      start_x: 540
+      start_y: 1500
+      end_x: 540
+      end_y: 800
+      duration_ms: 200
+
+  - wait: visual_stability
+
+  # Tap submit button
+  - tap:
+      x: 540
+      y: 1200
+
+  - wait: visual_stability
+
+  - checkpoint: form_validation_errors
+    description: Validation errors visible
+
+  # Scroll back up
+  - swipe:
+      start_x: 540
+      start_y: 500
+      end_x: 540
+      end_y: 1200
+      duration_ms: 200
+
+  - wait: visual_stability
+
+  # Tap name field
+  - tap:
+      x: 540
+      y: 350
+
+  - wait: visual_stability
+
+  - checkpoint: name_field_focused
+    description: Name field focused with keyboard
+
+  # Enter name
+  - input_text: "John Doe"
+
+  - checkpoint: after_name_input
+    description: Name field filled
+
+  # Tab to email
+  - key_event: tab
+
+  - wait: visual_stability
+
+  # Enter invalid email
+  - input_text: "not-an-email"
+
+  - key_event: tab
+
+  - wait: visual_stability
+
+  - checkpoint: invalid_email
+    description: Invalid email entered
+
+  # Dismiss keyboard
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: keyboard_dismissed
+    description: Keyboard dismissed, form visible
+
+barriers:
+  visual_stability:
+    timeout_ms: 3000
+    consecutive_matches: 2
+    polling_interval_ms: 150

@@ -1,0 +1,19 @@
+name: ooda_showcase
+description: Comprehensive demo app for OODA Flutter testing framework.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.0.0
+  flutter: ">=3.0.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  ooda_flutter:
+    path: ../../packages/ooda_flutter
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^3.0.0

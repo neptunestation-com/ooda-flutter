@@ -1,0 +1,61 @@
+name: keyboard_test
+description: Test keyboard interactions and text input
+
+setup:
+  hot_restart: true
+  setup_delay_ms: 300
+
+steps:
+  - checkpoint: initial
+    description: Initial state before any input
+    capture_widget_tree: true
+    capture_semantics_tree: true
+
+  # Tap first text field
+  - tap:
+      x: 540
+      y: 200
+
+  - wait: visual_stability
+
+  - checkpoint: keyboard_visible
+    description: Keyboard appeared after focusing field
+
+  # Enter text
+  - input_text: "Hello World"
+
+  - checkpoint: text_entered
+    description: Text entered in first field
+
+  # Tab to next field
+  - key_event: tab
+
+  - wait: visual_stability
+
+  - checkpoint: field_2_focused
+    description: Second field focused
+
+  # Enter more text
+  - input_text: "Test input"
+
+  # Tab to multiline field
+  - key_event: tab
+
+  - wait: visual_stability
+
+  - checkpoint: multiline_focused
+    description: Multiline field focused
+
+  # Dismiss keyboard with back
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: keyboard_hidden
+    description: Keyboard dismissed
+
+barriers:
+  visual_stability:
+    timeout_ms: 5000
+    consecutive_matches: 3
+    polling_interval_ms: 200

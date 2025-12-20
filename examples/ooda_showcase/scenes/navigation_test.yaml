@@ -1,0 +1,90 @@
+name: navigation_test
+description: Test navigation patterns - drawer, tabs, back button
+
+setup:
+  hot_restart: true
+  navigate_to: /navigation
+  setup_delay_ms: 300
+
+steps:
+  - checkpoint: nav_initial
+    description: Navigation screen initial state
+
+  # Open drawer (swipe from left edge)
+  - swipe:
+      start_x: 0
+      start_y: 800
+      end_x: 300
+      end_y: 800
+      duration_ms: 200
+
+  - wait: visual_stability
+
+  - checkpoint: drawer_open
+    description: Drawer is open
+
+  # Close drawer with back button
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: drawer_closed
+    description: Drawer closed
+
+  # Tap on second tab
+  - tap:
+      x: 540
+      y: 150
+
+  - wait: visual_stability
+
+  - checkpoint: tab_2_selected
+    description: Second tab content visible
+
+  # Tap on third tab
+  - tap:
+      x: 900
+      y: 150
+
+  - wait: visual_stability
+
+  - checkpoint: tab_3_selected
+    description: Third tab content visible
+
+  # Swipe to go back to first tab
+  - swipe:
+      start_x: 100
+      start_y: 600
+      end_x: 900
+      end_y: 600
+      duration_ms: 200
+
+  - wait: visual_stability
+
+  - swipe:
+      start_x: 100
+      start_y: 600
+      end_x: 900
+      end_y: 600
+      duration_ms: 200
+
+  - wait: visual_stability
+
+  - checkpoint: tab_1_via_swipe
+    description: Back to first tab via swipe gestures
+
+  # Tap on bottom navigation
+  - tap:
+      x: 540
+      y: 1850
+
+  - wait: visual_stability
+
+  - checkpoint: bottom_nav_changed
+    description: Bottom navigation changed
+
+barriers:
+  visual_stability:
+    timeout_ms: 3000
+    consecutive_matches: 2
+    polling_interval_ms: 150

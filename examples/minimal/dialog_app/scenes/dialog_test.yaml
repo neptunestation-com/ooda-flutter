@@ -1,0 +1,51 @@
+name: dialog_test
+description: Test dialog overlay detection
+
+setup:
+  hot_restart: true
+  setup_delay_ms: 300
+
+steps:
+  - checkpoint: initial
+    description: Before any dialogs
+
+  # Open AlertDialog
+  - tap:
+      x: 540
+      y: 400
+
+  - wait: visual_stability
+
+  - checkpoint: alert_open
+    description: AlertDialog visible
+
+  # Dismiss with back
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: alert_closed
+    description: AlertDialog dismissed
+
+  # Open BottomSheet
+  - tap:
+      x: 540
+      y: 500
+
+  - wait: visual_stability
+
+  - checkpoint: sheet_open
+    description: BottomSheet visible
+
+  # Dismiss with back
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: sheet_closed
+    description: BottomSheet dismissed
+
+barriers:
+  visual_stability:
+    timeout_ms: 3000
+    consecutive_matches: 2

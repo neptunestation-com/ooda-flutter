@@ -1,0 +1,58 @@
+name: login_flow
+description: Complete login form interaction sequence
+
+setup:
+  hot_restart: true
+  navigate_to: /login
+  setup_delay_ms: 500
+
+steps:
+  - checkpoint: initial_view
+    description: Login form before any interaction
+    capture_semantics_tree: true
+
+  # Focus email field (approximate center of first TextField)
+  - tap:
+      x: 540
+      y: 350
+
+  - wait: visual_stability
+
+  - checkpoint: email_focused
+    description: Email field focused, keyboard visible
+
+  # Enter email
+  - input_text: "user@example.com"
+
+  - checkpoint: email_entered
+    description: Email field populated
+
+  # Tab to password field
+  - key_event: tab
+
+  - wait: visual_stability
+
+  - checkpoint: password_focused
+    description: Password field focused
+
+  # Enter password
+  - input_text: "password123"
+
+  - checkpoint: password_entered
+    description: Password field populated (obscured)
+
+  # Submit with enter
+  - key_event: enter
+
+  - wait:
+      barrier: visual_stability
+      timeout_ms: 3000
+
+  - checkpoint: after_submit
+    description: State after form submission
+
+barriers:
+  visual_stability:
+    timeout_ms: 5000
+    consecutive_matches: 3
+    polling_interval_ms: 200

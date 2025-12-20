@@ -3,7 +3,8 @@ repository: https://github.com/neptunestation-com/ooda-flutter
 
 packages:
   - packages/*
-  - example
+  - examples/ooda_showcase
+  - examples/minimal/*
 
 command:
   bootstrap:

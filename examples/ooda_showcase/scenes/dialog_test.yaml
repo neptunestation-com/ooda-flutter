@@ -1,0 +1,71 @@
+name: dialog_test
+description: Test dialog overlay detection
+
+setup:
+  hot_restart: true
+  navigate_to: /dialogs
+  setup_delay_ms: 300
+
+steps:
+  - checkpoint: initial
+    description: Dialogs screen before any dialogs
+
+  # Tap "Show AlertDialog" button (first button)
+  - tap:
+      x: 540
+      y: 300
+
+  - wait: visual_stability
+
+  - checkpoint: alert_dialog_open
+    description: AlertDialog is visible (overlay detected)
+
+  # Dismiss with back button
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: alert_dialog_dismissed
+    description: After dismissing AlertDialog
+
+  # Tap "Show BottomSheet" button (second button)
+  - tap:
+      x: 540
+      y: 400
+
+  - wait: visual_stability
+
+  - checkpoint: bottom_sheet_open
+    description: BottomSheet is visible
+
+  # Dismiss with back button
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: bottom_sheet_dismissed
+    description: After dismissing BottomSheet
+
+  # Tap "Show DatePicker" button (third button)
+  - tap:
+      x: 540
+      y: 500
+
+  - wait: visual_stability
+
+  - checkpoint: date_picker_open
+    description: DatePicker is visible
+
+  # Dismiss with back button
+  - key_event: back
+
+  - wait: visual_stability
+
+  - checkpoint: date_picker_dismissed
+    description: After dismissing DatePicker
+
+barriers:
+  visual_stability:
+    timeout_ms: 3000
+    consecutive_matches: 2
+    polling_interval_ms: 150
