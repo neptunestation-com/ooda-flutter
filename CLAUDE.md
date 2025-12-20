@@ -8,32 +8,28 @@ OODA-Flutter is an AI-driven OODA (Observe-Orient-Decide-Act) loop framework for
 
 ## Build & Test Commands
 
-This is a Dart monorepo managed with [melos](https://melos.invertase.dev/).
+This is a Dart monorepo using [pub workspaces](https://dart.dev/go/pub-workspaces) (Dart 3.10+) and [melos](https://melos.invertase.dev/) for orchestration.
 
 ```bash
-# Bootstrap all packages (links dependencies, required first time)
+# Get dependencies for all packages (pub workspaces - run from root)
+dart pub get
+
+# Bootstrap with melos (generates IDE files)
 melos bootstrap
 
-# Run all tests across all packages
-melos run test
+# Run tests on specific packages (non-interactive)
+melos exec --scope="ooda_shared,ooda_runner" -- dart test
 
 # Run static analysis on all packages
-melos run analyze
+melos exec -- dart analyze .
 
 # Format all packages
-melos run format
-
-# Clean build artifacts
-melos run clean
+melos exec -- dart format .
 ```
 
 **Per-package commands** (run from within a package directory):
 
 ```bash
-# Get dependencies
-dart pub get                    # For pure Dart packages
-flutter pub get                 # For Flutter packages (ooda_flutter)
-
 # Run all tests in a package
 dart test
 

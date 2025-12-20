@@ -2,9 +2,10 @@ name: ooda_flutter
 description: In-app Flutter package for OODA framework - provides enhanced observation capabilities.
 version: 0.1.0
 publish_to: none
+resolution: workspace
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.10.0
   flutter: ">=3.0.0"
 
 dependencies:

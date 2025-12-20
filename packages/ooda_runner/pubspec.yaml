@@ -2,9 +2,10 @@ name: ooda_runner
 description: CLI tool for AI-driven Flutter OODA loop - the control plane for automated UI testing.
 version: 0.1.0
 publish_to: none
+resolution: workspace
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.10.0
 
 executables:
   ooda: ooda

@@ -2,9 +2,10 @@ name: ooda_shared
 description: Shared types, models, and protocols for the OODA Flutter framework.
 version: 0.1.0
 publish_to: none
+resolution: workspace
 
 environment:
-  sdk: ^3.0.0
+  sdk: ^3.10.0
 
 dependencies:
   meta: ^1.9.0

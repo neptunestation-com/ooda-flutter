@@ -1,0 +1,49 @@
+name: ooda_flutter_workspace
+description: AI-driven OODA loop framework for automated Flutter UI testing on Android.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: ^3.10.0
+
+dev_dependencies:
+  melos: ^7.0.0
+
+workspace:
+  - packages/ooda_shared
+  - packages/ooda_runner
+  - packages/ooda_flutter
+  - examples/ooda_showcase
+  - examples/minimal/keyboard_app
+  - examples/minimal/scroll_app
+  - examples/minimal/dialog_app
+  - examples/minimal/form_app
+  - examples/minimal/gestures_app
+  - examples/minimal/animation_app
+
+melos:
+  name: ooda_flutter
+  repository: https://github.com/neptunestation-com/ooda-flutter
+
+  command:
+    bootstrap:
+      usePubspecOverrides: true
+
+  scripts:
+    analyze:
+      run: melos exec -- dart analyze .
+      description: Run static analysis on all packages
+
+    test:
+      run: melos exec -- dart test
+      description: Run tests in all packages
+      packageFilters:
+        dirExists: test
+
+    format:
+      run: melos exec -- dart format .
+      description: Format all packages
+
+    clean:
+      run: melos exec -- rm -rf .dart_tool build
+      description: Clean build artifacts
