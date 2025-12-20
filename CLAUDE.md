@@ -1,204 +1,144 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## What is this?
 
-## Project Overview
+**ooda-flutter** is a control plane for AI agents to interact with and observe Flutter apps on Android. It runs scenes (scripted interactions), captures observations (screenshots, widget trees, semantics), and outputs structured data for AI analysis.
 
-OODA-Flutter is an AI-driven OODA (Observe-Orient-Decide-Act) loop framework for automated Flutter UI testing on Android. It provides a control plane for AI agents to build, run, observe, interact with, and capture structured observations from Flutter applications.
+## Quick Start (Most Common Workflow)
 
-## Build & Test Commands
-
-This is a Dart monorepo using [pub workspaces](https://dart.dev/go/pub-workspaces) (Dart 3.10+) and [melos](https://melos.invertase.dev/) for orchestration.
-
-**Makefile** (recommended for humans):
+### 1. Run a scene against a Flutter app
 
 ```bash
-make help       # Show all available commands
-make setup      # Install dependencies
-make bootstrap  # Bootstrap with melos
-make test       # Run all tests
-make analyze    # Run static analysis
-make format     # Format all code
-make devices    # List connected devices
-make screenshot # Take a screenshot
-make showcase   # Run the showcase app
-```
-
-**Melos commands** (direct access):
-
-```bash
-# First-time setup: activate melos globally
-dart pub global activate melos
-
-# Get dependencies for all packages (pub workspaces - run from root)
-dart pub get
-
-# Bootstrap with melos (generates IDE files)
-dart pub global run melos bootstrap
-
-# Run tests on specific packages (non-interactive)
-dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
-
-# Run static analysis on all packages
-dart pub global run melos exec -- dart analyze .
-
-# Format all packages
-dart pub global run melos exec -- dart format .
-```
-
-**Per-package commands** (run from within a package directory):
-
-```bash
-# Run all tests in a package
-dart test
-
-# Run a single test file
-dart test test/path/to/test_file.dart
-
-# Run tests with name filter
-dart test --name "test description pattern"
-
-# Analyze code (linting)
-dart analyze
-```
-
-**CLI commands** (run from `packages/ooda_runner`):
-
-```bash
-dart run bin/ooda.dart devices                                      # List devices
-dart run bin/ooda.dart screenshot -d <device_id>                    # Take screenshot
-dart run bin/ooda.dart run -p /path/to/flutter/project -d <device_id>  # Run app
-dart run bin/ooda.dart observe -d <device_id>                       # Capture observation
-dart run bin/ooda.dart scene -f example/scenes/login_flow.yaml     # Execute scene
-```
-
-**Global CLI** (if installed via `dart pub global activate`):
-
-```bash
-ooda devices
-ooda screenshot -d <device_id>
-ooda scene -f scene.yaml
-```
-
-**Running example apps**:
-
-```bash
-# Run the showcase app (minimal variant)
-cd examples/ooda_showcase && flutter run
-
-# Run the showcase app (polished variant)
-cd examples/ooda_showcase && flutter run -t lib/main_polished.dart
-
-# Run a scene against an example app
+# From this repo root, with a phone connected:
 dart run packages/ooda_runner/bin/ooda.dart scene \
-  -f examples/ooda_showcase/scenes/login_flow.yaml \
+  -s examples/ooda_showcase/scenes/login_flow.yaml \
   -p examples/ooda_showcase
 ```
 
-## Architecture
+### 2. Analyze the observations
 
-### Three-Package Structure
+Observations are saved to `obs/<scene_name>/<checkpoint_name>/`:
 
-- **ooda_shared**: Shared types and models used by both runner and Flutter packages
-  - Models: `AdbDevice`, `BarrierResult`, `Interaction`, `SceneDefinition`, `CheckpointDefinition`
-  - Events: `LifecycleEvent`, `RunnerEvent`
+| File | Contents |
+|------|----------|
+| `device.png` | What the phone displays (includes keyboard, system dialogs) |
+| `flutter.png` | What Flutter renders (app content only) |
+| `widget_tree.json` | Widget hierarchy with types and properties |
+| `semantics.json` | Accessibility tree with labels, roles, actions |
+| `meta.json` | Timestamp, overlay detection result |
+| `logs.txt` | Flutter logs during capture |
 
-- **ooda_runner**: CLI tool and control plane (pure Dart, no Flutter dependency)
-  - Entry point: `bin/ooda.dart` - CLI with commands: `devices`, `screenshot`, `run`, `observe`, `scene`
-  - Core components described below
+**Overlay detection**: If `device.png` differs from `flutter.png`, a system overlay (keyboard, dialog) is present.
 
-- **ooda_flutter**: In-app Flutter package for enhanced observation (placeholder for future Flutter-side features)
+### 3. Use observations in prompts
 
-Note: `ooda_runner` re-exports all types from `ooda_shared`, so you can import just `package:ooda_runner/ooda_runner.dart` to get all types.
+```
+Look at obs/login_flow/email_entered/ and describe what's on screen.
+Based on the semantics.json, what form fields are available?
+Compare device.png and flutter.png - is the keyboard visible?
+```
 
-### Testing
+## CLI Commands
 
-Tests are located in each package's `test/` directory and mirror the `src/` structure:
-- `test/barriers/` - Barrier tests (polling, events, timeouts)
-- `test/daemon/` - JSON-RPC protocol parsing tests
-- `test/observation/` - Camera, overlay detection, bundle tests
-- `test/scenes/` - Scene parsing and execution tests
-- `test/interaction/` - Interaction controller tests
+Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`:
 
-Run a single test file: `dart test test/barriers/barrier_test.dart`
+| Command | Purpose |
+|---------|---------|
+| `devices` | List connected Android devices |
+| `screenshot -d <device>` | Capture device screenshot |
+| `scene -s <yaml> -p <project>` | Execute scene and capture observations |
+| `run -p <project> -d <device>` | Start Flutter app with OODA control |
+| `observe -d <device>` | Capture observation from running app |
 
-### Key Components in ooda_runner
-
-**ADB Layer** (`src/adb/`):
-- `AdbClient`: Device communication - tap, swipe, text input, screenshots, shell commands
-- `DeviceManager`: Device discovery and selection
-
-**Barrier System** (`src/barriers/`):
-- Abstract `Barrier<T>`, `PollingBarrier<T>`, and `EventBarrier<T>` base classes for condition-waiting
-- `DeviceReadyBarrier`: Waits for device boot completion (polling-based)
-- `DeviceConnectedBarrier`: Waits for a specific device to connect (polling-based)
-- `AppReadyBarrier`: Waits for Flutter app to start via `app.started` event (event-based)
-- `HotReloadBarrier`: Waits for hot reload/restart to complete via `app.progress` events (event-based)
-- `VmServiceReadyBarrier`: Waits for VM service WebSocket URI via `app.debugPort` event (event-based)
-- `VisualStabilityBarrier`: Waits for screen to stabilize (consecutive matching screenshots)
-- `DualCameraStabilityBarrier`: Waits for both device and Flutter screenshots to stabilize
-
-**Flutter Daemon** (`src/daemon/`):
-- `JsonRpcProtocol`: Parses Flutter's `--machine` JSON-RPC output (events, responses, logs)
-- `FlutterDaemonClient`: Communicates with `flutter run --machine`
-- `VmServiceClient`: Connects to VM service for widget tree access
-- Key daemon events: `app.started`, `app.debugPort`, `app.stop`, `app.progress`, `app.log`
-
-**Session Management** (`src/runner/`):
-- `FlutterSession`: Manages `flutter run` process lifecycle, hot reload/restart, app state tracking
-
-**Observation System** (`src/observation/`):
-- `DeviceCamera`: ADB framebuffer screenshots
-- `FlutterCamera`: Flutter engine screenshots via VM service
-- `OverlayDetector`: Compares Flutter vs Device screenshots to detect system overlays (keyboard, dialogs)
-- `ObservationBundle`: Structured output containing both screenshots, widget tree, semantics tree, logs, metadata
-
-**Scene Execution** (`src/scenes/`):
-- `SceneParser`: Parses YAML scene definitions
-- `SceneExecutor`: Orchestrates scene execution - runs steps, captures checkpoints, handles barriers
-- Scene YAML format: `name`, `setup`, `steps` (checkpoints and interactions), `barriers` config
-
-**Interactions** (`src/interaction/`):
-- `InteractionController`: Executes device interactions (tap, swipe, text input, key events)
-
-### Data Flow
-
-1. `SceneExecutor` loads a scene YAML and starts execution
-2. For each step: either execute an `Interaction` via `InteractionController` or capture a `CheckpointDefinition`
-3. Barriers (e.g., `VisualStabilityBarrier`) ensure the UI is ready before observations
-4. `ObservationBundle` captures: device screenshot, Flutter screenshot, widget tree, semantics, logs
-5. Two-camera model enables overlay detection by comparing Flutter-rendered vs ADB-captured frames
-
-### Scene YAML Format
+## Scene YAML Format
 
 ```yaml
-name: example_scene
+name: my_scene
 setup:
-  hot_restart: true
-  navigate_to: /route            # Deep link: sends ooda://showcase/route via ADB
-  setup_delay_ms: 500
+  hot_restart: true              # Start fresh
+  navigate_to: /settings         # Deep link (requires app support)
+
 steps:
-  - checkpoint: initial_view
-    description: Before interaction
-  - tap: { x: 540, y: 400 }
-  - wait: visual_stability
-  - input_text: "text to type"
-  - swipe: { start_x: 540, start_y: 1000, end_x: 540, end_y: 500, duration_ms: 300 }
-  - key: back                    # or: enter, home, tab, escape
-  - checkpoint: after_input
+  - checkpoint: initial          # Capture observation
+  - tap: { x: 540, y: 400 }      # Tap coordinates
+  - input_text: "user@test.com"  # Type text
+  - key: enter                   # Key event: enter, back, tab, home
+  - swipe: { start_x: 540, start_y: 1000, end_x: 540, end_y: 400 }
+  - wait: visual_stability       # Wait for screen to settle
+  - checkpoint: after_input      # Capture again
+
 barriers:
   visual_stability:
     timeout_ms: 5000
-    consecutive_matches: 3
+    consecutive_matches: 2
 ```
 
-Note: `navigate_to` uses Android deep links. The target app must register a handler for `ooda://showcase/*` intents (see `examples/ooda_showcase/android/app/src/main/AndroidManifest.xml`).
+## For New Flutter Projects
 
-### Interaction Types (ooda_shared)
+Add to `lib/main.dart` to enable semantics capture:
 
-The sealed `Interaction` class has these subtypes:
-- `TapInteraction`: x, y coordinates
-- `TextInputInteraction`: text string
-- `SwipeInteraction`: start/end x/y, duration_ms
-- `KeyEventInteraction`: keyCode (constants: keyBack=4, keyEnter=66, keyHome=3, keyTab=61, keyEscape=111)
-- `WaitInteraction`: barrierType, optional timeoutMs
+```dart
+import 'package:flutter/rendering.dart';
+
+void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  SemanticsBinding.instance.ensureSemantics();
+  runApp(const MyApp());
+}
+```
+
+## Example Scenes
+
+Located in `examples/ooda_showcase/scenes/`:
+- `login_flow.yaml` - Form input, validation
+- `dialog_test.yaml` - Dialog overlay detection
+- `scroll_test.yaml` - List scrolling
+- `keyboard_test.yaml` - Keyboard interactions
+
+---
+
+## Development Reference
+
+### Build & Test
+
+```bash
+make help          # Show all commands
+make test          # Run tests
+make analyze       # Static analysis
+dart pub get       # Get dependencies (from repo root)
+```
+
+### Package Structure
+
+| Package | Purpose |
+|---------|---------|
+| `ooda_shared` | Shared types: `Interaction`, `SceneDefinition`, `BarrierResult` |
+| `ooda_runner` | CLI and control plane (pure Dart) |
+| `ooda_flutter` | In-app package (placeholder) |
+
+### Key Components
+
+**Scene Execution** (`packages/ooda_runner/lib/src/scenes/`):
+- `SceneParser` - Parses YAML
+- `SceneExecutor` - Runs steps, captures checkpoints
+
+**Observation** (`packages/ooda_runner/lib/src/observation/`):
+- `DeviceCamera` - ADB screenshots
+- `FlutterCamera` - VM service screenshots + widget tree + semantics
+- `OverlayDetector` - Compares cameras to detect overlays
+
+**Device Control** (`packages/ooda_runner/lib/src/adb/`):
+- `AdbClient` - Tap, swipe, text, screenshots via ADB
+- `DeviceManager` - Device discovery
+
+**Barriers** (`packages/ooda_runner/lib/src/barriers/`):
+- `VisualStabilityBarrier` - Wait for screen to stop changing
+- `AppReadyBarrier` - Wait for app to start
+- `HotReloadBarrier` - Wait for hot restart to complete
+
+### Tests
+
+```bash
+dart test packages/ooda_runner/test/           # All runner tests
+dart test test/scenes/scene_parser_test.dart   # Single test file
+```

@@ -2,6 +2,8 @@
 
 An AI-driven OODA (Observe-Orient-Decide-Act) loop framework for automated Flutter UI testing on Android.
 
+> **AI Coding Tools**: See [CLAUDE.md](CLAUDE.md) for quick-start instructions optimized for AI agents.
+
 ## What is this?
 
 OODA-Flutter provides a **control plane for AI agents** to autonomously build, run, observe, interact with, and critique Flutter applications. It bridges the gap between AI systems and Flutter's UI layer, enabling:
