@@ -1,6 +1,9 @@
 # OODA-Flutter Makefile
 # Human-friendly wrapper for common development tasks
 
+# Use dart pub global run for portability (doesn't require ~/.pub-cache/bin in PATH)
+MELOS := dart pub global run melos
+
 .PHONY: help setup bootstrap test analyze format clean devices screenshot
 
 # Default target
@@ -30,20 +33,20 @@ setup:
 	dart pub get
 
 bootstrap: setup
-	melos bootstrap
+	$(MELOS) bootstrap
 
 # Development targets
 test:
-	melos exec --scope="ooda_shared,ooda_runner" -- dart test
+	$(MELOS) exec --scope="ooda_shared,ooda_runner" -- dart test
 
 analyze:
-	melos exec -- dart analyze .
+	$(MELOS) exec -- dart analyze .
 
 format:
-	melos exec -- dart format .
+	$(MELOS) exec -- dart format .
 
 clean:
-	melos exec -- rm -rf .dart_tool build
+	$(MELOS) exec -- rm -rf .dart_tool build
 
 # CLI targets
 devices:
