@@ -10,6 +10,22 @@ OODA-Flutter is an AI-driven OODA (Observe-Orient-Decide-Act) loop framework for
 
 This is a Dart monorepo using [pub workspaces](https://dart.dev/go/pub-workspaces) (Dart 3.10+) and [melos](https://melos.invertase.dev/) for orchestration.
 
+**Makefile** (recommended for humans):
+
+```bash
+make help       # Show all available commands
+make setup      # Install dependencies
+make bootstrap  # Bootstrap with melos
+make test       # Run all tests
+make analyze    # Run static analysis
+make format     # Format all code
+make devices    # List connected devices
+make screenshot # Take a screenshot
+make showcase   # Run the showcase app
+```
+
+**Melos commands** (direct access):
+
 ```bash
 # Get dependencies for all packages (pub workspaces - run from root)
 dart pub get
