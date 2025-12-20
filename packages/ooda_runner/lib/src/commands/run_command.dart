@@ -30,10 +30,7 @@ class RunCommand extends Command<int> {
       abbr: 't',
       help: 'Target file to run (defaults to lib/main.dart).',
     );
-    argParser.addOption(
-      'flavor',
-      help: 'Build flavor to use.',
-    );
+    argParser.addOption('flavor', help: 'Build flavor to use.');
     argParser.addFlag(
       'hot-reload',
       abbr: 'r',
@@ -69,7 +66,8 @@ class RunCommand extends Command<int> {
   final String name = 'run';
 
   @override
-  final String description = 'Start a Flutter run session with OODA loop control.';
+  final String description =
+      'Start a Flutter run session with OODA loop control.';
 
   @override
   Future<int> run() async {

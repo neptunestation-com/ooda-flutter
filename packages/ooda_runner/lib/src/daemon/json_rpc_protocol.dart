@@ -3,11 +3,7 @@ import 'dart:convert';
 
 /// A JSON-RPC 2.0 request.
 class JsonRpcRequest {
-  JsonRpcRequest({
-    required this.method,
-    this.params,
-    this.id,
-  });
+  JsonRpcRequest({required this.method, this.params, this.id});
 
   final String method;
   final dynamic params;
@@ -27,11 +23,7 @@ class JsonRpcRequest {
 
 /// A JSON-RPC 2.0 response.
 class JsonRpcResponse {
-  JsonRpcResponse({
-    this.id,
-    this.result,
-    this.error,
-  });
+  JsonRpcResponse({this.id, this.result, this.error});
 
   factory JsonRpcResponse.fromJson(Map<String, dynamic> json) {
     return JsonRpcResponse(
@@ -61,11 +53,7 @@ class JsonRpcResponse {
 
 /// A JSON-RPC 2.0 error.
 class JsonRpcError {
-  JsonRpcError({
-    required this.code,
-    required this.message,
-    this.data,
-  });
+  JsonRpcError({required this.code, required this.message, this.data});
 
   factory JsonRpcError.fromJson(Map<String, dynamic> json) {
     return JsonRpcError(
@@ -85,10 +73,7 @@ class JsonRpcError {
 
 /// An event from the Flutter daemon.
 class DaemonEvent {
-  DaemonEvent({
-    required this.event,
-    required this.params,
-  });
+  DaemonEvent({required this.event, required this.params});
 
   factory DaemonEvent.fromJson(Map<String, dynamic> json) {
     return DaemonEvent(
@@ -196,11 +181,7 @@ class DaemonMessageParser {
 
 /// A log message from the daemon.
 class DaemonLog {
-  DaemonLog({
-    required this.message,
-    this.error = false,
-    this.stackTrace,
-  });
+  DaemonLog({required this.message, this.error = false, this.stackTrace});
 
   factory DaemonLog.fromJson(Map<String, dynamic> json) {
     return DaemonLog(

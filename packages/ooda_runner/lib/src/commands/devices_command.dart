@@ -117,14 +117,16 @@ class DevicesCommand extends Command<int> {
 
   void _printJson(List<AdbDevice> devices) {
     final json = devices
-        .map((d) => {
-              'id': d.id,
-              'state': d.state.name,
-              'model': d.model,
-              'product': d.product,
-              'is_emulator': d.isEmulator,
-              'is_ready': d.isReady,
-            })
+        .map(
+          (d) => {
+            'id': d.id,
+            'state': d.state.name,
+            'model': d.model,
+            'product': d.product,
+            'is_emulator': d.isEmulator,
+            'is_ready': d.isReady,
+          },
+        )
         .toList();
 
     stdout.writeln('[');
@@ -133,7 +135,9 @@ class DevicesCommand extends Command<int> {
       stdout.write('  {');
       stdout.write('"id": "${item['id']}", ');
       stdout.write('"state": "${item['state']}", ');
-      stdout.write('"model": ${item['model'] != null ? '"${item['model']}"' : 'null'}, ');
+      stdout.write(
+        '"model": ${item['model'] != null ? '"${item['model']}"' : 'null'}, ',
+      );
       stdout.write('"is_emulator": ${item['is_emulator']}, ');
       stdout.write('"is_ready": ${item['is_ready']}');
       stdout.write('}');

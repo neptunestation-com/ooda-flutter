@@ -77,10 +77,7 @@ void main() {
     test('detects no overlay for identical images', () {
       final image = createSolidPng(100, 100);
 
-      final result = detector.detect(
-        flutterImage: image,
-        deviceImage: image,
-      );
+      final result = detector.detect(flutterImage: image, deviceImage: image);
 
       expect(result.overlayPresent, isFalse);
       expect(result.diffPercentage, equals(0.0));
@@ -121,10 +118,7 @@ void main() {
       final invalid = Uint8List.fromList([1, 2, 3, 4, 5]);
       final valid = createSolidPng(100, 100);
 
-      final result = detector.detect(
-        flutterImage: invalid,
-        deviceImage: valid,
-      );
+      final result = detector.detect(flutterImage: invalid, deviceImage: valid);
 
       expect(result.overlayPresent, isTrue);
       expect(result.reason, contains('decode'));
@@ -197,10 +191,7 @@ void main() {
       final png1 = Uint8List.fromList(img.encodePng(image1));
       final png2 = Uint8List.fromList(img.encodePng(image2));
 
-      final result = detector.detect(
-        flutterImage: png1,
-        deviceImage: png2,
-      );
+      final result = detector.detect(flutterImage: png1, deviceImage: png2);
 
       // With 0.5 threshold, slight color difference should be ignored
       expect(result.overlayPresent, isFalse);

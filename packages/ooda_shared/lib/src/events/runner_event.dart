@@ -1,12 +1,7 @@
 import 'package:meta/meta.dart';
 
 /// Severity level for runner events.
-enum RunnerEventSeverity {
-  debug,
-  info,
-  warning,
-  error,
-}
+enum RunnerEventSeverity { debug, info, warning, error }
 
 /// Base class for runner events (logs and diagnostics).
 @immutable
@@ -90,12 +85,12 @@ class LogEvent extends RunnerEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'log',
-        'message': message,
-        if (source != null) 'source': source,
-        'severity': severity.name,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'log',
+    'message': message,
+    if (source != null) 'source': source,
+    'severity': severity.name,
+    'timestamp': timestamp.toIso8601String(),
+  };
 
   @override
   String toString() => '[$severity] $message';
@@ -117,12 +112,12 @@ class ProgressEvent extends RunnerEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'progress',
-        'id': id,
-        'message': message,
-        'finished': finished,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'progress',
+    'id': id,
+    'message': message,
+    'finished': finished,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Barrier timeout event with diagnostics.
@@ -145,15 +140,15 @@ class BarrierTimeoutEvent extends RunnerEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'barrier_timeout',
-        'barrier_name': barrierName,
-        'elapsed_ms': elapsed.inMilliseconds,
-        if (diagnosticInfo != null) 'diagnostic_info': diagnosticInfo,
-        if (screenshotPath != null) 'screenshot_path': screenshotPath,
-        if (logcatPath != null) 'logcat_path': logcatPath,
-        'severity': severity.name,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'barrier_timeout',
+    'barrier_name': barrierName,
+    'elapsed_ms': elapsed.inMilliseconds,
+    if (diagnosticInfo != null) 'diagnostic_info': diagnosticInfo,
+    if (screenshotPath != null) 'screenshot_path': screenshotPath,
+    if (logcatPath != null) 'logcat_path': logcatPath,
+    'severity': severity.name,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Error event.
@@ -172,11 +167,11 @@ class ErrorEvent extends RunnerEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'error',
-        'message': message,
-        if (error != null) 'error': error.toString(),
-        if (stackTrace != null) 'stack_trace': stackTrace.toString(),
-        'severity': severity.name,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'error',
+    'message': message,
+    if (error != null) 'error': error.toString(),
+    if (stackTrace != null) 'stack_trace': stackTrace.toString(),
+    'severity': severity.name,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }

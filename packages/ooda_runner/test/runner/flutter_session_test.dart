@@ -4,9 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('FlutterSessionConfig', () {
     test('builds basic args', () {
-      const config = FlutterSessionConfig(
-        projectPath: '/path/to/project',
-      );
+      const config = FlutterSessionConfig(projectPath: '/path/to/project');
 
       final args = config.buildArgs();
 
@@ -84,9 +82,15 @@ void main() {
   group('FlutterSessionState', () {
     test('has all expected states', () {
       expect(FlutterSessionState.values, hasLength(5));
-      expect(FlutterSessionState.values, contains(FlutterSessionState.starting));
+      expect(
+        FlutterSessionState.values,
+        contains(FlutterSessionState.starting),
+      );
       expect(FlutterSessionState.values, contains(FlutterSessionState.running));
-      expect(FlutterSessionState.values, contains(FlutterSessionState.stopping));
+      expect(
+        FlutterSessionState.values,
+        contains(FlutterSessionState.stopping),
+      );
       expect(FlutterSessionState.values, contains(FlutterSessionState.stopped));
       expect(FlutterSessionState.values, contains(FlutterSessionState.error));
     });
@@ -94,10 +98,7 @@ void main() {
 
   group('AppInfo', () {
     test('creates with required fields', () {
-      final info = AppInfo(
-        appId: 'test-app',
-        deviceId: 'emulator-5554',
-      );
+      final info = AppInfo(appId: 'test-app', deviceId: 'emulator-5554');
 
       expect(info.appId, 'test-app');
       expect(info.deviceId, 'emulator-5554');
@@ -139,10 +140,7 @@ void main() {
 
     test('creates with cause', () {
       final cause = Exception('Root cause');
-      final exception = FlutterSessionException(
-        'Test error',
-        cause: cause,
-      );
+      final exception = FlutterSessionException('Test error', cause: cause);
 
       expect(exception.cause, cause);
       expect(exception.toString(), contains('Root cause'));

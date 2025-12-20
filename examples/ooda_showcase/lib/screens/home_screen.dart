@@ -16,9 +16,7 @@ class HomeScreen extends StatelessWidget {
           variant == AppVariant.polished ? 'OODA Showcase' : 'Showcase',
         ),
       ),
-      body: variant == AppVariant.polished
-          ? _PolishedHome()
-          : _MinimalHome(),
+      body: variant == AppVariant.polished ? _PolishedHome() : _MinimalHome(),
     );
   }
 }
@@ -29,26 +27,11 @@ class _MinimalHome extends StatelessWidget {
     return ListView(
       padding: const EdgeInsets.all(16),
       children: const [
-        _NavButton(
-          title: 'Login',
-          route: '/login',
-        ),
-        _NavButton(
-          title: 'Item List',
-          route: '/items',
-        ),
-        _NavButton(
-          title: 'Dialogs',
-          route: '/dialogs',
-        ),
-        _NavButton(
-          title: 'Forms',
-          route: '/forms',
-        ),
-        _NavButton(
-          title: 'Navigation',
-          route: '/navigation',
-        ),
+        _NavButton(title: 'Login', route: '/login'),
+        _NavButton(title: 'Item List', route: '/items'),
+        _NavButton(title: 'Dialogs', route: '/dialogs'),
+        _NavButton(title: 'Forms', route: '/forms'),
+        _NavButton(title: 'Navigation', route: '/navigation'),
       ],
     );
   }
@@ -106,10 +89,7 @@ class _PolishedHome extends StatelessWidget {
 }
 
 class _NavButton extends StatelessWidget {
-  const _NavButton({
-    required this.title,
-    required this.route,
-  });
+  const _NavButton({required this.title, required this.route});
 
   final String title;
   final String route;
@@ -155,10 +135,7 @@ class _NavCard extends StatelessWidget {
             children: [
               Icon(icon, size: 48),
               const SizedBox(height: 8),
-              Text(
-                title,
-                style: Theme.of(context).textTheme.titleMedium,
-              ),
+              Text(title, style: Theme.of(context).textTheme.titleMedium),
               Text(
                 subtitle,
                 style: Theme.of(context).textTheme.bodySmall,

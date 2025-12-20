@@ -58,10 +58,7 @@ class _ListScreenState extends State<ListScreen> {
 }
 
 class _MinimalList extends StatelessWidget {
-  const _MinimalList({
-    required this.scrollController,
-    required this.itemCount,
-  });
+  const _MinimalList({required this.scrollController, required this.itemCount});
 
   final ScrollController scrollController;
   final int itemCount;
@@ -116,7 +113,9 @@ class _PolishedList extends StatelessWidget {
               child: Text('${index + 1}'),
             ),
             title: Text('Item ${index + 1}'),
-            subtitle: Text('This is a detailed description for item ${index + 1}'),
+            subtitle: Text(
+              'This is a detailed description for item ${index + 1}',
+            ),
             trailing: IconButton(
               icon: const Icon(Icons.chevron_right),
               onPressed: () {},

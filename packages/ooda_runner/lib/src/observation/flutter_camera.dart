@@ -73,8 +73,9 @@ class FlutterCamera {
     return FlutterObservation(
       screenshot: results[0] as Uint8List,
       widgetTree: results[1] as Map<String, dynamic>,
-      semanticsTree:
-          includeSemanticsTree ? results[2] as Map<String, dynamic> : null,
+      semanticsTree: includeSemanticsTree
+          ? results[2] as Map<String, dynamic>
+          : null,
     );
   }
 
@@ -150,7 +151,8 @@ class FlutterObservation {
   final Map<String, dynamic>? semanticsTree;
 
   /// Get the widget tree as a JSON string.
-  String get widgetTreeJson => const JsonEncoder.withIndent('  ').convert(widgetTree);
+  String get widgetTreeJson =>
+      const JsonEncoder.withIndent('  ').convert(widgetTree);
 
   /// Get the semantics tree as a JSON string.
   String? get semanticsTreeJson => semanticsTree != null

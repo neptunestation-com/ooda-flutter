@@ -74,18 +74,15 @@ class ObserveCommand extends Command<int> {
       help: 'Capture semantics tree.',
       defaultsTo: true,
     );
-    argParser.addFlag(
-      'logs',
-      help: 'Capture device logs.',
-      defaultsTo: true,
-    );
+    argParser.addFlag('logs', help: 'Capture device logs.', defaultsTo: true);
   }
 
   @override
   final String name = 'observe';
 
   @override
-  final String description = 'Capture an observation bundle from a running Flutter app.';
+  final String description =
+      'Capture an observation bundle from a running Flutter app.';
 
   @override
   Future<int> run() async {
@@ -161,7 +158,9 @@ class ObserveCommand extends Command<int> {
         if (session.appInfo?.vmServiceUri != null) {
           stdout.write('Connecting to VM service...');
           try {
-            vmClient = await VmServiceClient.connect(session.appInfo!.vmServiceUri!);
+            vmClient = await VmServiceClient.connect(
+              session.appInfo!.vmServiceUri!,
+            );
             stdout.writeln(' OK');
           } catch (e) {
             stdout.writeln(' FAILED: $e');
@@ -196,7 +195,9 @@ class ObserveCommand extends Command<int> {
         final stabilityResult = await stabilityBarrier.wait();
 
         if (stabilityResult.success && stabilityResult.value != null) {
-          stdout.writeln(' OK (${stabilityResult.value!.framesChecked} frames)');
+          stdout.writeln(
+            ' OK (${stabilityResult.value!.framesChecked} frames)',
+          );
           builder
               .deviceScreenshot(stabilityResult.value!.screenshot!)
               .stability('stable');

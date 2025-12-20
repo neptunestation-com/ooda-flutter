@@ -4,10 +4,7 @@ import 'package:test/test.dart';
 void main() {
   group('AdbDevice', () {
     test('creates device with required fields', () {
-      const device = AdbDevice(
-        id: 'emulator-5554',
-        state: DeviceState.device,
-      );
+      const device = AdbDevice(id: 'emulator-5554', state: DeviceState.device);
 
       expect(device.id, 'emulator-5554');
       expect(device.state, DeviceState.device);
@@ -100,7 +97,10 @@ void main() {
 
     test('hashCode based on id', () {
       const device1 = AdbDevice(id: 'emulator-5554', state: DeviceState.device);
-      const device2 = AdbDevice(id: 'emulator-5554', state: DeviceState.offline);
+      const device2 = AdbDevice(
+        id: 'emulator-5554',
+        state: DeviceState.offline,
+      );
 
       expect(device1.hashCode, equals(device2.hashCode));
     });

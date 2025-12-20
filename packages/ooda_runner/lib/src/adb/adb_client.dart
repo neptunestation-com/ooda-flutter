@@ -68,10 +68,13 @@ class AdbClient {
   ///
   /// Returns raw PNG bytes.
   Future<Uint8List> screenshot(String deviceId) async {
-    final result = await _run(
-      ['-s', deviceId, 'exec-out', 'screencap', '-p'],
-      binary: true,
-    );
+    final result = await _run([
+      '-s',
+      deviceId,
+      'exec-out',
+      'screencap',
+      '-p',
+    ], binary: true);
 
     if (result.exitCode != 0) {
       throw AdbException(
@@ -143,18 +146,16 @@ class AdbClient {
 
   /// Get the foreground activity.
   Future<String?> foregroundActivity(String deviceId) async {
-    final result =
-        await shell(deviceId, 'dumpsys activity activities | grep mResumedActivity');
+    final result = await shell(
+      deviceId,
+      'dumpsys activity activities | grep mResumedActivity',
+    );
     final match = RegExp(r'(\S+/\S+)').firstMatch(result);
     return match?.group(1);
   }
 
   /// Get recent logcat output.
-  Future<String> logcat(
-    String deviceId, {
-    int lines = 100,
-    String? tag,
-  }) async {
+  Future<String> logcat(String deviceId, {int lines = 100, String? tag}) async {
     final tagFilter = tag != null ? '-s $tag' : '';
     return await shell(deviceId, 'logcat -d -t $lines $tagFilter');
   }
@@ -188,10 +189,7 @@ class AdbClient {
     String deviceId, {
     Duration timeout = const Duration(seconds: 60),
   }) async {
-    await _run(
-      ['-s', deviceId, 'wait-for-device'],
-      timeout: timeout,
-    );
+    await _run(['-s', deviceId, 'wait-for-device'], timeout: timeout);
   }
 
   /// Run an ADB command and return the result.

@@ -99,8 +99,8 @@ class HotReloadBarrier extends EventBarrier<Duration> {
   HotReloadBarrier({
     required FlutterSession session,
     super.timeout = const Duration(seconds: 30),
-  })  : _session = session,
-        _startTime = DateTime.now();
+  }) : _session = session,
+       _startTime = DateTime.now();
 
   @override
   final String name = 'HotReload';
@@ -197,10 +197,7 @@ class VmServiceReadyBarrier extends EventBarrier<Uri> {
     // First check if already available
     final existingUri = _session.appInfo?.vmServiceUri;
     if (existingUri != null) {
-      return BarrierResult.success(
-        value: existingUri,
-        elapsed: Duration.zero,
-      );
+      return BarrierResult.success(value: existingUri, elapsed: Duration.zero);
     }
 
     // Otherwise wait for the event

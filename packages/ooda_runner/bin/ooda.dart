@@ -8,15 +8,16 @@ import 'package:ooda_runner/src/commands/scene_command.dart';
 import 'package:ooda_runner/src/commands/screenshot_command.dart';
 
 void main(List<String> arguments) async {
-  final runner = CommandRunner<int>(
-    'ooda',
-    'AI-driven Flutter OODA loop - control plane for automated UI testing.',
-  )
-    ..addCommand(DevicesCommand())
-    ..addCommand(ObserveCommand())
-    ..addCommand(RunCommand())
-    ..addCommand(SceneCommand())
-    ..addCommand(ScreenshotCommand());
+  final runner =
+      CommandRunner<int>(
+          'ooda',
+          'AI-driven Flutter OODA loop - control plane for automated UI testing.',
+        )
+        ..addCommand(DevicesCommand())
+        ..addCommand(ObserveCommand())
+        ..addCommand(RunCommand())
+        ..addCommand(SceneCommand())
+        ..addCommand(ScreenshotCommand());
 
   try {
     final exitCode = await runner.run(arguments) ?? 0;

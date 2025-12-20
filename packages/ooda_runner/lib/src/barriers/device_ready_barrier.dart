@@ -14,8 +14,8 @@ class DeviceReadyBarrier extends PollingBarrier<bool> {
     required String deviceId,
     super.timeout = const Duration(seconds: 60),
     super.pollingInterval = const Duration(seconds: 1),
-  })  : _adb = adb,
-        _deviceId = deviceId;
+  }) : _adb = adb,
+       _deviceId = deviceId;
 
   @override
   final String name = 'DeviceReady';
@@ -57,12 +57,16 @@ class DeviceReadyBarrier extends PollingBarrier<bool> {
         if (device.isReady) {
           // Device is connected but boot not complete
           try {
-            final bootCompleted =
-                await _adb.shell(_deviceId, 'getprop sys.boot_completed');
+            final bootCompleted = await _adb.shell(
+              _deviceId,
+              'getprop sys.boot_completed',
+            );
             buffer.writeln('sys.boot_completed: ${bootCompleted.trim()}');
 
-            final bootAnim =
-                await _adb.shell(_deviceId, 'getprop init.svc.bootanim');
+            final bootAnim = await _adb.shell(
+              _deviceId,
+              'getprop init.svc.bootanim',
+            );
             buffer.writeln('init.svc.bootanim: ${bootAnim.trim()}');
 
             final uptime = await _adb.shell(_deviceId, 'uptime');
@@ -87,8 +91,8 @@ class DeviceConnectedBarrier extends PollingBarrier<AdbDevice> {
     required String deviceId,
     super.timeout = const Duration(seconds: 30),
     super.pollingInterval = const Duration(seconds: 1),
-  })  : _adb = adb,
-        _deviceId = deviceId;
+  }) : _adb = adb,
+       _deviceId = deviceId;
 
   @override
   final String name = 'DeviceConnected';
@@ -121,7 +125,9 @@ class DeviceConnectedBarrier extends PollingBarrier<AdbDevice> {
         buffer.writeln('');
         buffer.writeln('Troubleshooting:');
         buffer.writeln('  1. Start an emulator: emulator -avd <avd_name>');
-        buffer.writeln('  2. Or connect a physical device with USB debugging enabled');
+        buffer.writeln(
+          '  2. Or connect a physical device with USB debugging enabled',
+        );
         buffer.writeln('  3. Run "adb devices" to verify connection');
       } else {
         buffer.writeln('Connected devices:');

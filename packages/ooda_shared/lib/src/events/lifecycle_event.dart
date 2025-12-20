@@ -4,7 +4,7 @@ import 'package:meta/meta.dart';
 @immutable
 sealed class LifecycleEvent {
   const LifecycleEvent({DateTime? timestamp})
-      : timestamp = timestamp ?? const _CurrentDateTime();
+    : timestamp = timestamp ?? const _CurrentDateTime();
 
   /// When this event occurred.
   final DateTime timestamp;
@@ -83,11 +83,11 @@ class DeviceConnectedEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'device_connected',
-        'device_id': deviceId,
-        'is_emulator': isEmulator,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'device_connected',
+    'device_id': deviceId,
+    'is_emulator': isEmulator,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Device boot completed event.
@@ -104,11 +104,11 @@ class DeviceBootCompleteEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'device_boot_complete',
-        'device_id': deviceId,
-        'boot_duration_ms': bootDuration.inMilliseconds,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'device_boot_complete',
+    'device_id': deviceId,
+    'boot_duration_ms': bootDuration.inMilliseconds,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// App started event.
@@ -127,12 +127,12 @@ class AppStartedEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'app_started',
-        'device_id': deviceId,
-        'app_id': appId,
-        if (vmServiceUri != null) 'vm_service_uri': vmServiceUri.toString(),
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'app_started',
+    'device_id': deviceId,
+    'app_id': appId,
+    if (vmServiceUri != null) 'vm_service_uri': vmServiceUri.toString(),
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Hot reload completed event.
@@ -149,11 +149,11 @@ class ReloadCompleteEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'reload_complete',
-        'reload_duration_ms': reloadDuration.inMilliseconds,
-        'reload_id': reloadId,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'reload_complete',
+    'reload_duration_ms': reloadDuration.inMilliseconds,
+    'reload_id': reloadId,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Visual stability achieved event.
@@ -170,11 +170,11 @@ class VisualStabilityEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'visual_stability',
-        'stabilization_time_ms': stabilizationTime.inMilliseconds,
-        'frames_checked': framesChecked,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'visual_stability',
+    'stabilization_time_ms': stabilizationTime.inMilliseconds,
+    'frames_checked': framesChecked,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Checkpoint captured event.
@@ -193,12 +193,12 @@ class CheckpointCapturedEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'checkpoint_captured',
-        'scene_name': sceneName,
-        'checkpoint_name': checkpointName,
-        'bundle_path': bundlePath,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'checkpoint_captured',
+    'scene_name': sceneName,
+    'checkpoint_name': checkpointName,
+    'bundle_path': bundlePath,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }
 
 /// Session ended event.
@@ -215,9 +215,9 @@ class SessionEndedEvent extends LifecycleEvent {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'session_ended',
-        'exit_code': exitCode,
-        if (reason != null) 'reason': reason,
-        'timestamp': timestamp.toIso8601String(),
-      };
+    'type': 'session_ended',
+    'exit_code': exitCode,
+    if (reason != null) 'reason': reason,
+    'timestamp': timestamp.toIso8601String(),
+  };
 }

@@ -72,19 +72,14 @@ class _FormTestScreenState extends State<FormTestScreen> {
               keyboardType: TextInputType.phone,
             ),
             const SizedBox(height: 24),
-            ElevatedButton(
-              onPressed: _submit,
-              child: const Text('Submit'),
-            ),
+            ElevatedButton(onPressed: _submit, child: const Text('Submit')),
             if (_status.isNotEmpty) ...[
               const SizedBox(height: 16),
               Text(
                 _status,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  color: _status.contains('valid')
-                      ? Colors.green
-                      : Colors.red,
+                  color: _status.contains('valid') ? Colors.green : Colors.red,
                 ),
               ),
             ],

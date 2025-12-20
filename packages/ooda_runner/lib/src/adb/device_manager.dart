@@ -115,18 +115,19 @@ class DeviceNotReadyException implements Exception {
   final DeviceState state;
 
   @override
-  String toString() =>
-      'Device $deviceId is not ready (state: ${state.name})';
+  String toString() => 'Device $deviceId is not ready (state: ${state.name})';
 }
 
 /// Exception thrown when no devices are available.
 class NoDevicesAvailableException implements Exception {
   @override
-  String toString() => 'No devices available. Start an emulator or connect a device.';
+  String toString() =>
+      'No devices available. Start an emulator or connect a device.';
 }
 
 /// Exception thrown when no device is selected.
 class NoDeviceSelectedException implements Exception {
   @override
-  String toString() => 'No device selected. Call selectDevice() or autoSelectDevice() first.';
+  String toString() =>
+      'No device selected. Call selectDevice() or autoSelectDevice() first.';
 }

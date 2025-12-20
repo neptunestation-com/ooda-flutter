@@ -106,15 +106,16 @@ class VisualStabilityBarrier extends PollingBarrier<VisualStabilityResult> {
 ///
 /// Waits for both Flutter and device screenshots to stabilize,
 /// then compares them for overlay detection.
-class DualCameraStabilityBarrier extends PollingBarrier<DualCameraStabilityResult> {
+class DualCameraStabilityBarrier
+    extends PollingBarrier<DualCameraStabilityResult> {
   DualCameraStabilityBarrier({
     required DeviceCamera deviceCamera,
     required Future<Uint8List> Function() flutterScreenshot,
     this.consecutiveMatches = 3,
     super.timeout = const Duration(seconds: 5),
     super.pollingInterval = const Duration(milliseconds: 150),
-  })  : _deviceCamera = deviceCamera,
-        _flutterScreenshot = flutterScreenshot;
+  }) : _deviceCamera = deviceCamera,
+       _flutterScreenshot = flutterScreenshot;
 
   @override
   final String name = 'DualCameraStability';
@@ -155,11 +156,13 @@ class DualCameraStabilityBarrier extends PollingBarrier<DualCameraStabilityResul
       _framesChecked++;
 
       // Check if both are stable
-      final deviceStable = _previousDeviceHash != null &&
+      final deviceStable =
+          _previousDeviceHash != null &&
           _previousDeviceHash == deviceHash &&
           DeviceCamera.areEqual(_previousDeviceImage!, deviceImage);
 
-      final flutterStable = _previousFlutterHash != null &&
+      final flutterStable =
+          _previousFlutterHash != null &&
           _previousFlutterHash == flutterHash &&
           DeviceCamera.areEqual(_previousFlutterImage!, flutterImage);
 

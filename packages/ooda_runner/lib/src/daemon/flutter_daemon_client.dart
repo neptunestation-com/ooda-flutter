@@ -25,8 +25,7 @@ class DaemonException implements Exception {
 /// The Flutter daemon is started via `flutter run --machine` and communicates
 /// using JSON-RPC 2.0 over stdin/stdout.
 class FlutterDaemonClient {
-  FlutterDaemonClient._(this._process)
-      : _parser = DaemonMessageParser() {
+  FlutterDaemonClient._(this._process) : _parser = DaemonMessageParser() {
     // Listen to stdout for JSON-RPC messages
     _stdoutSubscription = _process.stdout
         .transform(utf8.decoder)
@@ -38,8 +37,8 @@ class FlutterDaemonClient {
         .transform(utf8.decoder)
         .transform(const LineSplitter())
         .listen((line) {
-      _stderrController.add(line);
-    });
+          _stderrController.add(line);
+        });
 
     // Forward events from parser
     _parser.events.listen((event) {
@@ -106,11 +105,7 @@ class FlutterDaemonClient {
     }
 
     final id = _nextId++;
-    final request = JsonRpcRequest(
-      method: method,
-      params: params,
-      id: id,
-    );
+    final request = JsonRpcRequest(method: method, params: params, id: id);
 
     final completer = Completer<JsonRpcResponse>();
     _pendingRequests[id] = completer;
@@ -124,10 +119,7 @@ class FlutterDaemonClient {
   }
 
   /// Send a request and return the result, throwing on error.
-  Future<dynamic> call(
-    String method, [
-    Map<String, dynamic>? params,
-  ]) async {
+  Future<dynamic> call(String method, [Map<String, dynamic>? params]) async {
     final response = await request(method, params);
     if (response.isError) {
       throw DaemonException(
@@ -166,9 +158,7 @@ class FlutterDaemonClient {
 
   /// Stop the running application.
   Future<void> stop({String? appId}) async {
-    await call('app.stop', {
-      if (appId != null) 'appId': appId,
-    });
+    await call('app.stop', {if (appId != null) 'appId': appId});
   }
 
   /// Call a service extension on the VM service.
@@ -188,9 +178,7 @@ class FlutterDaemonClient {
 
   /// Detach from the running application (keeps it running).
   Future<void> detach({String? appId}) async {
-    await call('app.detach', {
-      if (appId != null) 'appId': appId,
-    });
+    await call('app.detach', {if (appId != null) 'appId': appId});
   }
 
   /// Close the daemon client and terminate the process.

@@ -101,13 +101,13 @@ class SwipeInteraction extends Interaction {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'swipe',
-        'start_x': startX,
-        'start_y': startY,
-        'end_x': endX,
-        'end_y': endY,
-        'duration_ms': durationMs,
-      };
+    'type': 'swipe',
+    'start_x': startX,
+    'start_y': startY,
+    'end_x': endX,
+    'end_y': endY,
+    'duration_ms': durationMs,
+  };
 
   @override
   String toString() =>
@@ -117,10 +117,7 @@ class SwipeInteraction extends Interaction {
 /// A wait interaction for barriers.
 @immutable
 class WaitInteraction extends Interaction {
-  const WaitInteraction({
-    required this.barrierType,
-    this.timeoutMs,
-  });
+  const WaitInteraction({required this.barrierType, this.timeoutMs});
 
   /// The type of barrier to wait for.
   final String barrierType;
@@ -130,10 +127,10 @@ class WaitInteraction extends Interaction {
 
   @override
   Map<String, dynamic> toJson() => {
-        'type': 'wait',
-        'barrier': barrierType,
-        if (timeoutMs != null) 'timeout_ms': timeoutMs,
-      };
+    'type': 'wait',
+    'barrier': barrierType,
+    if (timeoutMs != null) 'timeout_ms': timeoutMs,
+  };
 
   @override
   String toString() => 'WaitInteraction(barrier: $barrierType)';

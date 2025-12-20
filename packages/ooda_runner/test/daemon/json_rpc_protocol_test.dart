@@ -54,10 +54,7 @@ void main() {
       final json = {
         'jsonrpc': '2.0',
         'id': 1,
-        'error': {
-          'code': -32600,
-          'message': 'Invalid request',
-        },
+        'error': {'code': -32600, 'message': 'Invalid request'},
       };
       final response = JsonRpcResponse.fromJson(json);
 
@@ -93,10 +90,7 @@ void main() {
     test('parses from JSON', () {
       final json = {
         'event': 'app.started',
-        'params': {
-          'appId': 'test-app',
-          'deviceId': 'emulator-5554',
-        },
+        'params': {'appId': 'test-app', 'deviceId': 'emulator-5554'},
       };
       final event = DaemonEvent.fromJson(json);
 
@@ -148,9 +142,7 @@ void main() {
       final responses = <JsonRpcResponse>[];
       parser.responses.listen(responses.add);
 
-      final parsed = parser.parseLine(
-        '[{"id":1,"result":{"success":true}}]',
-      );
+      final parsed = parser.parseLine('[{"id":1,"result":{"success":true}}]');
 
       expect(parsed, isTrue);
       await Future<void>.delayed(Duration.zero);
@@ -162,9 +154,7 @@ void main() {
       final logs = <DaemonLog>[];
       parser.logs.listen(logs.add);
 
-      final parsed = parser.parseLine(
-        '[{"log":"Test log message"}]',
-      );
+      final parsed = parser.parseLine('[{"log":"Test log message"}]');
 
       expect(parsed, isTrue);
       await Future<void>.delayed(Duration.zero);
@@ -197,9 +187,7 @@ void main() {
 
   group('DaemonLog', () {
     test('parses normal log', () {
-      final log = DaemonLog.fromJson({
-        'log': 'Info message',
-      });
+      final log = DaemonLog.fromJson({'log': 'Info message'});
 
       expect(log.message, 'Info message');
       expect(log.error, isFalse);

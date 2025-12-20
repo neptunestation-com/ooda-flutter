@@ -57,7 +57,9 @@ class SceneParser {
 
     // Parse setup
     final setupYaml = yaml['setup'] as YamlMap?;
-    final setup = setupYaml != null ? _parseSetup(setupYaml) : const SceneSetup();
+    final setup = setupYaml != null
+        ? _parseSetup(setupYaml)
+        : const SceneSetup();
 
     // Parse steps
     final stepsYaml = yaml['steps'] as YamlList? ?? YamlList();
@@ -125,15 +127,19 @@ class SceneParser {
     final name = yaml['checkpoint'] as String;
     final description = yaml['description'] as String?;
 
-    return CheckpointStep(CheckpointDefinition(
-      name: name,
-      description: description,
-      captureFlutterScreenshot: yaml['capture_flutter_screenshot'] as bool? ?? true,
-      captureDeviceScreenshot: yaml['capture_device_screenshot'] as bool? ?? true,
-      captureWidgetTree: yaml['capture_widget_tree'] as bool? ?? true,
-      captureSemanticsTree: yaml['capture_semantics_tree'] as bool? ?? true,
-      captureLogs: yaml['capture_logs'] as bool? ?? true,
-    ));
+    return CheckpointStep(
+      CheckpointDefinition(
+        name: name,
+        description: description,
+        captureFlutterScreenshot:
+            yaml['capture_flutter_screenshot'] as bool? ?? true,
+        captureDeviceScreenshot:
+            yaml['capture_device_screenshot'] as bool? ?? true,
+        captureWidgetTree: yaml['capture_widget_tree'] as bool? ?? true,
+        captureSemanticsTree: yaml['capture_semantics_tree'] as bool? ?? true,
+        captureLogs: yaml['capture_logs'] as bool? ?? true,
+      ),
+    );
   }
 
   static InteractionStep _parseTapStep(YamlMap yaml) {
@@ -184,13 +190,15 @@ class SceneParser {
   static InteractionStep _parseSwipeStep(YamlMap yaml) {
     final swipe = yaml['swipe'] as YamlMap;
 
-    return InteractionStep(SwipeInteraction(
-      startX: swipe['start_x'] as int,
-      startY: swipe['start_y'] as int,
-      endX: swipe['end_x'] as int,
-      endY: swipe['end_y'] as int,
-      durationMs: swipe['duration_ms'] as int? ?? 300,
-    ));
+    return InteractionStep(
+      SwipeInteraction(
+        startX: swipe['start_x'] as int,
+        startY: swipe['start_y'] as int,
+        endX: swipe['end_x'] as int,
+        endY: swipe['end_y'] as int,
+        durationMs: swipe['duration_ms'] as int? ?? 300,
+      ),
+    );
   }
 
   static InteractionStep _parseWaitStep(YamlMap yaml) {
@@ -208,10 +216,9 @@ class SceneParser {
       throw SceneParseException('Invalid wait format: $wait');
     }
 
-    return InteractionStep(WaitInteraction(
-      barrierType: barrierType,
-      timeoutMs: timeoutMs,
-    ));
+    return InteractionStep(
+      WaitInteraction(barrierType: barrierType, timeoutMs: timeoutMs),
+    );
   }
 
   static Map<String, dynamic> _yamlMapToMap(YamlMap yaml) {

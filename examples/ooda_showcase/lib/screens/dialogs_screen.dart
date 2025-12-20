@@ -13,7 +13,9 @@ class DialogsScreen extends StatelessWidget {
       context: context,
       builder: (ctx) => AlertDialog(
         title: const Text('Alert Dialog'),
-        content: const Text('This is an alert dialog. It appears as an overlay.'),
+        content: const Text(
+          'This is an alert dialog. It appears as an overlay.',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
@@ -63,20 +65,14 @@ class DialogsScreen extends StatelessWidget {
   }
 
   void _showTimePicker(BuildContext context) {
-    showTimePicker(
-      context: context,
-      initialTime: TimeOfDay.now(),
-    );
+    showTimePicker(context: context, initialTime: TimeOfDay.now());
   }
 
   void _showSnackBar(BuildContext context) {
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: const Text('This is a snackbar message'),
-        action: SnackBarAction(
-          label: 'Undo',
-          onPressed: () {},
-        ),
+        action: SnackBarAction(label: 'Undo', onPressed: () {}),
       ),
     );
   }

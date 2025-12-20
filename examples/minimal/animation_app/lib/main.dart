@@ -73,11 +73,7 @@ class _AnimationTestScreenState extends State<AnimationTestScreen>
                   color: Theme.of(context).colorScheme.primary,
                   borderRadius: BorderRadius.circular(16),
                 ),
-                child: const Icon(
-                  Icons.sync,
-                  color: Colors.white,
-                  size: 48,
-                ),
+                child: const Icon(Icons.sync, color: Colors.white, size: 48),
               ),
             ),
             const SizedBox(height: 32),

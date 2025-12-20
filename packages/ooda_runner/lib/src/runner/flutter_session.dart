@@ -111,10 +111,8 @@ class AppInfo {
 /// - Tracking app state and lifecycle events
 /// - Hot reload/restart operations
 class FlutterSession {
-  FlutterSession._({
-    required this.config,
-    required FlutterDaemonClient client,
-  }) : _client = client {
+  FlutterSession._({required this.config, required FlutterDaemonClient client})
+    : _client = client {
     _eventSubscription = _client.events.listen(_handleEvent);
   }
 
@@ -305,10 +303,9 @@ class FlutterSession {
 
     try {
       // Try to stop gracefully via daemon
-      await _client.stop(appId: _appInfo?.appId).timeout(
-            const Duration(seconds: 5),
-            onTimeout: () {},
-          );
+      await _client
+          .stop(appId: _appInfo?.appId)
+          .timeout(const Duration(seconds: 5), onTimeout: () {});
     } catch (_) {
       // Ignore errors during graceful stop
     }
@@ -346,10 +343,7 @@ class FlutterSession {
 
     final client = FlutterDaemonClient.fromProcess(process);
 
-    return FlutterSession._(
-      config: config,
-      client: client,
-    );
+    return FlutterSession._(config: config, client: client);
   }
 }
 

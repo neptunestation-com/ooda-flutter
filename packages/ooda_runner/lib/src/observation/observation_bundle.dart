@@ -92,25 +92,27 @@ class ObservationBundle {
     // Device screenshot
     if (deviceScreenshot != null) {
       futures.add(
-        File(p.join(bundleDir.path, 'device.png'))
-            .writeAsBytes(deviceScreenshot!),
+        File(
+          p.join(bundleDir.path, 'device.png'),
+        ).writeAsBytes(deviceScreenshot!),
       );
     }
 
     // Flutter screenshot
     if (flutterScreenshot != null) {
       futures.add(
-        File(p.join(bundleDir.path, 'flutter.png'))
-            .writeAsBytes(flutterScreenshot!),
+        File(
+          p.join(bundleDir.path, 'flutter.png'),
+        ).writeAsBytes(flutterScreenshot!),
       );
     }
 
     // Widget tree
     if (widgetTree != null) {
       futures.add(
-        File(p.join(bundleDir.path, 'widget_tree.json')).writeAsString(
-          const JsonEncoder.withIndent('  ').convert(widgetTree),
-        ),
+        File(
+          p.join(bundleDir.path, 'widget_tree.json'),
+        ).writeAsString(const JsonEncoder.withIndent('  ').convert(widgetTree)),
       );
     }
 

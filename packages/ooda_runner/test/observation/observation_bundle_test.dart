@@ -61,22 +61,13 @@ void main() {
       final outputDir = await bundle.write(tempDir);
 
       expect(await outputDir.exists(), isTrue);
-      expect(
-        await File(p.join(outputDir.path, 'meta.json')).exists(),
-        isTrue,
-      );
-      expect(
-        await File(p.join(outputDir.path, 'device.png')).exists(),
-        isTrue,
-      );
+      expect(await File(p.join(outputDir.path, 'meta.json')).exists(), isTrue);
+      expect(await File(p.join(outputDir.path, 'device.png')).exists(), isTrue);
       expect(
         await File(p.join(outputDir.path, 'widget_tree.json')).exists(),
         isTrue,
       );
-      expect(
-        await File(p.join(outputDir.path, 'logs.txt')).exists(),
-        isTrue,
-      );
+      expect(await File(p.join(outputDir.path, 'logs.txt')).exists(), isTrue);
     });
 
     test('writes correct directory structure', () async {
@@ -178,20 +169,15 @@ void main() {
 
     test('throws on missing checkpoint name', () {
       expect(
-        () => ObservationBundleBuilder()
-            .scene('test')
-            .device('device')
-            .build(),
+        () => ObservationBundleBuilder().scene('test').device('device').build(),
         throwsA(isA<ObservationBundleException>()),
       );
     });
 
     test('throws on missing device ID', () {
       expect(
-        () => ObservationBundleBuilder()
-            .scene('test')
-            .checkpoint('test')
-            .build(),
+        () =>
+            ObservationBundleBuilder().scene('test').checkpoint('test').build(),
         throwsA(isA<ObservationBundleException>()),
       );
     });

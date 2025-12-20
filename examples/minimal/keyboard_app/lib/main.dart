@@ -84,10 +84,7 @@ class _KeyboardTestScreenState extends State<KeyboardTestScreen> {
               onSubmitted: (_) => _submit(),
             ),
             const SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _submit,
-              child: const Text('Submit'),
-            ),
+            ElevatedButton(onPressed: _submit, child: const Text('Submit')),
             const SizedBox(height: 16),
             Text(
               _status,

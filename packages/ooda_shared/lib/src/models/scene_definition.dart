@@ -138,10 +138,7 @@ class SceneDefinition {
 
   /// Get all checkpoints in this scene.
   List<CheckpointDefinition> get checkpoints {
-    return steps
-        .whereType<CheckpointStep>()
-        .map((s) => s.checkpoint)
-        .toList();
+    return steps.whereType<CheckpointStep>().map((s) => s.checkpoint).toList();
   }
 
   /// Get barrier config by name, or default.

@@ -56,7 +56,8 @@ class SceneCommand extends Command<int> {
   final String name = 'scene';
 
   @override
-  final String description = 'Execute a scene from a YAML file and capture observations.';
+  final String description =
+      'Execute a scene from a YAML file and capture observations.';
 
   @override
   Future<int> run() async {
@@ -196,7 +197,9 @@ class SceneCommand extends Command<int> {
         for (final obs in result.observations) {
           stdout.writeln('  - ${obs.checkpointName}');
           stdout.writeln('    Overlay: ${obs.overlayPresent}');
-          stdout.writeln('    Path: ${p.join(outputPath, obs.sceneName, obs.checkpointName)}');
+          stdout.writeln(
+            '    Path: ${p.join(outputPath, obs.sceneName, obs.checkpointName)}',
+          );
         }
         stdout.writeln('');
       }
@@ -232,7 +235,9 @@ class SceneCommand extends Command<int> {
         if (verbose) stdout.writeln('[START] Scene: $sceneName');
 
       case SceneCompletedEvent(:final observationCount):
-        stdout.writeln('[DONE] Scene completed with $observationCount observations');
+        stdout.writeln(
+          '[DONE] Scene completed with $observationCount observations',
+        );
 
       case SceneFailedEvent(:final error):
         stderr.writeln('[FAILED] Scene failed: $error');
@@ -265,7 +270,9 @@ class SceneCommand extends Command<int> {
 
       case SceneLogEvent(:final message, :final severity):
         if (verbose || severity == RunnerEventSeverity.error) {
-          final prefix = severity == RunnerEventSeverity.error ? 'ERROR' : 'LOG';
+          final prefix = severity == RunnerEventSeverity.error
+              ? 'ERROR'
+              : 'LOG';
           stdout.writeln('      [$prefix] $message');
         }
     }
@@ -274,14 +281,17 @@ class SceneCommand extends Command<int> {
   String _stepDescription(SceneStep step) {
     return switch (step) {
       CheckpointStep(:final checkpoint) => 'Checkpoint: ${checkpoint.name}',
-      InteractionStep(:final interaction) => _interactionDescription(interaction),
+      InteractionStep(:final interaction) => _interactionDescription(
+        interaction,
+      ),
     };
   }
 
   String _interactionDescription(Interaction interaction) {
     return switch (interaction) {
       TapInteraction(:final x, :final y) => 'Tap($x, $y)',
-      TextInputInteraction(:final text) => 'Input: "${text.length > 20 ? '${text.substring(0, 20)}...' : text}"',
+      TextInputInteraction(:final text) =>
+        'Input: "${text.length > 20 ? '${text.substring(0, 20)}...' : text}"',
       KeyEventInteraction(:final keyCode) => 'Key: $keyCode',
       SwipeInteraction() => 'Swipe',
       WaitInteraction(:final barrierType) => 'Wait: $barrierType',

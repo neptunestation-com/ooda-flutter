@@ -12,11 +12,9 @@ import '../adb/adb_client.dart';
 /// It captures the actual framebuffer, including system UI, keyboard,
 /// permission dialogs, and other native overlays.
 class DeviceCamera {
-  DeviceCamera({
-    required AdbClient adb,
-    required String deviceId,
-  })  : _adb = adb,
-        _deviceId = deviceId;
+  DeviceCamera({required AdbClient adb, required String deviceId})
+    : _adb = adb,
+      _deviceId = deviceId;
 
   final AdbClient _adb;
   final String _deviceId;
@@ -118,9 +116,9 @@ class VisualStabilityDetector {
     required DeviceCamera camera,
     int consecutiveMatches = 3,
     Duration samplingInterval = const Duration(milliseconds: 100),
-  })  : _camera = camera,
-        _consecutiveMatches = consecutiveMatches,
-        _samplingInterval = samplingInterval;
+  }) : _camera = camera,
+       _consecutiveMatches = consecutiveMatches,
+       _samplingInterval = samplingInterval;
 
   final DeviceCamera _camera;
   final int _consecutiveMatches;

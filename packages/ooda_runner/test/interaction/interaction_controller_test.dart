@@ -23,8 +23,7 @@ void main() {
 
     group('tap', () {
       test('executes tap via ADB', () async {
-        when(() => mockAdb.tap(deviceId, 100, 200))
-            .thenAnswer((_) async => {});
+        when(() => mockAdb.tap(deviceId, 100, 200)).thenAnswer((_) async => {});
 
         final result = await controller.tap(100, 200);
 
@@ -34,8 +33,9 @@ void main() {
       });
 
       test('returns failure on ADB error', () async {
-        when(() => mockAdb.tap(deviceId, 100, 200))
-            .thenThrow(AdbException('tap failed'));
+        when(
+          () => mockAdb.tap(deviceId, 100, 200),
+        ).thenThrow(AdbException('tap failed'));
 
         final result = await controller.tap(100, 200);
 
@@ -46,8 +46,9 @@ void main() {
 
     group('inputText', () {
       test('executes text input via ADB', () async {
-        when(() => mockAdb.inputText(deviceId, 'hello'))
-            .thenAnswer((_) async => {});
+        when(
+          () => mockAdb.inputText(deviceId, 'hello'),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.inputText('hello');
 
@@ -57,8 +58,9 @@ void main() {
       });
 
       test('returns failure on ADB error', () async {
-        when(() => mockAdb.inputText(deviceId, 'test'))
-            .thenThrow(AdbException('input failed'));
+        when(
+          () => mockAdb.inputText(deviceId, 'test'),
+        ).thenThrow(AdbException('input failed'));
 
         final result = await controller.inputText('test');
 
@@ -69,8 +71,7 @@ void main() {
 
     group('keyEvent', () {
       test('executes key event via ADB', () async {
-        when(() => mockAdb.keyEvent(deviceId, 66))
-            .thenAnswer((_) async => {});
+        when(() => mockAdb.keyEvent(deviceId, 66)).thenAnswer((_) async => {});
 
         final result = await controller.keyEvent(66);
 
@@ -80,8 +81,9 @@ void main() {
       });
 
       test('returns failure on ADB error', () async {
-        when(() => mockAdb.keyEvent(deviceId, 4))
-            .thenThrow(AdbException('key event failed'));
+        when(
+          () => mockAdb.keyEvent(deviceId, 4),
+        ).thenThrow(AdbException('key event failed'));
 
         final result = await controller.keyEvent(4);
 
@@ -92,14 +94,16 @@ void main() {
 
     group('swipe', () {
       test('executes swipe via ADB', () async {
-        when(() => mockAdb.swipe(
-              deviceId,
-              startX: 540,
-              startY: 1500,
-              endX: 540,
-              endY: 500,
-              durationMs: 300,
-            )).thenAnswer((_) async => {});
+        when(
+          () => mockAdb.swipe(
+            deviceId,
+            startX: 540,
+            startY: 1500,
+            endX: 540,
+            endY: 500,
+            durationMs: 300,
+          ),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.swipe(
           startX: 540,
@@ -111,95 +115,111 @@ void main() {
 
         expect(result.success, isTrue);
         expect(result.interaction, isA<SwipeInteraction>());
-        verify(() => mockAdb.swipe(
-              deviceId,
-              startX: 540,
-              startY: 1500,
-              endX: 540,
-              endY: 500,
-              durationMs: 300,
-            )).called(1);
+        verify(
+          () => mockAdb.swipe(
+            deviceId,
+            startX: 540,
+            startY: 1500,
+            endX: 540,
+            endY: 500,
+            durationMs: 300,
+          ),
+        ).called(1);
       });
     });
 
     group('convenience methods', () {
       test('back() sends back key event', () async {
-        when(() => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyBack))
-            .thenAnswer((_) async => {});
+        when(
+          () => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyBack),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.back();
 
         expect(result.success, isTrue);
-        verify(() => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyBack))
-            .called(1);
+        verify(
+          () => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyBack),
+        ).called(1);
       });
 
       test('enter() sends enter key event', () async {
-        when(() => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyEnter))
-            .thenAnswer((_) async => {});
+        when(
+          () => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyEnter),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.enter();
 
         expect(result.success, isTrue);
-        verify(() => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyEnter))
-            .called(1);
+        verify(
+          () => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyEnter),
+        ).called(1);
       });
 
       test('home() sends home key event', () async {
-        when(() => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyHome))
-            .thenAnswer((_) async => {});
+        when(
+          () => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyHome),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.home();
 
         expect(result.success, isTrue);
-        verify(() => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyHome))
-            .called(1);
+        verify(
+          () => mockAdb.keyEvent(deviceId, KeyEventInteraction.keyHome),
+        ).called(1);
       });
 
       test('scrollUp() performs upward swipe', () async {
-        when(() => mockAdb.swipe(
-              deviceId,
-              startX: 540,
-              startY: 1500,
-              endX: 540,
-              endY: 500,
-              durationMs: 300,
-            )).thenAnswer((_) async => {});
+        when(
+          () => mockAdb.swipe(
+            deviceId,
+            startX: 540,
+            startY: 1500,
+            endX: 540,
+            endY: 500,
+            durationMs: 300,
+          ),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.scrollUp();
 
         expect(result.success, isTrue);
-        verify(() => mockAdb.swipe(
-              deviceId,
-              startX: 540,
-              startY: 1500,
-              endX: 540,
-              endY: 500,
-              durationMs: 300,
-            )).called(1);
+        verify(
+          () => mockAdb.swipe(
+            deviceId,
+            startX: 540,
+            startY: 1500,
+            endX: 540,
+            endY: 500,
+            durationMs: 300,
+          ),
+        ).called(1);
       });
 
       test('scrollDown() performs downward swipe', () async {
-        when(() => mockAdb.swipe(
-              deviceId,
-              startX: 540,
-              startY: 500,
-              endX: 540,
-              endY: 1500,
-              durationMs: 300,
-            )).thenAnswer((_) async => {});
+        when(
+          () => mockAdb.swipe(
+            deviceId,
+            startX: 540,
+            startY: 500,
+            endX: 540,
+            endY: 1500,
+            durationMs: 300,
+          ),
+        ).thenAnswer((_) async => {});
 
         final result = await controller.scrollDown();
 
         expect(result.success, isTrue);
-        verify(() => mockAdb.swipe(
-              deviceId,
-              startX: 540,
-              startY: 500,
-              endX: 540,
-              endY: 1500,
-              durationMs: 300,
-            )).called(1);
+        verify(
+          () => mockAdb.swipe(
+            deviceId,
+            startX: 540,
+            startY: 500,
+            endX: 540,
+            endY: 1500,
+            durationMs: 300,
+          ),
+        ).called(1);
       });
     });
 
@@ -215,8 +235,7 @@ void main() {
       });
 
       test('tracks elapsed time', () async {
-        when(() => mockAdb.tap(deviceId, 100, 200))
-            .thenAnswer((_) async => {});
+        when(() => mockAdb.tap(deviceId, 100, 200)).thenAnswer((_) async => {});
 
         final result = await controller.tap(100, 200);
 
@@ -233,10 +252,7 @@ void main() {
         elapsed: const Duration(milliseconds: 50),
       );
 
-      expect(
-        result.toString(),
-        contains('success'),
-      );
+      expect(result.toString(), contains('success'));
       expect(result.toString(), contains('50ms'));
     });
 

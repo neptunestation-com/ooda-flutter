@@ -47,18 +47,9 @@ class _NavigationScreenState extends State<NavigationScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          _TabContent(
-            title: 'Tab 1 Content',
-            variant: widget.variant,
-          ),
-          _TabContent(
-            title: 'Tab 2 Content',
-            variant: widget.variant,
-          ),
-          _TabContent(
-            title: 'Tab 3 Content',
-            variant: widget.variant,
-          ),
+          _TabContent(title: 'Tab 1 Content', variant: widget.variant),
+          _TabContent(title: 'Tab 2 Content', variant: widget.variant),
+          _TabContent(title: 'Tab 3 Content', variant: widget.variant),
         ],
       ),
       bottomNavigationBar: NavigationBar(
@@ -158,10 +149,7 @@ class _NavigationScreenState extends State<NavigationScreen>
 }
 
 class _TabContent extends StatelessWidget {
-  const _TabContent({
-    required this.title,
-    required this.variant,
-  });
+  const _TabContent({required this.title, required this.variant});
 
   final String title;
   final AppVariant variant;
@@ -183,10 +171,7 @@ class _TabContent extends StatelessWidget {
                   color: Theme.of(context).colorScheme.primary,
                 ),
                 const SizedBox(height: 16),
-                Text(
-                  title,
-                  style: Theme.of(context).textTheme.headlineSmall,
-                ),
+                Text(title, style: Theme.of(context).textTheme.headlineSmall),
                 const SizedBox(height: 8),
                 const Text('Swipe left or right to change tabs'),
               ],
@@ -200,10 +185,7 @@ class _TabContent extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(
-            title,
-            style: Theme.of(context).textTheme.headlineSmall,
-          ),
+          Text(title, style: Theme.of(context).textTheme.headlineSmall),
           const SizedBox(height: 8),
           const Text('Swipe or tap tabs to navigate'),
         ],

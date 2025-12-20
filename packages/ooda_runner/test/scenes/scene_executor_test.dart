@@ -72,10 +72,7 @@ void main() {
     });
 
     test('toString format', () {
-      final error = executor.SceneError(
-        step: 2,
-        message: 'Input failed',
-      );
+      final error = executor.SceneError(step: 2, message: 'Input failed');
 
       expect(error.toString(), contains('step: 2'));
       expect(error.toString(), contains('Input failed'));
@@ -185,10 +182,7 @@ void main() {
     });
 
     test('execute returns result with success when no errors', () async {
-      const scene = SceneDefinition(
-        name: 'success_scene',
-        steps: [],
-      );
+      const scene = SceneDefinition(name: 'success_scene', steps: []);
 
       final result = await sceneExecutor.execute(scene);
 
@@ -204,8 +198,9 @@ void main() {
         steps: [],
       );
 
-      when(() => mockSession.hotRestart())
-          .thenAnswer((_) async => <String, dynamic>{});
+      when(
+        () => mockSession.hotRestart(),
+      ).thenAnswer((_) async => <String, dynamic>{});
 
       await sceneExecutor.execute(scene);
 
@@ -215,15 +210,15 @@ void main() {
     test('execute captures checkpoints', () async {
       const scene = SceneDefinition(
         name: 'checkpoint_scene',
-        steps: [
-          CheckpointStep(CheckpointDefinition(name: 'test_checkpoint')),
-        ],
+        steps: [CheckpointStep(CheckpointDefinition(name: 'test_checkpoint'))],
       );
 
-      when(() => mockAdb.screenshot(deviceId))
-          .thenAnswer((_) async => createTestPng());
-      when(() => mockAdb.logcat(deviceId, lines: any(named: 'lines')))
-          .thenAnswer((_) async => 'logcat output');
+      when(
+        () => mockAdb.screenshot(deviceId),
+      ).thenAnswer((_) async => createTestPng());
+      when(
+        () => mockAdb.logcat(deviceId, lines: any(named: 'lines')),
+      ).thenAnswer((_) async => 'logcat output');
 
       final result = await sceneExecutor.execute(scene);
 
@@ -234,15 +229,15 @@ void main() {
     test('execute handles interaction errors gracefully', () async {
       const scene = SceneDefinition(
         name: 'error_scene',
-        steps: [
-          InteractionStep(TapInteraction(x: 100, y: 200)),
-        ],
+        steps: [InteractionStep(TapInteraction(x: 100, y: 200))],
       );
 
-      when(() => mockAdb.tap(deviceId, 100, 200))
-          .thenThrow(AdbException('Device disconnected'));
-      when(() => mockAdb.screenshot(deviceId))
-          .thenAnswer((_) async => createTestPng());
+      when(
+        () => mockAdb.tap(deviceId, 100, 200),
+      ).thenThrow(AdbException('Device disconnected'));
+      when(
+        () => mockAdb.screenshot(deviceId),
+      ).thenAnswer((_) async => createTestPng());
 
       final result = await sceneExecutor.execute(scene);
 
@@ -254,14 +249,13 @@ void main() {
     test('execute handles tap interaction', () async {
       const scene = SceneDefinition(
         name: 'tap_scene',
-        steps: [
-          InteractionStep(TapInteraction(x: 100, y: 200)),
-        ],
+        steps: [InteractionStep(TapInteraction(x: 100, y: 200))],
       );
 
       when(() => mockAdb.tap(deviceId, 100, 200)).thenAnswer((_) async => {});
-      when(() => mockAdb.screenshot(deviceId))
-          .thenAnswer((_) async => createTestPng());
+      when(
+        () => mockAdb.screenshot(deviceId),
+      ).thenAnswer((_) async => createTestPng());
 
       final result = await sceneExecutor.execute(scene);
 

@@ -9,8 +9,14 @@ Uint8List createTestPng(int width, int height, {int color = 0xFFFF0000}) {
   final image = img.Image(width: width, height: height);
   for (int y = 0; y < height; y++) {
     for (int x = 0; x < width; x++) {
-      image.setPixelRgba(x, y, (color >> 16) & 0xFF, (color >> 8) & 0xFF,
-          color & 0xFF, (color >> 24) & 0xFF);
+      image.setPixelRgba(
+        x,
+        y,
+        (color >> 16) & 0xFF,
+        (color >> 8) & 0xFF,
+        color & 0xFF,
+        (color >> 24) & 0xFF,
+      );
     }
   }
   return Uint8List.fromList(img.encodePng(image));
@@ -61,8 +67,9 @@ void main() {
 
       test('returns different hash for different images', () {
         final image1 = Uint8List.fromList(List.generate(1000, (i) => i % 256));
-        final image2 =
-            Uint8List.fromList(List.generate(1000, (i) => (i + 1) % 256));
+        final image2 = Uint8List.fromList(
+          List.generate(1000, (i) => (i + 1) % 256),
+        );
 
         expect(
           DeviceCamera.computeHash(image1),

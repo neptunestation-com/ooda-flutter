@@ -15,28 +15,19 @@ class OodaTheme {
       secondary: _secondaryColor,
       tertiary: _tertiaryColor,
     ),
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 2,
-    ),
+    appBarTheme: const AppBarTheme(centerTitle: true, elevation: 2),
     cardTheme: CardThemeData(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(
@@ -52,28 +43,19 @@ class OodaTheme {
       tertiary: _tertiaryColor,
       brightness: Brightness.dark,
     ),
-    appBarTheme: const AppBarTheme(
-      centerTitle: true,
-      elevation: 2,
-    ),
+    appBarTheme: const AppBarTheme(centerTitle: true, elevation: 2),
     cardTheme: CardThemeData(
       elevation: 2,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
     ),
     inputDecorationTheme: InputDecorationTheme(
       filled: true,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
+      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
     ),
     elevatedButtonTheme: ElevatedButtonThemeData(
       style: ElevatedButton.styleFrom(
         padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
     ),
     floatingActionButtonTheme: const FloatingActionButtonThemeData(

@@ -10,10 +10,7 @@ import 'package:image/image.dart' as img;
 ///
 /// Rule: overlay_present = flutter_image != device_image
 class OverlayDetector {
-  OverlayDetector({
-    this.threshold = 0.01,
-    this.minDiffPercentage = 0.05,
-  });
+  OverlayDetector({this.threshold = 0.01, this.minDiffPercentage = 0.05});
 
   /// Threshold for considering images different (0.0 to 1.0).
   /// 0.0 = must be identical, 1.0 = always consider same
@@ -47,7 +44,8 @@ class OverlayDetector {
         overlayPresent: true,
         confidence: 0.5,
         diffPercentage: 1.0,
-        reason: 'Images have different dimensions: '
+        reason:
+            'Images have different dimensions: '
             '${flutter.width}x${flutter.height} vs ${device.width}x${device.height}',
       );
     }
@@ -59,7 +57,9 @@ class OverlayDetector {
 
     return OverlayDetectionResult(
       overlayPresent: overlayPresent,
-      confidence: overlayPresent ? comparison.confidence : 1.0 - comparison.confidence,
+      confidence: overlayPresent
+          ? comparison.confidence
+          : 1.0 - comparison.confidence,
       diffPercentage: comparison.diffPercentage,
       diffRegions: comparison.diffRegions,
       reason: overlayPresent
@@ -115,7 +115,7 @@ class OverlayDetector {
               y: minDiffY,
               width: maxDiffX - minDiffX + 1,
               height: maxDiffY - minDiffY + 1,
-            )
+            ),
           ]
         : <DiffRegion>[];
 

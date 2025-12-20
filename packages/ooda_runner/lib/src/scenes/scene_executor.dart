@@ -159,17 +159,12 @@ class SceneExecutor {
     } else {
       final result = await _interactionController.execute(interaction);
       if (!result.success) {
-        throw SceneExecutionException(
-          'Interaction failed: ${result.error}',
-        );
+        throw SceneExecutionException('Interaction failed: ${result.error}');
       }
     }
   }
 
-  Future<void> _executeWait(
-    SceneDefinition scene,
-    WaitInteraction wait,
-  ) async {
+  Future<void> _executeWait(SceneDefinition scene, WaitInteraction wait) async {
     final barrierConfig = scene.getBarrierConfig(wait.barrierType);
     final timeout = wait.timeoutMs != null
         ? Duration(milliseconds: wait.timeoutMs!)
@@ -181,24 +176,30 @@ class SceneExecutor {
           camera: _deviceCamera,
           timeout: timeout,
           consecutiveMatches: barrierConfig.consecutiveMatches,
-          pollingInterval: Duration(milliseconds: barrierConfig.pollingIntervalMs),
+          pollingInterval: Duration(
+            milliseconds: barrierConfig.pollingIntervalMs,
+          ),
         );
         final result = await barrier.wait();
         if (!result.success) {
-          _emit(SceneLogEvent(
-            message: 'Visual stability timeout: ${result.diagnosticInfo}',
-            severity: RunnerEventSeverity.warning,
-          ));
+          _emit(
+            SceneLogEvent(
+              message: 'Visual stability timeout: ${result.diagnosticInfo}',
+              severity: RunnerEventSeverity.warning,
+            ),
+          );
         }
 
       case 'delay':
         await Future<void>.delayed(timeout);
 
       default:
-        _emit(SceneLogEvent(
-          message: 'Unknown barrier type: ${wait.barrierType}',
-          severity: RunnerEventSeverity.warning,
-        ));
+        _emit(
+          SceneLogEvent(
+            message: 'Unknown barrier type: ${wait.barrierType}',
+            severity: RunnerEventSeverity.warning,
+          ),
+        );
     }
   }
 
@@ -225,14 +226,16 @@ class SceneExecutor {
     // Capture device screenshot
     if (checkpoint.captureDeviceScreenshot) {
       try {
-        final screenshot = stabilityResult.value?.screenshot ??
-            await _deviceCamera.capture();
+        final screenshot =
+            stabilityResult.value?.screenshot ?? await _deviceCamera.capture();
         builder.deviceScreenshot(screenshot);
       } catch (e) {
-        _emit(SceneLogEvent(
-          message: 'Failed to capture device screenshot: $e',
-          severity: RunnerEventSeverity.error,
-        ));
+        _emit(
+          SceneLogEvent(
+            message: 'Failed to capture device screenshot: $e',
+            severity: RunnerEventSeverity.error,
+          ),
+        );
       }
     }
 
@@ -244,10 +247,12 @@ class SceneExecutor {
           final screenshot = await _flutterCamera!.captureScreenshot();
           builder.flutterScreenshot(screenshot);
         } catch (e) {
-          _emit(SceneLogEvent(
-            message: 'Failed to capture Flutter screenshot: $e',
-            severity: RunnerEventSeverity.warning,
-          ));
+          _emit(
+            SceneLogEvent(
+              message: 'Failed to capture Flutter screenshot: $e',
+              severity: RunnerEventSeverity.warning,
+            ),
+          );
         }
       }
 
@@ -257,10 +262,12 @@ class SceneExecutor {
           final tree = await _flutterCamera!.getWidgetTree();
           builder.widgetTree(tree);
         } catch (e) {
-          _emit(SceneLogEvent(
-            message: 'Failed to capture widget tree: $e',
-            severity: RunnerEventSeverity.warning,
-          ));
+          _emit(
+            SceneLogEvent(
+              message: 'Failed to capture widget tree: $e',
+              severity: RunnerEventSeverity.warning,
+            ),
+          );
         }
       }
 
@@ -270,10 +277,12 @@ class SceneExecutor {
           final tree = await _flutterCamera!.getSemanticsTree();
           builder.semanticsTree(tree);
         } catch (e) {
-          _emit(SceneLogEvent(
-            message: 'Failed to capture semantics tree: $e',
-            severity: RunnerEventSeverity.warning,
-          ));
+          _emit(
+            SceneLogEvent(
+              message: 'Failed to capture semantics tree: $e',
+              severity: RunnerEventSeverity.warning,
+            ),
+          );
         }
       }
     }
@@ -284,10 +293,12 @@ class SceneExecutor {
         final logcat = await adb.logcat(deviceId, lines: 50);
         builder.addLogs(logcat.split('\n'));
       } catch (e) {
-        _emit(SceneLogEvent(
-          message: 'Failed to capture logs: $e',
-          severity: RunnerEventSeverity.warning,
-        ));
+        _emit(
+          SceneLogEvent(
+            message: 'Failed to capture logs: $e',
+            severity: RunnerEventSeverity.warning,
+          ),
+        );
       }
     }
 
@@ -335,11 +346,7 @@ class SceneResult {
 
 /// An error that occurred during scene execution.
 class SceneError {
-  SceneError({
-    required this.step,
-    required this.message,
-    this.stackTrace,
-  });
+  SceneError({required this.step, required this.message, this.stackTrace});
 
   final int step;
   final String message;

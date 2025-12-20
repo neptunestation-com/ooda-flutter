@@ -86,9 +86,7 @@ abstract class PollingBarrier<T> extends Barrier<T> {
 
 /// A barrier that waits for an event from a stream.
 abstract class EventBarrier<T> extends Barrier<T> {
-  EventBarrier({
-    this.timeout = const Duration(seconds: 30),
-  });
+  EventBarrier({this.timeout = const Duration(seconds: 30)});
 
   @override
   final Duration timeout;
@@ -123,10 +121,12 @@ abstract class EventBarrier<T> extends Barrier<T> {
       if (!completer.isCompleted) {
         subscription.cancel();
         collectDiagnostics().then((diagnostics) {
-          completer.complete(BarrierResult.timeout(
-            elapsed: stopwatch.elapsed,
-            diagnosticInfo: diagnostics,
-          ));
+          completer.complete(
+            BarrierResult.timeout(
+              elapsed: stopwatch.elapsed,
+              diagnosticInfo: diagnostics,
+            ),
+          );
         });
       }
     });
@@ -137,20 +137,21 @@ abstract class EventBarrier<T> extends Barrier<T> {
         if (matchesEvent(event) && !completer.isCompleted) {
           timer.cancel();
           subscription.cancel();
-          completer.complete(BarrierResult.success(
-            value: extractValue(event),
-            elapsed: stopwatch.elapsed,
-          ));
+          completer.complete(
+            BarrierResult.success(
+              value: extractValue(event),
+              elapsed: stopwatch.elapsed,
+            ),
+          );
         }
       },
       onError: (error) {
         if (!completer.isCompleted) {
           timer.cancel();
           subscription.cancel();
-          completer.complete(BarrierResult.failure(
-            elapsed: stopwatch.elapsed,
-            error: error,
-          ));
+          completer.complete(
+            BarrierResult.failure(elapsed: stopwatch.elapsed, error: error),
+          );
         }
       },
     );

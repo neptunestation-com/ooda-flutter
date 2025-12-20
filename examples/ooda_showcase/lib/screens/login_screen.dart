@@ -51,7 +51,8 @@ class _LoginScreenState extends State<LoginScreen> {
               rememberMe: _rememberMe,
               obscurePassword: _obscurePassword,
               status: _status,
-              onRememberMeChanged: (v) => setState(() => _rememberMe = v ?? false),
+              onRememberMeChanged: (v) =>
+                  setState(() => _rememberMe = v ?? false),
               onObscurePasswordToggle: () =>
                   setState(() => _obscurePassword = !_obscurePassword),
               onSubmit: _submit,
@@ -63,7 +64,8 @@ class _LoginScreenState extends State<LoginScreen> {
               rememberMe: _rememberMe,
               obscurePassword: _obscurePassword,
               status: _status,
-              onRememberMeChanged: (v) => setState(() => _rememberMe = v ?? false),
+              onRememberMeChanged: (v) =>
+                  setState(() => _rememberMe = v ?? false),
               onObscurePasswordToggle: () =>
                   setState(() => _obscurePassword = !_obscurePassword),
               onSubmit: _submit,
@@ -116,15 +118,18 @@ class _MinimalLoginForm extends StatelessWidget {
             decoration: InputDecoration(
               labelText: 'Password',
               suffixIcon: IconButton(
-                icon: Icon(obscurePassword ? Icons.visibility : Icons.visibility_off),
+                icon: Icon(
+                  obscurePassword ? Icons.visibility : Icons.visibility_off,
+                ),
                 onPressed: onObscurePasswordToggle,
               ),
             ),
             obscureText: obscurePassword,
             textInputAction: TextInputAction.done,
             onFieldSubmitted: (_) => onSubmit(),
-            validator: (v) =>
-                v == null || v.length < 6 ? 'Password must be 6+ characters' : null,
+            validator: (v) => v == null || v.length < 6
+                ? 'Password must be 6+ characters'
+                : null,
           ),
           const SizedBox(height: 16),
           CheckboxListTile(
@@ -134,19 +139,13 @@ class _MinimalLoginForm extends StatelessWidget {
             controlAffinity: ListTileControlAffinity.leading,
           ),
           const SizedBox(height: 16),
-          ElevatedButton(
-            onPressed: onSubmit,
-            child: const Text('Login'),
-          ),
+          ElevatedButton(onPressed: onSubmit, child: const Text('Login')),
           if (status != null) ...[
             const SizedBox(height: 16),
             Text(status!, textAlign: TextAlign.center),
           ],
           const SizedBox(height: 8),
-          TextButton(
-            onPressed: () {},
-            child: const Text('Forgot password?'),
-          ),
+          TextButton(onPressed: () {}, child: const Text('Forgot password?')),
         ],
       ),
     );
@@ -210,8 +209,9 @@ class _PolishedLoginForm extends StatelessWidget {
                     ),
                     keyboardType: TextInputType.emailAddress,
                     textInputAction: TextInputAction.next,
-                    validator: (v) =>
-                        v == null || !v.contains('@') ? 'Enter a valid email' : null,
+                    validator: (v) => v == null || !v.contains('@')
+                        ? 'Enter a valid email'
+                        : null,
                   ),
                   const SizedBox(height: 16),
                   TextFormField(
@@ -221,7 +221,10 @@ class _PolishedLoginForm extends StatelessWidget {
                       prefixIcon: const Icon(Icons.lock_outlined),
                       suffixIcon: IconButton(
                         icon: Icon(
-                            obscurePassword ? Icons.visibility : Icons.visibility_off),
+                          obscurePassword
+                              ? Icons.visibility
+                              : Icons.visibility_off,
+                        ),
                         onPressed: onObscurePasswordToggle,
                       ),
                     ),
@@ -249,10 +252,7 @@ class _PolishedLoginForm extends StatelessWidget {
                   ),
                   if (status != null) ...[
                     const SizedBox(height: 16),
-                    Text(
-                      status!,
-                      style: TextStyle(color: colorScheme.primary),
-                    ),
+                    Text(status!, style: TextStyle(color: colorScheme.primary)),
                   ],
                   const SizedBox(height: 8),
                   TextButton(

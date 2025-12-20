@@ -12,8 +12,8 @@ class InteractionController {
     required AdbClient adb,
     required String deviceId,
     this.interactionDelay = const Duration(milliseconds: 100),
-  })  : _adb = adb,
-        _deviceId = deviceId;
+  }) : _adb = adb,
+       _deviceId = deviceId;
 
   final AdbClient _adb;
   final String _deviceId;
@@ -40,12 +40,12 @@ class InteractionController {
           break;
 
         case SwipeInteraction(
-            :final startX,
-            :final startY,
-            :final endX,
-            :final endY,
-            :final durationMs
-          ):
+          :final startX,
+          :final startY,
+          :final endX,
+          :final endY,
+          :final durationMs,
+        ):
           await _adb.swipe(
             _deviceId,
             startX: startX,
@@ -117,13 +117,15 @@ class InteractionController {
     required int endY,
     int durationMs = 300,
   }) async {
-    return execute(SwipeInteraction(
-      startX: startX,
-      startY: startY,
-      endX: endX,
-      endY: endY,
-      durationMs: durationMs,
-    ));
+    return execute(
+      SwipeInteraction(
+        startX: startX,
+        startY: startY,
+        endX: endX,
+        endY: endY,
+        durationMs: durationMs,
+      ),
+    );
   }
 
   /// Scroll up on the screen.

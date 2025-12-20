@@ -13,10 +13,7 @@ enum AppVariant { minimal, polished }
 
 /// Main app widget.
 class OodaShowcaseApp extends StatelessWidget {
-  const OodaShowcaseApp({
-    super.key,
-    this.variant = AppVariant.minimal,
-  });
+  const OodaShowcaseApp({super.key, this.variant = AppVariant.minimal});
 
   final AppVariant variant;
 
@@ -48,10 +45,7 @@ class OodaShowcaseApp extends StatelessWidget {
 
     final builder = routes[settings.name];
     if (builder != null) {
-      return MaterialPageRoute(
-        builder: builder,
-        settings: settings,
-      );
+      return MaterialPageRoute(builder: builder, settings: settings);
     }
     return null;
   }

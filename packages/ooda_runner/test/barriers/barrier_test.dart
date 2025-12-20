@@ -127,9 +127,7 @@ void main() {
 
   group('EventBarrier', () {
     test('succeeds when matching event received', () async {
-      final barrier = TestEventBarrier(
-        timeout: const Duration(seconds: 5),
-      );
+      final barrier = TestEventBarrier(timeout: const Duration(seconds: 5));
 
       // Emit after a short delay
       Future<void>.delayed(const Duration(milliseconds: 50), () {
@@ -145,9 +143,7 @@ void main() {
     });
 
     test('ignores non-matching events', () async {
-      final barrier = TestEventBarrier(
-        timeout: const Duration(seconds: 5),
-      );
+      final barrier = TestEventBarrier(timeout: const Duration(seconds: 5));
 
       // Emit non-matching then matching events
       Future<void>.delayed(const Duration(milliseconds: 20), () {

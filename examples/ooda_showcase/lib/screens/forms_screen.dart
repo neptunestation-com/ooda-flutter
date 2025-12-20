@@ -62,10 +62,7 @@ class _FormsScreenState extends State<FormsScreen> {
       appBar: AppBar(
         title: const Text('Forms'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.refresh),
-            onPressed: _reset,
-          ),
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _reset),
         ],
       ),
       body: Form(
@@ -80,7 +77,8 @@ class _FormsScreenState extends State<FormsScreen> {
                 agreeToTerms: _agreeToTerms,
                 submissionStatus: _submissionStatus,
                 onOptionChanged: (v) => setState(() => _selectedOption = v),
-                onAgreeChanged: (v) => setState(() => _agreeToTerms = v ?? false),
+                onAgreeChanged: (v) =>
+                    setState(() => _agreeToTerms = v ?? false),
                 onSubmit: _submit,
               )
             : _MinimalForm(
@@ -92,7 +90,8 @@ class _FormsScreenState extends State<FormsScreen> {
                 agreeToTerms: _agreeToTerms,
                 submissionStatus: _submissionStatus,
                 onOptionChanged: (v) => setState(() => _selectedOption = v),
-                onAgreeChanged: (v) => setState(() => _agreeToTerms = v ?? false),
+                onAgreeChanged: (v) =>
+                    setState(() => _agreeToTerms = v ?? false),
                 onSubmit: _submit,
               ),
       ),
@@ -171,7 +170,8 @@ class _MinimalForm extends StatelessWidget {
             alignLabelWithHint: true,
           ),
           maxLines: 4,
-          validator: (v) => v == null || v.isEmpty ? 'Message is required' : null,
+          validator: (v) =>
+              v == null || v.isEmpty ? 'Message is required' : null,
         ),
         const SizedBox(height: 16),
         CheckboxListTile(
@@ -181,10 +181,7 @@ class _MinimalForm extends StatelessWidget {
           controlAffinity: ListTileControlAffinity.leading,
         ),
         const SizedBox(height: 16),
-        ElevatedButton(
-          onPressed: onSubmit,
-          child: const Text('Submit'),
-        ),
+        ElevatedButton(onPressed: onSubmit, child: const Text('Submit')),
         if (submissionStatus != null) ...[
           const SizedBox(height: 16),
           Text(submissionStatus!, textAlign: TextAlign.center),
@@ -256,8 +253,9 @@ class _PolishedForm extends StatelessWidget {
                   ),
                   keyboardType: TextInputType.emailAddress,
                   textInputAction: TextInputAction.next,
-                  validator: (v) =>
-                      v == null || !v.contains('@') ? 'Enter a valid email' : null,
+                  validator: (v) => v == null || !v.contains('@')
+                      ? 'Enter a valid email'
+                      : null,
                 ),
                 const SizedBox(height: 16),
                 TextFormField(
@@ -294,7 +292,10 @@ class _PolishedForm extends StatelessWidget {
                   items: const [
                     DropdownMenuItem(value: 'general', child: Text('General')),
                     DropdownMenuItem(value: 'support', child: Text('Support')),
-                    DropdownMenuItem(value: 'feedback', child: Text('Feedback')),
+                    DropdownMenuItem(
+                      value: 'feedback',
+                      child: Text('Feedback'),
+                    ),
                   ],
                   onChanged: onOptionChanged,
                 ),
@@ -334,10 +335,7 @@ class _PolishedForm extends StatelessWidget {
                 : colorScheme.errorContainer,
             child: Padding(
               padding: const EdgeInsets.all(16),
-              child: Text(
-                submissionStatus!,
-                textAlign: TextAlign.center,
-              ),
+              child: Text(submissionStatus!, textAlign: TextAlign.center),
             ),
           ),
         ],

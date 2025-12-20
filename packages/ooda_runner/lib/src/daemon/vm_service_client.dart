@@ -52,9 +52,7 @@ class VmServiceClient {
   /// Get the root widget tree as JSON.
   ///
   /// Uses the WidgetInspectorService to get the render tree.
-  Future<Map<String, dynamic>> getWidgetTree({
-    bool summaryTree = true,
-  }) async {
+  Future<Map<String, dynamic>> getWidgetTree({bool summaryTree = true}) async {
     if (_mainIsolateId == null) {
       throw VmServiceClientException('No isolate available');
     }
@@ -65,9 +63,7 @@ class VmServiceClient {
             ? 'ext.flutter.inspector.getRootWidgetSummaryTree'
             : 'ext.flutter.inspector.getRootWidget',
         isolateId: _mainIsolateId,
-        args: {
-          'groupName': 'ooda_runner',
-        },
+        args: {'groupName': 'ooda_runner'},
       );
 
       if (response.json != null) {
@@ -98,9 +94,7 @@ class VmServiceClient {
       final response = await _service.callServiceExtension(
         'ext.flutter.inspector.getSemanticsTree',
         isolateId: _mainIsolateId,
-        args: {
-          'groupName': 'ooda_runner',
-        },
+        args: {'groupName': 'ooda_runner'},
       );
 
       if (response.json != null) {

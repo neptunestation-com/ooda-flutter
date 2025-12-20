@@ -12,15 +12,8 @@ class BarrierResult<T> {
   });
 
   /// Create a successful result.
-  factory BarrierResult.success({
-    T? value,
-    required Duration elapsed,
-  }) {
-    return BarrierResult(
-      success: true,
-      value: value,
-      elapsed: elapsed,
-    );
+  factory BarrierResult.success({T? value, required Duration elapsed}) {
+    return BarrierResult(success: true, value: value, elapsed: elapsed);
   }
 
   /// Create a timeout failure result.
