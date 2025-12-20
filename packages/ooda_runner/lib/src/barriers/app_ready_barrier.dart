@@ -29,13 +29,17 @@ class AppReadyBarrier extends EventBarrier<AppInfo> {
   bool matchesEvent(dynamic event) {
     if (event is DaemonEvent && event.event == DaemonEvents.appStarted) {
       final appId = event.get<String>('appId');
-      final deviceId = event.get<String>('deviceId');
-      if (appId != null && deviceId != null) {
+      // Note: app.started only contains appId, not deviceId
+      // deviceId comes from app.start event and is already stored in session.appInfo
+      if (appId != null) {
+        // Use existing appInfo from session if available (populated by app.start event)
+        final existingInfo = _session.appInfo;
         _appInfo = AppInfo(
           appId: appId,
-          deviceId: deviceId,
-          directory: event.get<String>('directory'),
-          supportsRestart: event.get<bool>('supportsRestart') ?? true,
+          deviceId: existingInfo?.deviceId ?? '',
+          directory: existingInfo?.directory,
+          supportsRestart: existingInfo?.supportsRestart ?? true,
+          vmServiceUri: existingInfo?.vmServiceUri,
         );
         return true;
       }

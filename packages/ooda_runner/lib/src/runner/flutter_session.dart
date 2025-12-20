@@ -153,6 +153,9 @@ class FlutterSession {
     _eventController.add(event);
 
     switch (event.event) {
+      case 'app.start':
+        _handleAppStart(event);
+        break;
       case DaemonEvents.appStarted:
         _handleAppStarted(event);
         break;
@@ -165,18 +168,36 @@ class FlutterSession {
     }
   }
 
-  void _handleAppStarted(DaemonEvent event) {
+  void _handleAppStart(DaemonEvent event) {
+    // app.start contains initial app info (before app is fully started)
     final appId = event.get<String>('appId');
     final deviceId = event.get<String>('deviceId');
     final directory = event.get<String>('directory');
     final supportsRestart = event.get<bool>('supportsRestart') ?? true;
 
-    if (appId != null && deviceId != null) {
+    if (appId != null) {
       _appInfo = AppInfo(
         appId: appId,
-        deviceId: deviceId,
+        deviceId: deviceId ?? '',
         directory: directory,
         supportsRestart: supportsRestart,
+        vmServiceUri: _appInfo?.vmServiceUri,
+      );
+    }
+  }
+
+  void _handleAppStarted(DaemonEvent event) {
+    final appId = event.get<String>('appId');
+    // Note: app.started only contains appId
+    // deviceId, directory, supportsRestart come from app.start event
+
+    if (appId != null) {
+      // Preserve existing info from app.start event, update appId
+      _appInfo = AppInfo(
+        appId: appId,
+        deviceId: _appInfo?.deviceId ?? '',
+        directory: _appInfo?.directory,
+        supportsRestart: _appInfo?.supportsRestart ?? true,
         vmServiceUri: _appInfo?.vmServiceUri,
       );
       _setState(FlutterSessionState.running);
@@ -311,11 +332,14 @@ class FlutterSession {
     }
 
     await _eventSubscription.cancel();
-    await _stateController.close();
-    await _eventController.close();
 
     final exitCode = await _client.close();
-    _setState(FlutterSessionState.stopped);
+
+    // Set state directly without emitting (controllers will be closed)
+    _state = FlutterSessionState.stopped;
+
+    await _stateController.close();
+    await _eventController.close();
 
     return exitCode;
   }
