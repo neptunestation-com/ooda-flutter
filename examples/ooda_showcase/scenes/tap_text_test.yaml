@@ -1,5 +1,5 @@
-name: tap_label_test
-description: Test tapping by semantics label
+name: tap_text_test
+description: Test tapping by visible text
 
 setup:
   hot_restart: true
@@ -8,8 +8,8 @@ setup:
 steps:
   - checkpoint: initial_view
 
-  # Tap Email field by label instead of coordinates
-  - tap_label: "Email"
+  # Tap Email field by visible text instead of coordinates
+  - tap_text: "Email"
   - wait: visual_stability
 
   - checkpoint: email_focused
@@ -17,8 +17,8 @@ steps:
   - input_text: "test@example.com"
   - wait: visual_stability
 
-  # Tap Password field by label
-  - tap_label: "Password"
+  # Tap Password field by visible text
+  - tap_text: "Password"
   - wait: visual_stability
 
   - checkpoint: password_focused
@@ -26,8 +26,8 @@ steps:
   - input_text: "secret123"
   - wait: visual_stability
 
-  # Tap the Login button by label
-  - tap_label: "Login"
+  # Tap the Login button by visible text
+  - tap_text: "Login"
   - wait: visual_stability
 
   - checkpoint: after_login

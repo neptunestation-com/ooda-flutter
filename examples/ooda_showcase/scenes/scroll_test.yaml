@@ -11,7 +11,7 @@ steps:
     description: Item list at initial position (top)
 
   # Tap Item 3 at top of list
-  - tap_label: "Item 3"
+  - tap_text: "Item 3"
   - wait: visual_stability
 
   - checkpoint: after_tap_item3
@@ -31,7 +31,7 @@ steps:
     description: After first scroll down
 
   # Tap an item that's now visible
-  - tap_label: "Item 15"
+  - tap_text: "Item 15"
   - wait: visual_stability
 
   - checkpoint: after_tap_item15
@@ -64,7 +64,7 @@ steps:
     description: After third scroll down
 
   # Tap an item deep in the list
-  - tap_label: "Item 30"
+  - tap_text: "Item 30"
   - wait: visual_stability
 
   - checkpoint: after_tap_item30

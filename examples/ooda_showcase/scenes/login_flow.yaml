@@ -11,8 +11,8 @@ steps:
     description: Login form before any interaction
     capture_semantics_tree: true
 
-  # Focus email field by semantics label
-  - tap_label: "Email"
+  # Focus email field by visible text
+  - tap_text: "Email"
 
   - wait: visual_stability
 

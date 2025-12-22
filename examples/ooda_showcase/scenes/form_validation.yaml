@@ -22,8 +22,8 @@ steps:
 
   - wait: visual_stability
 
-  # Tap submit button by label
-  - tap_label: "Submit"
+  # Tap submit button by visible text
+  - tap_text: "Submit"
 
   - wait: visual_stability
 
@@ -40,8 +40,8 @@ steps:
 
   - wait: visual_stability
 
-  # Tap name field by label (asterisk indicates required)
-  - tap_label: "Name *"
+  # Tap name field by visible text (asterisk indicates required)
+  - tap_text: "Name *"
 
   - wait: visual_stability
 
