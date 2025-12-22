@@ -26,7 +26,7 @@ The "Orient" and "Decide" phases are left to the AI agent consuming this framewo
 ## Features
 
 ### Device Interaction
-- Tap at coordinates
+- Tap at coordinates or **by semantics label** (accessibility-based targeting)
 - Swipe gestures with configurable duration
 - Text input
 - Key events (back, home, enter, etc.)
@@ -56,12 +56,12 @@ setup:
 steps:
   - checkpoint: initial_screen
     description: Login form before interaction
-  - tap: { x: 540, y: 400 }
+  - tap_label: "Email"              # Tap by semantics label (recommended)
   - wait: visual_stability
   - input_text: "user@example.com"
-  - tap: { x: 540, y: 500 }
+  - tap_label: "Password"           # No need to hardcode coordinates
   - input_text: "password123"
-  - tap: { x: 540, y: 700 }
+  - tap_label: "Login"              # Works with buttons too
   - wait: visual_stability
   - checkpoint: after_login
     description: State after login attempt
@@ -70,6 +70,8 @@ barriers:
     timeout_ms: 5000
     consecutive_matches: 3
 ```
+
+> **New in v0.3.0**: `tap_label` lets you tap elements by their accessibility label instead of coordinates. The framework captures the semantics tree, finds the matching label, and taps the center of that element's bounds.
 
 ## Requirements
 
@@ -113,7 +115,7 @@ dependencies:
     git:
       url: https://github.com/neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.2.0  # Pin to a version tag
+      ref: v0.3.0  # Pin to a version tag
 ```
 
 Or with SSH:
@@ -123,7 +125,7 @@ dependencies:
     git:
       url: git@github.com:neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.2.0
+      ref: v0.3.0
 ```
 
 ```dart
