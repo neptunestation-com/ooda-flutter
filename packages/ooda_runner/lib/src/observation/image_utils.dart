@@ -10,6 +10,60 @@ class ImageUtils {
   /// Claude limits images to 2000px on any dimension for multi-image requests.
   static const int defaultMaxDimension = 1568;
 
+  /// Canonical dimensions for screenshot comparison.
+  /// Uses 1080x1920 as the standard mobile resolution.
+  static const int canonicalWidth = 1080;
+  static const int canonicalHeight = 1920;
+
+  /// Canonicalize two images to the same dimensions for comparison.
+  ///
+  /// Both images are resized to [canonicalWidth] x [canonicalHeight].
+  /// This ensures pixel-by-pixel comparison works regardless of source resolution.
+  ///
+  /// Returns null for either image if it cannot be decoded.
+  static ({Uint8List? first, Uint8List? second}) canonicalize(
+    Uint8List first,
+    Uint8List second,
+  ) {
+    final firstImage = img.decodePng(first);
+    final secondImage = img.decodePng(second);
+
+    if (firstImage == null || secondImage == null) {
+      return (first: null, second: null);
+    }
+
+    // Check if both are already at canonical size
+    final firstIsCanonical = firstImage.width == canonicalWidth &&
+        firstImage.height == canonicalHeight;
+    final secondIsCanonical = secondImage.width == canonicalWidth &&
+        secondImage.height == canonicalHeight;
+
+    if (firstIsCanonical && secondIsCanonical) {
+      return (first: first, second: second);
+    }
+
+    // Resize to canonical dimensions
+    final firstResized = firstIsCanonical
+        ? first
+        : _resizeToCanonical(firstImage);
+    final secondResized = secondIsCanonical
+        ? second
+        : _resizeToCanonical(secondImage);
+
+    return (first: firstResized, second: secondResized);
+  }
+
+  /// Resize an image to canonical dimensions.
+  static Uint8List _resizeToCanonical(img.Image image) {
+    final resized = img.copyResize(
+      image,
+      width: canonicalWidth,
+      height: canonicalHeight,
+      interpolation: img.Interpolation.linear,
+    );
+    return Uint8List.fromList(img.encodePng(resized));
+  }
+
   /// Resize an image to fit within the specified max dimension while
   /// preserving aspect ratio.
   ///

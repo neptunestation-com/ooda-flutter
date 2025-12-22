@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:ooda_shared/ooda_shared.dart';
 import 'package:path/path.dart' as p;
 
+import 'image_utils.dart';
 import 'overlay_detector.dart';
 
 /// A complete observation bundle captured at a checkpoint.
@@ -143,15 +144,23 @@ class ObservationBundle {
     if (overlayDetection?.overlayPresent == true &&
         deviceScreenshot != null &&
         flutterScreenshot != null) {
-      final detector = OverlayDetector();
-      final diffImage = detector.generateDiffImage(
-        flutterImage: flutterScreenshot!,
-        deviceImage: deviceScreenshot!,
+      // Canonicalize before generating diff image
+      final canonical = ImageUtils.canonicalize(
+        flutterScreenshot!,
+        deviceScreenshot!,
       );
-      if (diffImage != null) {
-        futures.add(
-          File(p.join(bundleDir.path, 'diff.png')).writeAsBytes(diffImage),
+
+      if (canonical.first != null && canonical.second != null) {
+        final detector = OverlayDetector();
+        final diffImage = detector.generateDiffImage(
+          flutterImage: canonical.first!,
+          deviceImage: canonical.second!,
         );
+        if (diffImage != null) {
+          futures.add(
+            File(p.join(bundleDir.path, 'diff.png')).writeAsBytes(diffImage),
+          );
+        }
       }
     }
 
@@ -206,11 +215,19 @@ class ObservationBundle {
     // Re-detect overlay if both screenshots present
     OverlayDetectionResult? overlayDetection;
     if (deviceScreenshot != null && flutterScreenshot != null) {
-      final detector = OverlayDetector();
-      overlayDetection = detector.detect(
-        flutterImage: flutterScreenshot,
-        deviceImage: deviceScreenshot,
+      // Canonicalize both screenshots to the same dimensions before comparison
+      final canonical = ImageUtils.canonicalize(
+        flutterScreenshot,
+        deviceScreenshot,
       );
+
+      if (canonical.first != null && canonical.second != null) {
+        final detector = OverlayDetector();
+        overlayDetection = detector.detect(
+          flutterImage: canonical.first!,
+          deviceImage: canonical.second!,
+        );
+      }
     }
 
     return ObservationBundle(
@@ -328,11 +345,27 @@ class ObservationBundleBuilder {
     // Detect overlay if both screenshots present
     OverlayDetectionResult? overlayDetection;
     if (_deviceScreenshot != null && _flutterScreenshot != null) {
-      final detector = OverlayDetector();
-      overlayDetection = detector.detect(
-        flutterImage: _flutterScreenshot!,
-        deviceImage: _deviceScreenshot!,
+      // Canonicalize both screenshots to the same dimensions before comparison
+      final canonical = ImageUtils.canonicalize(
+        _flutterScreenshot!,
+        _deviceScreenshot!,
       );
+
+      if (canonical.first != null && canonical.second != null) {
+        final detector = OverlayDetector();
+        overlayDetection = detector.detect(
+          flutterImage: canonical.first!,
+          deviceImage: canonical.second!,
+        );
+      } else {
+        // Failed to decode images
+        overlayDetection = OverlayDetectionResult(
+          overlayPresent: false,
+          confidence: 0.0,
+          diffPercentage: 0.0,
+          reason: 'Failed to decode one or both images for comparison',
+        );
+      }
     }
 
     final metadata = ObservationMetadata(
