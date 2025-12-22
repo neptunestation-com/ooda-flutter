@@ -29,8 +29,18 @@ Observations are saved to `obs/<scene_name>/<checkpoint_name>/` by default (over
 | `semantics.json`   | Accessibility tree with labels, roles, actions              |
 | `meta.json`        | Timestamp, overlay detection result                         |
 | `logs.txt`         | Flutter logs during capture                                 |
+| `diff.png`         | Visual diff (only generated when overlay detected)          |
 
-**Overlay detection**: If `device.png` differs from `flutter.png`, a system overlay (keyboard, dialog) is present.
+**Overlay detection**: Compares `device.png` and `flutter.png` to detect system overlays:
+
+| Detected as overlay | NOT detected (expected) |
+|---------------------|-------------------------|
+| Keyboard (IME)      | Flutter AlertDialog     |
+| Permission dialogs  | Flutter BottomSheet     |
+| System notifications| Flutter DatePicker      |
+| Toast messages      | Any Flutter-rendered UI |
+
+The comparison excludes top 5% (status bar) and bottom 12% (nav bar) to avoid false positives from system UI that differs between device and Flutter screenshots.
 
 ### 3. Use observations in prompts
 
@@ -150,7 +160,7 @@ dart test packages/ooda_shared/test/
 
 **Data Flow**: Scene YAML → `SceneParser` → `SceneExecutor` → (`InteractionController` for actions, `ObservationBundle` for checkpoints) → Output to `obs/` directory
 
-**Two-Camera Model**: `DeviceCamera` (ADB framebuffer) captures what's displayed including system UI. `FlutterCamera` (VM service) captures only Flutter-rendered content. `OverlayDetector` compares both to detect system overlays (keyboard, dialogs).
+**Two-Camera Model**: `DeviceCamera` (ADB framebuffer) captures what's displayed including system UI. `FlutterCamera` (VM service) captures only Flutter-rendered content. `OverlayDetector` compares both to detect system overlays (keyboard, dialogs). Before comparison, screenshots are canonicalized to 1080x1920, and top 5% / bottom 12% are excluded to ignore status bar and nav bar differences.
 
 **Barrier System**: Barriers block execution until conditions are met (e.g., `VisualStabilityBarrier` waits for animations to settle, `AppReadyBarrier` waits for app startup). `FlutterSession` manages app lifecycle via `flutter run --machine` JSON-RPC protocol.
 
