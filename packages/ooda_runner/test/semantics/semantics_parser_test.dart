@@ -201,6 +201,107 @@ SemanticsNode#0
       });
     });
 
+    group('findByLabelContaining', () {
+      test('finds node by substring match', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ └─SemanticsNode#21
+     Rect.fromLTRB(0.0, 0.0, 360.0, 72.0)
+     label: "Submit Button"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final matches = SemanticsParser.findByLabelContaining(root, 'Submit');
+
+        expect(matches, hasLength(1));
+        expect(matches[0].id, equals(21));
+      });
+
+      test('finds multiple nodes containing substring', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ ├─SemanticsNode#21
+ │   Rect.fromLTRB(0.0, 0.0, 360.0, 72.0)
+ │   label: "Item 1"
+ │
+ ├─SemanticsNode#22
+ │   Rect.fromLTRB(0.0, 72.0, 360.0, 144.0)
+ │   label: "Item 10"
+ │
+ └─SemanticsNode#23
+     Rect.fromLTRB(0.0, 144.0, 360.0, 216.0)
+     label: "Item 11"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        // "Item 1" matches "Item 1", "Item 10", and "Item 11"
+        final matches = SemanticsParser.findByLabelContaining(root, 'Item 1');
+
+        expect(matches, hasLength(3));
+      });
+
+      test('returns empty list when substring not found', () {
+        const dump = '''
+SemanticsNode#0
+  Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+  label: "Email"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final matches = SemanticsParser.findByLabelContaining(root, 'Password');
+
+        expect(matches, isEmpty);
+      });
+
+      test('exact match is preferred over substring', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ ├─SemanticsNode#21
+ │   Rect.fromLTRB(0.0, 0.0, 360.0, 72.0)
+ │   label: "Submit"
+ │
+ └─SemanticsNode#22
+     Rect.fromLTRB(0.0, 72.0, 360.0, 144.0)
+     label: "Submit Button"
+''';
+        final root = SemanticsParser.parse(dump)!;
+
+        // Exact match should find only node 21
+        final exactMatches = SemanticsParser.findByLabel(root, 'Submit');
+        expect(exactMatches, hasLength(1));
+        expect(exactMatches[0].id, equals(21));
+
+        // Substring match should find both
+        final substringMatches = SemanticsParser.findByLabelContaining(root, 'Submit');
+        expect(substringMatches, hasLength(2));
+      });
+    });
+
+    group('findFirstByLabelContaining', () {
+      test('returns first node containing substring', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ ├─SemanticsNode#21
+ │   Rect.fromLTRB(0.0, 0.0, 360.0, 72.0)
+ │   label: "Item 1"
+ │
+ └─SemanticsNode#22
+     Rect.fromLTRB(0.0, 72.0, 360.0, 144.0)
+     label: "Item 2"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final node = SemanticsParser.findFirstByLabelContaining(root, 'Item');
+
+        expect(node, isNotNull);
+        expect(node!.id, equals(21));
+      });
+    });
+
     group('SemanticsNode', () {
       test('absoluteBounds applies scale', () {
         const node = SemanticsNode(

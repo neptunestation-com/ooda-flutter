@@ -74,10 +74,11 @@ barriers:
 > **New in v0.4.0**: `tap_label` lets you tap elements by their accessibility label instead of coordinates. The framework captures the semantics tree, finds the matching label, and taps the center of that element's bounds.
 
 **`tap_label` behavior:**
-- **Visibility filtering**: Only matches nodes whose center is visible on screen. Off-screen elements (e.g., scrolled-out ListView items) are ignored—scroll first or use coordinates.
+- **Substring matching**: Tries exact match first, then falls back to substring match. `tap_label: "Item 5"` matches a label containing "Item 5" (e.g., multiline list item labels)
+- **Visibility filtering**: Only matches nodes whose center is visible on screen. Off-screen elements are ignored—scroll first or use coordinates
 - Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not in the semantics tree—use coordinates for dialog buttons
 - Required form fields may include asterisks in labels (e.g., `"Name *"` not `"Name"`)
-- Labels must match exactly (case-sensitive)
+- Matching is case-sensitive
 
 ## Requirements
 

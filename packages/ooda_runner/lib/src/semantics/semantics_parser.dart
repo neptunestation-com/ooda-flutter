@@ -101,10 +101,20 @@ class SemanticsParser {
     }
   }
 
-  /// Find all nodes with a matching label.
+  /// Find all nodes with an exactly matching label.
   static List<SemanticsNode> findByLabel(SemanticsNode root, String label) {
     final results = <SemanticsNode>[];
-    _findByLabel(root, label, results);
+    _findByLabel(root, label, results, exactMatch: true);
+    return results;
+  }
+
+  /// Find all nodes whose label contains the search string.
+  static List<SemanticsNode> findByLabelContaining(
+    SemanticsNode root,
+    String searchString,
+  ) {
+    final results = <SemanticsNode>[];
+    _findByLabel(root, searchString, results, exactMatch: false);
     return results;
   }
 
@@ -114,16 +124,32 @@ class SemanticsParser {
     return matches.isNotEmpty ? matches.first : null;
   }
 
+  /// Find the first node whose label contains the search string.
+  static SemanticsNode? findFirstByLabelContaining(
+    SemanticsNode root,
+    String searchString,
+  ) {
+    final matches = findByLabelContaining(root, searchString);
+    return matches.isNotEmpty ? matches.first : null;
+  }
+
   static void _findByLabel(
     SemanticsNode node,
     String label,
-    List<SemanticsNode> results,
-  ) {
-    if (node.label == label) {
-      results.add(node);
+    List<SemanticsNode> results, {
+    required bool exactMatch,
+  }) {
+    final nodeLabel = node.label;
+    if (nodeLabel != null) {
+      final matches = exactMatch
+          ? nodeLabel == label
+          : nodeLabel.contains(label);
+      if (matches) {
+        results.add(node);
+      }
     }
     for (final child in node.children) {
-      _findByLabel(child, label, results);
+      _findByLabel(child, label, results, exactMatch: exactMatch);
     }
   }
 
@@ -184,9 +210,27 @@ class SemanticsParser {
           scale = double.parse(scaleMatch.group(1)!);
         }
       } else if (content.startsWith('label:')) {
-        label = _parseQuotedValue(content, 'label:');
+        // Handle multiline labels
+        final (parsedLabel, newIndex) = _parseMultilineQuotedValue(
+          lines,
+          lineIndex,
+          content,
+          'label:',
+        );
+        label = parsedLabel;
+        lineIndex = newIndex;
+        continue; // Skip the lineIndex++ at the end
       } else if (content.startsWith('value:')) {
-        value = _parseQuotedValue(content, 'value:');
+        // Handle multiline values
+        final (parsedValue, newIndex) = _parseMultilineQuotedValue(
+          lines,
+          lineIndex,
+          content,
+          'value:',
+        );
+        value = parsedValue;
+        lineIndex = newIndex;
+        continue;
       } else if (content.startsWith('actions:')) {
         actions.addAll(_parseCommaSeparated(content, 'actions:'));
       } else if (content.startsWith('flags:')) {
@@ -289,6 +333,125 @@ class SemanticsParser {
       }
     }
     return afterPrefix.isEmpty ? null : afterPrefix;
+  }
+
+  /// Parse a potentially multiline quoted value (like label or value).
+  /// Returns the parsed string and the new line index.
+  static (String?, int) _parseMultilineQuotedValue(
+    List<String> lines,
+    int startIndex,
+    String firstLineContent,
+    String prefix,
+  ) {
+    final afterPrefix = firstLineContent
+        .substring(firstLineContent.indexOf(prefix) + prefix.length)
+        .trim();
+
+    // If it's a simple single-line value with quotes
+    if (afterPrefix.startsWith('"') && afterPrefix.endsWith('"') && afterPrefix.length > 1) {
+      return (afterPrefix.substring(1, afterPrefix.length - 1), startIndex + 1);
+    }
+
+    // If there's no content after prefix, look for multiline value
+    if (afterPrefix.isEmpty) {
+      // Look at next lines for the value
+      final buffer = StringBuffer();
+      int lineIndex = startIndex + 1;
+      bool foundStart = false;
+      bool foundEnd = false;
+
+      while (lineIndex < lines.length && !foundEnd) {
+        final line = _stripTreeChars(lines[lineIndex]);
+
+        // Skip empty lines
+        if (line.isEmpty) {
+          lineIndex++;
+          continue;
+        }
+
+        // Check for end of multiline (hitting another property or node)
+        if (_isPropertyLine(line) || _nodeHeaderRegex.hasMatch(line)) {
+          break;
+        }
+
+        // Look for opening quote
+        if (!foundStart && line.startsWith('"')) {
+          foundStart = true;
+          final content = line.substring(1);
+          if (content.endsWith('"')) {
+            // Single line value
+            return (content.substring(0, content.length - 1), lineIndex + 1);
+          }
+          buffer.write(content);
+        } else if (foundStart) {
+          // Continue collecting the multiline value
+          if (line.endsWith('"')) {
+            buffer.write('\n');
+            buffer.write(line.substring(0, line.length - 1));
+            foundEnd = true;
+          } else {
+            buffer.write('\n');
+            buffer.write(line);
+          }
+        }
+        lineIndex++;
+      }
+
+      if (buffer.isNotEmpty) {
+        return (buffer.toString(), lineIndex);
+      }
+      return (null, lineIndex);
+    }
+
+    // Single line value starting with quote but not ending
+    if (afterPrefix.startsWith('"')) {
+      final buffer = StringBuffer(afterPrefix.substring(1));
+      int lineIndex = startIndex + 1;
+
+      while (lineIndex < lines.length) {
+        final line = _stripTreeChars(lines[lineIndex]);
+
+        if (line.isEmpty) {
+          lineIndex++;
+          continue;
+        }
+
+        if (_isPropertyLine(line) || _nodeHeaderRegex.hasMatch(line)) {
+          break;
+        }
+
+        if (line.endsWith('"')) {
+          buffer.write('\n');
+          buffer.write(line.substring(0, line.length - 1));
+          return (buffer.toString(), lineIndex + 1);
+        } else {
+          buffer.write('\n');
+          buffer.write(line);
+        }
+        lineIndex++;
+      }
+      return (buffer.toString(), lineIndex);
+    }
+
+    // No quotes, return as-is
+    return (afterPrefix.isEmpty ? null : afterPrefix, startIndex + 1);
+  }
+
+  static bool _isPropertyLine(String content) {
+    return content.startsWith('label:') ||
+        content.startsWith('value:') ||
+        content.startsWith('actions:') ||
+        content.startsWith('flags:') ||
+        content.startsWith('Rect.fromLTRB') ||
+        content.startsWith('textDirection:') ||
+        content.startsWith('indexInParent:') ||
+        content.startsWith('tags:') ||
+        content.startsWith('sortKey:') ||
+        content.startsWith('scrollChildren:') ||
+        content.startsWith('scrollIndex:') ||
+        content.startsWith('scrollPosition:') ||
+        content.startsWith('scrollExtentMin:') ||
+        content.startsWith('scrollExtentMax:');
   }
 
   static Set<String> _parseCommaSeparated(String content, String prefix) {

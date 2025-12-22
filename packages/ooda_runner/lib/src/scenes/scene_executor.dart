@@ -280,7 +280,13 @@ class SceneExecutor {
       throw SceneExecutionException('Failed to parse semantics tree');
     }
 
-    final allMatches = SemanticsParser.findByLabel(root, interaction.label);
+    // Try exact match first, then fall back to substring match
+    var allMatches = SemanticsParser.findByLabel(root, interaction.label);
+    var matchType = 'exact';
+    if (allMatches.isEmpty) {
+      allMatches = SemanticsParser.findByLabelContaining(root, interaction.label);
+      matchType = 'substring';
+    }
 
     // Filter to visible nodes (center within screen bounds)
     final screenWidth = _screenDimensions?.width ?? 1080;
@@ -295,11 +301,11 @@ class SceneExecutor {
     if (matches.isEmpty) {
       if (allMatches.isEmpty) {
         throw SceneExecutionException(
-          'No semantics node found with label "${interaction.label}"',
+          'No semantics node found with label containing "${interaction.label}"',
         );
       } else {
         throw SceneExecutionException(
-          'Found ${allMatches.length} node(s) with label "${interaction.label}" '
+          'Found ${allMatches.length} node(s) with label containing "${interaction.label}" '
           'but none are visible on screen (may need to scroll)',
         );
       }
@@ -308,7 +314,7 @@ class SceneExecutor {
     if (interaction.matchIndex >= matches.length) {
       throw SceneExecutionException(
         'Match index ${interaction.matchIndex} out of range - '
-        'only ${matches.length} visible node(s) found with label "${interaction.label}"',
+        'only ${matches.length} visible node(s) found with label containing "${interaction.label}"',
       );
     }
 
@@ -320,7 +326,7 @@ class SceneExecutor {
     final centerY = bounds.centerY.round();
 
     _emit(SceneLogEvent(
-      message: 'Resolved "${interaction.label}" to tap at ($centerX, $centerY)',
+      message: 'Resolved "${interaction.label}" ($matchType match) to tap at ($centerX, $centerY)',
     ));
 
     // Execute the tap
