@@ -1,5 +1,5 @@
 name: scroll_test
-description: Test scrolling through the item list
+description: Test scrolling and tapping items in a list
 
 setup:
   hot_restart: true
@@ -9,6 +9,13 @@ setup:
 steps:
   - checkpoint: list_top
     description: Item list at initial position (top)
+
+  # Tap Item 3 at top of list
+  - tap_label: "Item 3"
+  - wait: visual_stability
+
+  - checkpoint: after_tap_item3
+    description: After tapping Item 3
 
   # Scroll down (swipe up gesture)
   - swipe:
@@ -22,6 +29,13 @@ steps:
 
   - checkpoint: list_scrolled_1
     description: After first scroll down
+
+  # Tap an item that's now visible
+  - tap_label: "Item 15"
+  - wait: visual_stability
+
+  - checkpoint: after_tap_item15
+    description: After tapping Item 15
 
   # Scroll down more
   - swipe:
@@ -48,6 +62,13 @@ steps:
 
   - checkpoint: list_scrolled_3
     description: After third scroll down
+
+  # Tap an item deep in the list
+  - tap_label: "Item 30"
+  - wait: visual_stability
+
+  - checkpoint: after_tap_item30
+    description: After tapping Item 30
 
   # Scroll back up (swipe down gesture)
   - swipe:
