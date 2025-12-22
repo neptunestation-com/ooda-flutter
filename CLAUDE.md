@@ -82,6 +82,10 @@ setup:
 steps:
   - checkpoint: initial          # Capture observation
   - tap: { x: 540, y: 400 }      # Tap coordinates
+  - tap_label: "Email"           # Tap by semantics label (finds element, taps center)
+  - tap_label:                   # Extended form for duplicate labels
+      label: "Submit"
+      match_index: 1             # 0 = first match (default), 1 = second, etc.
   - input_text: "user@test.com"  # Type text
   - key: enter                   # Key events: enter, back, tab, home, escape
   - swipe: { start_x: 540, start_y: 1000, end_x: 540, end_y: 400 }
@@ -174,6 +178,7 @@ dart test packages/ooda_shared/test/
 - **Observation**: `packages/ooda_runner/lib/src/observation/` (`DeviceCamera`, `FlutterCamera`, `OverlayDetector`)
 - **Device Control**: `packages/ooda_runner/lib/src/adb/` (`AdbClient`, `DeviceManager`)
 - **Barriers**: `packages/ooda_runner/lib/src/barriers/`
+- **Semantics**: `packages/ooda_runner/lib/src/semantics/` (`SemanticsParser` for tap_label resolution)
 - **Flutter Session**: `packages/ooda_runner/lib/src/runner/flutter_session.dart`
 
 ### Programmatic Usage

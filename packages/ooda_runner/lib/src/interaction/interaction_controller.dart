@@ -59,6 +59,14 @@ class InteractionController {
         case WaitInteraction():
           // Wait interactions are handled by the scene executor
           break;
+
+        case TapByLabelInteraction():
+          // TapByLabel interactions are resolved by the scene executor
+          // which gets the semantics tree, finds the label, and calls tap()
+          throw StateError(
+            'TapByLabelInteraction should be resolved by SceneExecutor, '
+            'not executed directly',
+          );
       }
 
       // Small delay to let UI settle

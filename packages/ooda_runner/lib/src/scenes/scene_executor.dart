@@ -14,6 +14,7 @@ import '../observation/flutter_camera.dart';
 import '../observation/image_utils.dart';
 import '../observation/observation_bundle.dart';
 import '../runner/flutter_session.dart';
+import '../semantics/semantics_parser.dart';
 
 /// Executes scenes and captures observations at checkpoints.
 class SceneExecutor {
@@ -236,11 +237,66 @@ class SceneExecutor {
   ) async {
     if (interaction is WaitInteraction) {
       await _executeWait(scene, interaction);
+    } else if (interaction is TapByLabelInteraction) {
+      await _executeTapByLabel(interaction);
     } else {
       final result = await _interactionController.execute(interaction);
       if (!result.success) {
         throw SceneExecutionException('Interaction failed: ${result.error}');
       }
+    }
+  }
+
+  Future<void> _executeTapByLabel(TapByLabelInteraction interaction) async {
+    if (_vmClient == null) {
+      throw SceneExecutionException(
+        'VM service not connected - cannot resolve semantics label "${interaction.label}"',
+      );
+    }
+
+    // Get current semantics tree
+    final semanticsText = await _vmClient!.getSemanticsTree();
+    if (semanticsText.isEmpty) {
+      throw SceneExecutionException(
+        'Semantics tree is empty - ensure SemanticsBinding.instance.ensureSemantics() is called',
+      );
+    }
+
+    // Parse and find the node
+    final root = SemanticsParser.parse(semanticsText);
+    if (root == null) {
+      throw SceneExecutionException('Failed to parse semantics tree');
+    }
+
+    final matches = SemanticsParser.findByLabel(root, interaction.label);
+    if (matches.isEmpty) {
+      throw SceneExecutionException(
+        'No semantics node found with label "${interaction.label}"',
+      );
+    }
+
+    if (interaction.matchIndex >= matches.length) {
+      throw SceneExecutionException(
+        'Match index ${interaction.matchIndex} out of range - '
+        'only ${matches.length} node(s) found with label "${interaction.label}"',
+      );
+    }
+
+    final node = matches[interaction.matchIndex];
+    final bounds = node.absoluteBounds;
+
+    // Calculate center of bounds
+    final centerX = bounds.centerX.round();
+    final centerY = bounds.centerY.round();
+
+    _emit(SceneLogEvent(
+      message: 'Resolved "${interaction.label}" to tap at ($centerX, $centerY)',
+    ));
+
+    // Execute the tap
+    final result = await _interactionController.tap(centerX, centerY);
+    if (!result.success) {
+      throw SceneExecutionException('Tap failed: ${result.error}');
     }
   }
 

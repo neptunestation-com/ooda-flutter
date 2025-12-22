@@ -35,3 +35,6 @@ export 'src/scenes/scene_executor.dart';
 
 // Interaction
 export 'src/interaction/interaction_controller.dart';
+
+// Semantics
+export 'src/semantics/semantics_parser.dart';

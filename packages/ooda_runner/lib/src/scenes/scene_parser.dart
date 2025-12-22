@@ -116,6 +116,9 @@ class SceneParser {
       if (step.containsKey('wait')) {
         return _parseWaitStep(step);
       }
+      if (step.containsKey('tap_label')) {
+        return _parseTapLabelStep(step);
+      }
 
       throw SceneParseException('Unknown step type: ${step.keys}');
     }
@@ -218,6 +221,26 @@ class SceneParser {
 
     return InteractionStep(
       WaitInteraction(barrierType: barrierType, timeoutMs: timeoutMs),
+    );
+  }
+
+  static InteractionStep _parseTapLabelStep(YamlMap yaml) {
+    final tapLabel = yaml['tap_label'];
+
+    String label;
+    int matchIndex = 0;
+
+    if (tapLabel is String) {
+      label = tapLabel;
+    } else if (tapLabel is YamlMap) {
+      label = tapLabel['label'] as String;
+      matchIndex = tapLabel['match_index'] as int? ?? 0;
+    } else {
+      throw SceneParseException('Invalid tap_label format: $tapLabel');
+    }
+
+    return InteractionStep(
+      TapByLabelInteraction(label: label, matchIndex: matchIndex),
     );
   }
 

@@ -135,3 +135,30 @@ class WaitInteraction extends Interaction {
   @override
   String toString() => 'WaitInteraction(barrier: $barrierType)';
 }
+
+/// A tap interaction targeting a UI element by its semantics label.
+///
+/// At execution time, the semantics tree is queried to find the element
+/// with the matching label, its bounds are extracted, and a tap is
+/// performed at the center of those bounds.
+@immutable
+class TapByLabelInteraction extends Interaction {
+  const TapByLabelInteraction({required this.label, this.matchIndex = 0});
+
+  /// The semantics label to find and tap.
+  final String label;
+
+  /// Which match to tap if multiple nodes have the same label (0 = first).
+  final int matchIndex;
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': 'tap_label',
+    'label': label,
+    if (matchIndex != 0) 'match_index': matchIndex,
+  };
+
+  @override
+  String toString() => 'TapByLabelInteraction(label: "$label"'
+      '${matchIndex != 0 ? ', matchIndex: $matchIndex' : ''})';
+}

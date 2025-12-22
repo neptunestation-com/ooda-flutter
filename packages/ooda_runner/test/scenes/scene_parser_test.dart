@@ -235,6 +235,43 @@ steps:
       expect(wait.timeoutMs, 10000);
     });
 
+    test('parses tap_label step with string label', () {
+      const yaml = '''
+name: test_scene
+steps:
+  - tap_label: "Email"
+''';
+
+      final scene = SceneParser.parse(yaml);
+
+      expect(scene.steps.length, 1);
+      expect(scene.steps[0], isA<InteractionStep>());
+
+      final step = scene.steps[0] as InteractionStep;
+      expect(step.interaction, isA<TapByLabelInteraction>());
+
+      final tapLabel = step.interaction as TapByLabelInteraction;
+      expect(tapLabel.label, 'Email');
+      expect(tapLabel.matchIndex, 0);
+    });
+
+    test('parses tap_label step with map and match_index', () {
+      const yaml = '''
+name: test_scene
+steps:
+  - tap_label:
+      label: "Submit"
+      match_index: 1
+''';
+
+      final scene = SceneParser.parse(yaml);
+      final step = scene.steps[0] as InteractionStep;
+      final tapLabel = step.interaction as TapByLabelInteraction;
+
+      expect(tapLabel.label, 'Submit');
+      expect(tapLabel.matchIndex, 1);
+    });
+
     test('parses barriers configuration', () {
       const yaml = '''
 name: test_scene
