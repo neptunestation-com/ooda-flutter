@@ -55,6 +55,8 @@ Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`,
 | `info --commands`              | Detailed options for all commands      |
 | `info --scene-yaml`            | Full scene YAML format reference       |
 | `info --observations`          | Observation file structure details     |
+| `update`                       | Update ooda to latest version          |
+| `update --ref <tag>`           | Install specific version               |
 
 Run `ooda info --commands` for all options, or `ooda <command> --help` for specific command help.
 

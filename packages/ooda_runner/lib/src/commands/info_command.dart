@@ -67,6 +67,7 @@ COMMANDS
   scene                Execute scene YAML, capture observations
   run                  Start Flutter app with OODA control
   observe              Capture observation from running app
+  update               Update ooda to latest version
   info                 Show this documentation
     --commands         Show detailed command options
     --scene-yaml       Show scene YAML format
@@ -355,6 +356,23 @@ Examples:
   ooda info
   ooda info --commands
   ooda info --scene-yaml
+
+UPDATE
+------
+Update ooda to the latest version from GitHub.
+
+  ooda update [options]
+
+Options:
+      --ssh            Use SSH URL instead of HTTPS
+      --ref REF        Git ref to install (branch, tag, or commit)
+      --dry-run        Show command without executing
+
+Examples:
+  ooda update                    # Update to latest via HTTPS
+  ooda update --ssh              # Update via SSH (requires SSH keys)
+  ooda update --ref v0.2.0       # Install specific version
+  ooda update --dry-run          # Preview update command
 ''');
   }
 }

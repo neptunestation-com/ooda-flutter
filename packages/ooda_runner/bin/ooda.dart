@@ -7,6 +7,7 @@ import 'package:ooda_runner/src/commands/observe_command.dart';
 import 'package:ooda_runner/src/commands/run_command.dart';
 import 'package:ooda_runner/src/commands/scene_command.dart';
 import 'package:ooda_runner/src/commands/screenshot_command.dart';
+import 'package:ooda_runner/src/commands/update_command.dart';
 
 void main(List<String> arguments) async {
   final runner =
@@ -19,7 +20,8 @@ void main(List<String> arguments) async {
         ..addCommand(ObserveCommand())
         ..addCommand(RunCommand())
         ..addCommand(SceneCommand())
-        ..addCommand(ScreenshotCommand());
+        ..addCommand(ScreenshotCommand())
+        ..addCommand(UpdateCommand());
 
   try {
     final exitCode = await runner.run(arguments) ?? 0;
