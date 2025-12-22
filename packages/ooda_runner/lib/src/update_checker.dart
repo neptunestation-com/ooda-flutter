@@ -29,7 +29,7 @@ Future<UpdateCheckResult?> checkForUpdate({Duration? timeout}) async {
 
     final request = await client.getUrl(
       Uri.parse(
-        'https://api.github.com/repos/neptunestation-com/ooda-flutter/releases/latest',
+        'https://api.github.com/repos/neptunestation-com/ooda-flutter/releases',
       ),
     );
     request.headers.set('Accept', 'application/vnd.github.v3+json');
@@ -45,8 +45,14 @@ Future<UpdateCheckResult?> checkForUpdate({Duration? timeout}) async {
     }
 
     final body = await response.transform(utf8.decoder).join();
-    final json = jsonDecode(body) as Map<String, dynamic>;
-    final tagName = json['tag_name'] as String?;
+    final releases = jsonDecode(body) as List<dynamic>;
+
+    if (releases.isEmpty) {
+      return null;
+    }
+
+    final latest = releases.first as Map<String, dynamic>;
+    final tagName = latest['tag_name'] as String?;
 
     if (tagName == null) {
       return null;
