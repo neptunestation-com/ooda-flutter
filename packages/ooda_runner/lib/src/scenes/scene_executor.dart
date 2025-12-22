@@ -48,6 +48,7 @@ class SceneExecutor {
   late final DeviceCamera _deviceCamera;
   FlutterCamera? _flutterCamera;
   VmServiceClient? _vmClient;
+  ({int width, int height})? _screenDimensions;
 
   final _eventController = StreamController<SceneEvent>.broadcast();
 
@@ -93,6 +94,17 @@ class SceneExecutor {
     final stopwatch = Stopwatch()..start();
     final observations = <ObservationBundle>[];
     final errors = <SceneError>[];
+
+    // Fetch screen dimensions for visibility filtering
+    try {
+      _screenDimensions = await adb.screenResolution(deviceId);
+    } catch (e) {
+      _emit(SceneLogEvent(
+        message: 'Failed to get screen resolution, using default 1080x1920: $e',
+        severity: RunnerEventSeverity.warning,
+      ));
+      _screenDimensions = (width: 1080, height: 1920);
+    }
 
     try {
       // Setup phase
@@ -268,17 +280,35 @@ class SceneExecutor {
       throw SceneExecutionException('Failed to parse semantics tree');
     }
 
-    final matches = SemanticsParser.findByLabel(root, interaction.label);
+    final allMatches = SemanticsParser.findByLabel(root, interaction.label);
+
+    // Filter to visible nodes (center within screen bounds)
+    final screenWidth = _screenDimensions?.width ?? 1080;
+    final screenHeight = _screenDimensions?.height ?? 1920;
+    final matches = allMatches.where((node) {
+      final bounds = node.absoluteBounds;
+      final x = bounds.centerX;
+      final y = bounds.centerY;
+      return x >= 0 && x <= screenWidth && y >= 0 && y <= screenHeight;
+    }).toList();
+
     if (matches.isEmpty) {
-      throw SceneExecutionException(
-        'No semantics node found with label "${interaction.label}"',
-      );
+      if (allMatches.isEmpty) {
+        throw SceneExecutionException(
+          'No semantics node found with label "${interaction.label}"',
+        );
+      } else {
+        throw SceneExecutionException(
+          'Found ${allMatches.length} node(s) with label "${interaction.label}" '
+          'but none are visible on screen (may need to scroll)',
+        );
+      }
     }
 
     if (interaction.matchIndex >= matches.length) {
       throw SceneExecutionException(
         'Match index ${interaction.matchIndex} out of range - '
-        'only ${matches.length} node(s) found with label "${interaction.label}"',
+        'only ${matches.length} visible node(s) found with label "${interaction.label}"',
       );
     }
 

@@ -223,5 +223,94 @@ SemanticsNode#0
         expect(node.toString(), contains('Email'));
       });
     });
+
+    group('SemanticsRect', () {
+      test('centerX returns horizontal center', () {
+        const rect = SemanticsRect.fromLTRB(100, 200, 300, 400);
+        expect(rect.centerX, equals(200.0));
+      });
+
+      test('centerY returns vertical center', () {
+        const rect = SemanticsRect.fromLTRB(100, 200, 300, 400);
+        expect(rect.centerY, equals(300.0));
+      });
+
+      test('width and height are correct', () {
+        const rect = SemanticsRect.fromLTRB(10, 20, 110, 220);
+        expect(rect.width, equals(100.0));
+        expect(rect.height, equals(200.0));
+      });
+
+      test('zero rect has zero center', () {
+        expect(SemanticsRect.zero.centerX, equals(0.0));
+        expect(SemanticsRect.zero.centerY, equals(0.0));
+      });
+    });
+
+    group('visibility filtering', () {
+      test('node with center on screen is visible', () {
+        const screenWidth = 1080;
+        const screenHeight = 1920;
+        const node = SemanticsNode(
+          id: 1,
+          bounds: SemanticsRect.fromLTRB(100, 200, 300, 400),
+        );
+        final bounds = node.absoluteBounds;
+        final x = bounds.centerX;
+        final y = bounds.centerY;
+        final isVisible =
+            x >= 0 && x <= screenWidth && y >= 0 && y <= screenHeight;
+        expect(isVisible, isTrue);
+      });
+
+      test('node with negative Y center is off-screen (scrolled up)', () {
+        const screenWidth = 1080;
+        const screenHeight = 1920;
+        // Node that has been scrolled up off screen
+        const node = SemanticsNode(
+          id: 1,
+          bounds: SemanticsRect.fromLTRB(100, -300, 300, -100),
+        );
+        final bounds = node.absoluteBounds;
+        final y = bounds.centerY;
+        final isVisible = y >= 0 && y <= screenHeight;
+        expect(isVisible, isFalse);
+        expect(y, equals(-200.0));
+      });
+
+      test('node with Y center below screen is off-screen (scrolled down)', () {
+        const screenWidth = 1080;
+        const screenHeight = 1920;
+        // Node that is below the visible area
+        const node = SemanticsNode(
+          id: 1,
+          bounds: SemanticsRect.fromLTRB(100, 2000, 300, 2200),
+        );
+        final bounds = node.absoluteBounds;
+        final y = bounds.centerY;
+        final isVisible = y >= 0 && y <= screenHeight;
+        expect(isVisible, isFalse);
+        expect(y, equals(2100.0));
+      });
+
+      test('scaled node visibility uses absoluteBounds', () {
+        const screenWidth = 1080;
+        const screenHeight = 1920;
+        // Node at 0-100 scaled 3x becomes 0-300
+        const node = SemanticsNode(
+          id: 1,
+          bounds: SemanticsRect.fromLTRB(0, 0, 100, 100),
+          scale: 3.0,
+        );
+        final bounds = node.absoluteBounds;
+        expect(bounds.centerX, equals(150.0));
+        expect(bounds.centerY, equals(150.0));
+        final isVisible = bounds.centerX >= 0 &&
+            bounds.centerX <= screenWidth &&
+            bounds.centerY >= 0 &&
+            bounds.centerY <= screenHeight;
+        expect(isVisible, isTrue);
+      });
+    });
   });
 }

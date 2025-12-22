@@ -161,6 +161,8 @@ void main() {
 
       when(() => mockSession.reloadCount).thenReturn(0);
       when(() => mockSession.appInfo).thenReturn(null);
+      when(() => mockAdb.screenResolution(deviceId))
+          .thenAnswer((_) async => (width: 1080, height: 1920));
 
       sceneExecutor = executor.SceneExecutor(
         session: mockSession,
