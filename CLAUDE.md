@@ -99,7 +99,8 @@ barriers:
     consecutive_matches: 2
 ```
 
-**`tap_label` limitations:**
+**`tap_label` behavior:**
+- **Visibility filtering**: Only matches nodes whose center is currently visible on screen. Off-screen elements (e.g., items scrolled out of a ListView) are ignored. Scroll first or use coordinates to tap off-screen elements.
 - Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not captured in the semantics tree - use coordinates for dialog buttons
 - Required form fields may include asterisks in labels (e.g., `"Name *"` not `"Name"`)
 - Labels must match exactly (case-sensitive)
