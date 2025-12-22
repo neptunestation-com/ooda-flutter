@@ -40,8 +40,8 @@ steps:
 
   - wait: visual_stability
 
-  # Tap name field by label
-  - tap_label: "Name"
+  # Tap name field by label (asterisk indicates required)
+  - tap_label: "Name *"
 
   - wait: visual_stability
 
