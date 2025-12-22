@@ -51,8 +51,21 @@ Future<UpdateCheckResult?> checkForUpdate({Duration? timeout}) async {
       return null;
     }
 
-    final latest = releases.first as Map<String, dynamic>;
-    final tagName = latest['tag_name'] as String?;
+    // Find the latest stable release (skip prereleases)
+    Map<String, dynamic>? latestStable;
+    for (final release in releases) {
+      final r = release as Map<String, dynamic>;
+      if (r['prerelease'] != true) {
+        latestStable = r;
+        break;
+      }
+    }
+
+    if (latestStable == null) {
+      return null;
+    }
+
+    final tagName = latestStable['tag_name'] as String?;
 
     if (tagName == null) {
       return null;
