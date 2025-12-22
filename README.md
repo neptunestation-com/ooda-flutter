@@ -104,7 +104,7 @@ dart pub global activate --source git \
 # Now available as a global command
 ooda devices
 ooda screenshot -d <device_id>
-ooda scene -f scene.yaml
+ooda scene -s scene.yaml
 
 # Update to latest version
 ooda update
@@ -197,7 +197,7 @@ flutter run
 
 # Run a scene against the showcase app
 dart run packages/ooda_runner/bin/ooda.dart scene \
-  -f examples/ooda_showcase/scenes/login_flow.yaml \
+  -s examples/ooda_showcase/scenes/login_flow.yaml \
   -p examples/ooda_showcase
 ```
 
