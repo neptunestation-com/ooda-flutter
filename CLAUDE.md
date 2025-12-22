@@ -56,6 +56,7 @@ Run from repo root with `dart run packages/ooda_runner/bin/ooda.dart <command>`,
 
 | Command                        | Purpose                                |
 |--------------------------------|----------------------------------------|
+| `--version`, `-v`              | Print ooda version                     |
 | `devices`                      | List connected Android devices         |
 | `screenshot`                   | Capture device screenshot              |
 | `scene -s <yaml> -p <project>` | Execute scene and capture observations |
