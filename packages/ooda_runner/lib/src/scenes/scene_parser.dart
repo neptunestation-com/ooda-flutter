@@ -119,6 +119,9 @@ class SceneParser {
       if (step.containsKey('tap_label')) {
         return _parseTapLabelStep(step);
       }
+      if (step.containsKey('tap_text')) {
+        return _parseTapTextStep(step);
+      }
 
       throw SceneParseException('Unknown step type: ${step.keys}');
     }
@@ -224,23 +227,64 @@ class SceneParser {
     );
   }
 
+  /// Check if a label is a valid namespaced semantic ID.
+  /// Valid IDs contain '.' or start with 'screen:'.
+  static bool _isNamespacedLabel(String label) {
+    return label.contains('.') || label.startsWith('screen:');
+  }
+
   static InteractionStep _parseTapLabelStep(YamlMap yaml) {
     final tapLabel = yaml['tap_label'];
 
     String label;
-    int matchIndex = 0;
+    int occurrence = 0;
+    String? within;
 
     if (tapLabel is String) {
       label = tapLabel;
     } else if (tapLabel is YamlMap) {
       label = tapLabel['label'] as String;
-      matchIndex = tapLabel['match_index'] as int? ?? 0;
+      // Support both 'occurrence' (new) and 'match_index' (legacy)
+      occurrence = tapLabel['occurrence'] as int? ??
+          tapLabel['match_index'] as int? ??
+          0;
+      within = tapLabel['within'] as String?;
     } else {
       throw SceneParseException('Invalid tap_label format: $tapLabel');
     }
 
+    // Validate that label is a namespaced semantic ID
+    if (!_isNamespacedLabel(label)) {
+      throw SceneParseException(
+        'tap_label requires a semantic ID like "auth.method_picker.email". '
+        'Got "$label". Use tap_text for visible text matching.',
+      );
+    }
+
     return InteractionStep(
-      TapByLabelInteraction(label: label, matchIndex: matchIndex),
+      TapByLabelInteraction(label: label, occurrence: occurrence, within: within),
+    );
+  }
+
+  static InteractionStep _parseTapTextStep(YamlMap yaml) {
+    final tapText = yaml['tap_text'];
+
+    String text;
+    int occurrence = 0;
+    String? within;
+
+    if (tapText is String) {
+      text = tapText;
+    } else if (tapText is YamlMap) {
+      text = tapText['text'] as String;
+      occurrence = tapText['occurrence'] as int? ?? 0;
+      within = tapText['within'] as String?;
+    } else {
+      throw SceneParseException('Invalid tap_text format: $tapText');
+    }
+
+    return InteractionStep(
+      TapByTextInteraction(text: text, occurrence: occurrence, within: within),
     );
   }
 

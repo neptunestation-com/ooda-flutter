@@ -136,29 +136,81 @@ class WaitInteraction extends Interaction {
   String toString() => 'WaitInteraction(barrier: $barrierType)';
 }
 
-/// A tap interaction targeting a UI element by its semantics label.
+/// A tap interaction targeting a UI element by its semantic ID.
 ///
 /// At execution time, the semantics tree is queried to find the element
-/// with the matching label, its bounds are extracted, and a tap is
-/// performed at the center of those bounds.
+/// with the EXACT matching label. The label must be a namespaced semantic ID
+/// (contains '.' or starts with 'screen:').
+///
+/// For visible text matching, use [TapByTextInteraction] instead.
 @immutable
 class TapByLabelInteraction extends Interaction {
-  const TapByLabelInteraction({required this.label, this.matchIndex = 0});
+  const TapByLabelInteraction({
+    required this.label,
+    this.occurrence = 0,
+    this.within,
+  });
 
-  /// The semantics label to find and tap.
+  /// The semantic ID to find and tap (exact match only).
+  /// Must be namespaced (contain '.' or start with 'screen:').
   final String label;
 
-  /// Which match to tap if multiple nodes have the same label (0 = first).
-  final int matchIndex;
+  /// Which occurrence to tap if multiple nodes match (0 = first).
+  final int occurrence;
+
+  /// Optional semantic ID of a parent node to constrain the search.
+  /// The search will only look within the subtree of this node.
+  final String? within;
 
   @override
   Map<String, dynamic> toJson() => {
     'type': 'tap_label',
     'label': label,
-    if (matchIndex != 0) 'match_index': matchIndex,
+    if (occurrence != 0) 'occurrence': occurrence,
+    if (within != null) 'within': within,
   };
 
   @override
   String toString() => 'TapByLabelInteraction(label: "$label"'
-      '${matchIndex != 0 ? ', matchIndex: $matchIndex' : ''})';
+      '${occurrence != 0 ? ', occurrence: $occurrence' : ''}'
+      '${within != null ? ', within: "$within"' : ''})';
+}
+
+/// A tap interaction targeting a UI element by its visible text.
+///
+/// Uses substring/contains matching to find elements. This is useful for
+/// tapping buttons or other elements by their displayed text, but is more
+/// brittle than semantic ID matching since visible text can change.
+///
+/// For stable semantic ID matching, use [TapByLabelInteraction] instead.
+@immutable
+class TapByTextInteraction extends Interaction {
+  const TapByTextInteraction({
+    required this.text,
+    this.occurrence = 0,
+    this.within,
+  });
+
+  /// The visible text to search for (substring match).
+  final String text;
+
+  /// Which occurrence to tap if multiple nodes match (0 = first).
+  final int occurrence;
+
+  /// Optional semantic ID of a parent node to constrain the search.
+  /// The search will only look within the subtree of this node.
+  final String? within;
+
+  @override
+  Map<String, dynamic> toJson() => {
+    'type': 'tap_text',
+    'text': text,
+    if (occurrence != 0) 'occurrence': occurrence,
+    if (within != null) 'within': within,
+  };
+
+  @override
+  String toString() => 'TapByTextInteraction(text: "$text"'
+      '${occurrence != 0 ? ', occurrence: $occurrence' : ''}'
+      '${within != null ? ', within: "$within"' : ''})';
 }

@@ -251,6 +251,8 @@ class SceneExecutor {
       await _executeWait(scene, interaction);
     } else if (interaction is TapByLabelInteraction) {
       await _executeTapByLabel(interaction);
+    } else if (interaction is TapByTextInteraction) {
+      await _executeTapByText(interaction);
     } else {
       final result = await _interactionController.execute(interaction);
       if (!result.success) {
@@ -259,10 +261,11 @@ class SceneExecutor {
     }
   }
 
+  /// Execute tap_label - STRICT semantic ID matching (exact match only).
   Future<void> _executeTapByLabel(TapByLabelInteraction interaction) async {
     if (_vmClient == null) {
       throw SceneExecutionException(
-        'VM service not connected - cannot resolve semantics label "${interaction.label}"',
+        'VM service not connected - cannot resolve semantic ID "${interaction.label}"',
       );
     }
 
@@ -274,19 +277,26 @@ class SceneExecutor {
       );
     }
 
-    // Parse and find the node
+    // Parse the tree
     final root = SemanticsParser.parse(semanticsText);
     if (root == null) {
       throw SceneExecutionException('Failed to parse semantics tree');
     }
 
-    // Try exact match first, then fall back to substring match
-    var allMatches = SemanticsParser.findByLabel(root, interaction.label);
-    var matchType = 'exact';
-    if (allMatches.isEmpty) {
-      allMatches = SemanticsParser.findByLabelContaining(root, interaction.label);
-      matchType = 'substring';
+    // Determine search root (whole tree or subtree if 'within' specified)
+    SemanticsNode searchRoot = root;
+    if (interaction.within != null) {
+      final withinNode = SemanticsParser.findSubtreeRoot(root, interaction.within!);
+      if (withinNode == null) {
+        throw SceneExecutionException(
+          'within constraint "${interaction.within}" not found in semantics tree',
+        );
+      }
+      searchRoot = withinNode;
     }
+
+    // STRICT: exact match only (no substring fallback)
+    final allMatches = SemanticsParser.findByLabel(searchRoot, interaction.label);
 
     // Filter to visible nodes (center within screen bounds)
     final screenWidth = _screenDimensions?.width ?? 1080;
@@ -298,27 +308,40 @@ class SceneExecutor {
       return x >= 0 && x <= screenWidth && y >= 0 && y <= screenHeight;
     }).toList();
 
+    // Error handling
     if (matches.isEmpty) {
       if (allMatches.isEmpty) {
         throw SceneExecutionException(
-          'No semantics node found with label containing "${interaction.label}"',
+          'No semantics node found with semantic ID "${interaction.label}"',
         );
       } else {
         throw SceneExecutionException(
-          'Found ${allMatches.length} node(s) with label containing "${interaction.label}" '
+          'Found ${allMatches.length} node(s) with semantic ID "${interaction.label}" '
           'but none are visible on screen (may need to scroll)',
         );
       }
     }
 
-    if (interaction.matchIndex >= matches.length) {
+    // STRICT: fail on ambiguity unless occurrence is specified
+    if (matches.length > 1 && interaction.occurrence == 0) {
+      final candidates = matches.take(5).map((node) {
+        final b = node.absoluteBounds;
+        return '  - "${node.label}" at (${b.centerX.round()}, ${b.centerY.round()})';
+      }).join('\n');
       throw SceneExecutionException(
-        'Match index ${interaction.matchIndex} out of range - '
-        'only ${matches.length} visible node(s) found with label containing "${interaction.label}"',
+        'Ambiguous: ${matches.length} visible nodes match semantic ID "${interaction.label}". '
+        'Use occurrence to disambiguate:\n$candidates',
       );
     }
 
-    final node = matches[interaction.matchIndex];
+    if (interaction.occurrence >= matches.length) {
+      throw SceneExecutionException(
+        'occurrence ${interaction.occurrence} out of range - '
+        'only ${matches.length} visible node(s) found with semantic ID "${interaction.label}"',
+      );
+    }
+
+    final node = matches[interaction.occurrence];
     final bounds = node.absoluteBounds;
 
     // Calculate center of bounds
@@ -326,7 +349,105 @@ class SceneExecutor {
     final centerY = bounds.centerY.round();
 
     _emit(SceneLogEvent(
-      message: 'Resolved "${interaction.label}" ($matchType match) to tap at ($centerX, $centerY)',
+      message: 'tap_label: "${interaction.label}" -> tap at ($centerX, $centerY)',
+    ));
+
+    // Execute the tap
+    final result = await _interactionController.tap(centerX, centerY);
+    if (!result.success) {
+      throw SceneExecutionException('Tap failed: ${result.error}');
+    }
+  }
+
+  /// Execute tap_text - visible text matching (substring/contains).
+  Future<void> _executeTapByText(TapByTextInteraction interaction) async {
+    if (_vmClient == null) {
+      throw SceneExecutionException(
+        'VM service not connected - cannot resolve text "${interaction.text}"',
+      );
+    }
+
+    // Get current semantics tree
+    final semanticsText = await _vmClient!.getSemanticsTree();
+    if (semanticsText.isEmpty) {
+      throw SceneExecutionException(
+        'Semantics tree is empty - ensure SemanticsBinding.instance.ensureSemantics() is called',
+      );
+    }
+
+    // Parse the tree
+    final root = SemanticsParser.parse(semanticsText);
+    if (root == null) {
+      throw SceneExecutionException('Failed to parse semantics tree');
+    }
+
+    // Determine search root (whole tree or subtree if 'within' specified)
+    SemanticsNode searchRoot = root;
+    if (interaction.within != null) {
+      final withinNode = SemanticsParser.findSubtreeRoot(root, interaction.within!);
+      if (withinNode == null) {
+        throw SceneExecutionException(
+          'within constraint "${interaction.within}" not found in semantics tree',
+        );
+      }
+      searchRoot = withinNode;
+    }
+
+    // Substring/contains matching for tap_text
+    final allMatches = SemanticsParser.findByLabelContaining(searchRoot, interaction.text);
+
+    // Filter to visible nodes (center within screen bounds)
+    final screenWidth = _screenDimensions?.width ?? 1080;
+    final screenHeight = _screenDimensions?.height ?? 1920;
+    final matches = allMatches.where((node) {
+      final bounds = node.absoluteBounds;
+      final x = bounds.centerX;
+      final y = bounds.centerY;
+      return x >= 0 && x <= screenWidth && y >= 0 && y <= screenHeight;
+    }).toList();
+
+    // Error handling
+    if (matches.isEmpty) {
+      if (allMatches.isEmpty) {
+        throw SceneExecutionException(
+          'No semantics node found with text containing "${interaction.text}"',
+        );
+      } else {
+        throw SceneExecutionException(
+          'Found ${allMatches.length} node(s) with text containing "${interaction.text}" '
+          'but none are visible on screen (may need to scroll)',
+        );
+      }
+    }
+
+    // Fail on ambiguity unless occurrence is specified
+    if (matches.length > 1 && interaction.occurrence == 0) {
+      final candidates = matches.take(5).map((node) {
+        final b = node.absoluteBounds;
+        return '  - "${node.label}" at (${b.centerX.round()}, ${b.centerY.round()})';
+      }).join('\n');
+      throw SceneExecutionException(
+        'Ambiguous: ${matches.length} visible nodes contain text "${interaction.text}". '
+        'Use occurrence to disambiguate:\n$candidates',
+      );
+    }
+
+    if (interaction.occurrence >= matches.length) {
+      throw SceneExecutionException(
+        'occurrence ${interaction.occurrence} out of range - '
+        'only ${matches.length} visible node(s) found with text containing "${interaction.text}"',
+      );
+    }
+
+    final node = matches[interaction.occurrence];
+    final bounds = node.absoluteBounds;
+
+    // Calculate center of bounds
+    final centerX = bounds.centerX.round();
+    final centerY = bounds.centerY.round();
+
+    _emit(SceneLogEvent(
+      message: 'tap_text: "${interaction.text}" matched "${node.label}" -> tap at ($centerX, $centerY)',
     ));
 
     // Execute the tap

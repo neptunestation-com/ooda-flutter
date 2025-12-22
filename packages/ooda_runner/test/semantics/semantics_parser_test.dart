@@ -365,7 +365,6 @@ SemanticsNode#0
       });
 
       test('node with negative Y center is off-screen (scrolled up)', () {
-        const screenWidth = 1080;
         const screenHeight = 1920;
         // Node that has been scrolled up off screen
         const node = SemanticsNode(
@@ -380,7 +379,6 @@ SemanticsNode#0
       });
 
       test('node with Y center below screen is off-screen (scrolled down)', () {
-        const screenWidth = 1080;
         const screenHeight = 1920;
         // Node that is below the visible area
         const node = SemanticsNode(

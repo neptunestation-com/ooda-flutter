@@ -82,10 +82,16 @@ setup:
 steps:
   - checkpoint: initial          # Capture observation
   - tap: { x: 540, y: 400 }      # Tap coordinates
-  - tap_label: "Email"           # Tap by semantics label (finds element, taps center)
-  - tap_label:                   # Extended form for duplicate labels
-      label: "Submit"
-      match_index: 1             # 0 = first match (default), 1 = second, etc.
+  - tap_label: "auth.email"      # Tap by semantic ID (STRICT, namespaced)
+  - tap_label:                   # Extended form with options
+      label: "form.submit"
+      occurrence: 1              # 0 = first, 1 = second, etc.
+      within: "screen:auth"      # Constrain to subtree
+  - tap_text: "Login"            # Tap by visible text (substring match)
+  - tap_text:                    # Extended form with options
+      text: "Submit"
+      occurrence: 0
+      within: "screen:auth"
   - input_text: "user@test.com"  # Type text
   - key: enter                   # Key events: enter, back, tab, home, escape
   - swipe: { start_x: 540, start_y: 1000, end_x: 540, end_y: 400 }
@@ -99,12 +105,18 @@ barriers:
     consecutive_matches: 2
 ```
 
-**`tap_label` behavior:**
-- **Substring matching**: Tries exact match first, then falls back to substring match. `tap_label: "Item 5"` matches a label containing "Item 5" (e.g., multiline list item labels)
-- **Visibility filtering**: Only matches nodes whose center is currently visible on screen. Off-screen elements are ignored—scroll first or use coordinates
-- Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not captured in the semantics tree—use coordinates for dialog buttons
-- Required form fields may include asterisks in labels (e.g., `"Name *"` not `"Name"`)
-- Matching is case-sensitive
+**`tap_label` vs `tap_text`:**
+
+| Action | Matching | Namespace Required | Use Case |
+|--------|----------|-------------------|----------|
+| `tap_label` | EXACT only | Yes (contains `.` or `screen:`) | Stable semantic ID targeting |
+| `tap_text` | Substring | No | Ad-hoc visible text (more brittle) |
+
+**Common behavior:**
+- **Visibility filtering**: Only matches nodes whose center is on screen
+- **Ambiguity fails**: Multiple matches without `occurrence` → error with candidates
+- **`within`**: Constrains search to subtree under matching parent node
+- Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not in semantics tree—use coordinates
 
 ## For New Flutter Projects
 

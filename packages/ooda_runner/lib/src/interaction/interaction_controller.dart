@@ -67,6 +67,14 @@ class InteractionController {
             'TapByLabelInteraction should be resolved by SceneExecutor, '
             'not executed directly',
           );
+
+        case TapByTextInteraction():
+          // TapByText interactions are resolved by the scene executor
+          // which gets the semantics tree, finds the text, and calls tap()
+          throw StateError(
+            'TapByTextInteraction should be resolved by SceneExecutor, '
+            'not executed directly',
+          );
       }
 
       // Small delay to let UI settle

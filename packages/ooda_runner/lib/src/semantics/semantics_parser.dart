@@ -133,6 +133,33 @@ class SemanticsParser {
     return matches.isNotEmpty ? matches.first : null;
   }
 
+  /// Find all nodes within a subtree rooted at [subtreeRoot].
+  /// Uses exact match for label.
+  static List<SemanticsNode> findByLabelInSubtree(
+    SemanticsNode subtreeRoot,
+    String label,
+  ) {
+    final results = <SemanticsNode>[];
+    _findByLabel(subtreeRoot, label, results, exactMatch: true);
+    return results;
+  }
+
+  /// Find all nodes within a subtree whose label contains the search string.
+  static List<SemanticsNode> findByLabelContainingInSubtree(
+    SemanticsNode subtreeRoot,
+    String searchString,
+  ) {
+    final results = <SemanticsNode>[];
+    _findByLabel(subtreeRoot, searchString, results, exactMatch: false);
+    return results;
+  }
+
+  /// Find the subtree root node by its exact label.
+  /// Returns the first node with an exactly matching label.
+  static SemanticsNode? findSubtreeRoot(SemanticsNode root, String label) {
+    return findFirstByLabel(root, label);
+  }
+
   static void _findByLabel(
     SemanticsNode node,
     String label,
@@ -321,18 +348,6 @@ class SemanticsParser {
       double.parse(match.group(3)!),
       double.parse(match.group(4)!),
     );
-  }
-
-  static String? _parseQuotedValue(String content, String prefix) {
-    final afterPrefix = content.substring(content.indexOf(prefix) + prefix.length).trim();
-    // Handle quoted strings
-    if (afterPrefix.startsWith('"')) {
-      final endQuote = afterPrefix.indexOf('"', 1);
-      if (endQuote > 0) {
-        return afterPrefix.substring(1, endQuote);
-      }
-    }
-    return afterPrefix.isEmpty ? null : afterPrefix;
   }
 
   /// Parse a potentially multiline quoted value (like label or value).

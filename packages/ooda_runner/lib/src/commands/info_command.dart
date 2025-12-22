@@ -85,6 +85,8 @@ name: my_scene
 steps:
   - checkpoint: name           # Capture observation
   - tap: { x: 540, y: 400 }    # Tap coordinates
+  - tap_label: "auth.login"    # Tap by semantic ID (EXACT match, namespaced)
+  - tap_text: "Login"          # Tap by visible text (substring match)
   - input_text: "hello"        # Type text
   - key: enter                 # enter, back, tab, home
   - wait: visual_stability     # Wait for screen to settle
@@ -129,6 +131,22 @@ steps:                            # Required: list of actions
   # Tap - touch at coordinates
   - tap: { x: 540, y: 400 }
 
+  # Tap by semantic ID (STRICT - exact match, namespaced required)
+  # Use this for stable, semantic-based targeting
+  - tap_label: "auth.login_button"
+  - tap_label:                    # Extended form with options
+      label: "form.submit"
+      occurrence: 1               # 0 = first, 1 = second, etc.
+      within: "screen:auth.login" # Constrain search to subtree
+
+  # Tap by visible text (substring matching)
+  # Use this for ad-hoc text-based tapping (more brittle)
+  - tap_text: "Login"
+  - tap_text:                     # Extended form with options
+      text: "Submit"
+      occurrence: 0               # 0 = first, 1 = second, etc.
+      within: "screen:auth.login" # Constrain search to subtree
+
   # Text input - type text (requires focused field)
   - input_text: "user@example.com"
 
@@ -151,6 +169,23 @@ barriers:                         # Optional: configure wait behavior
     timeout_ms: 5000
     consecutive_matches: 2
 
+TAP_LABEL VS TAP_TEXT
+---------------------
+tap_label (semantic ID):
+  - STRICT: exact match only, no fallback
+  - Requires namespaced ID (contains '.' or starts with 'screen:')
+  - Fails with "requires semantic ID" error for plain text like "Login"
+  - Fails on ambiguity (multiple matches) unless occurrence specified
+  - Best for: stable, semantic-based targeting
+
+tap_text (visible text):
+  - Uses substring/contains matching
+  - Works with any text string
+  - Fails on ambiguity unless occurrence specified
+  - Best for: ad-hoc text targeting, but more brittle
+
+Both actions filter to visible nodes only (center must be on screen).
+
 EXAMPLE
 -------
 name: login_flow
@@ -158,13 +193,20 @@ setup:
   hot_restart: true
 steps:
   - checkpoint: initial
-  - tap: { x: 540, y: 350 }       # Tap email field
+  - tap_label: "auth.email_field"  # Tap by semantic ID
   - input_text: "user@test.com"
-  - key: tab                       # Move to password
+  - tap_label: "auth.password_field"
   - input_text: "password123"
-  - key: enter                     # Submit
+  - tap_label: "auth.submit_button"
   - wait: visual_stability
   - checkpoint: after_login
+
+ALTERNATIVE (text-based, less stable):
+  - tap_text: "Email"              # Tap field by visible text
+  - input_text: "user@test.com"
+  - tap_text: "Password"
+  - input_text: "password123"
+  - tap_text: "Login"
 
 GETTING COORDINATES
 -------------------

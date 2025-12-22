@@ -235,41 +235,193 @@ steps:
       expect(wait.timeoutMs, 10000);
     });
 
-    test('parses tap_label step with string label', () {
-      const yaml = '''
+    group('tap_label (strict semantic ID)', () {
+      test('parses tap_label with namespaced ID (contains dot)', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_label: "auth.login_button"
+''';
+
+        final scene = SceneParser.parse(yaml);
+
+        expect(scene.steps.length, 1);
+        expect(scene.steps[0], isA<InteractionStep>());
+
+        final step = scene.steps[0] as InteractionStep;
+        expect(step.interaction, isA<TapByLabelInteraction>());
+
+        final tapLabel = step.interaction as TapByLabelInteraction;
+        expect(tapLabel.label, 'auth.login_button');
+        expect(tapLabel.occurrence, 0);
+        expect(tapLabel.within, isNull);
+      });
+
+      test('parses tap_label with screen: prefix', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_label: "screen:login"
+''';
+
+        final scene = SceneParser.parse(yaml);
+        final step = scene.steps[0] as InteractionStep;
+        final tapLabel = step.interaction as TapByLabelInteraction;
+
+        expect(tapLabel.label, 'screen:login');
+      });
+
+      test('parses tap_label with occurrence (new field)', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_label:
+      label: "form.submit"
+      occurrence: 2
+''';
+
+        final scene = SceneParser.parse(yaml);
+        final step = scene.steps[0] as InteractionStep;
+        final tapLabel = step.interaction as TapByLabelInteraction;
+
+        expect(tapLabel.label, 'form.submit');
+        expect(tapLabel.occurrence, 2);
+      });
+
+      test('parses tap_label with legacy match_index (backward compat)', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_label:
+      label: "form.submit"
+      match_index: 1
+''';
+
+        final scene = SceneParser.parse(yaml);
+        final step = scene.steps[0] as InteractionStep;
+        final tapLabel = step.interaction as TapByLabelInteraction;
+
+        expect(tapLabel.label, 'form.submit');
+        expect(tapLabel.occurrence, 1);
+      });
+
+      test('parses tap_label with within constraint', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_label:
+      label: "widget.button"
+      within: "screen:auth.login"
+''';
+
+        final scene = SceneParser.parse(yaml);
+        final step = scene.steps[0] as InteractionStep;
+        final tapLabel = step.interaction as TapByLabelInteraction;
+
+        expect(tapLabel.label, 'widget.button');
+        expect(tapLabel.within, 'screen:auth.login');
+      });
+
+      test('throws for non-namespaced label (plain text like "Email")', () {
+        const yaml = '''
 name: test_scene
 steps:
   - tap_label: "Email"
 ''';
 
-      final scene = SceneParser.parse(yaml);
+        expect(
+          () => SceneParser.parse(yaml),
+          throwsA(
+            isA<SceneParseException>().having(
+              (e) => e.message,
+              'message',
+              contains('tap_label requires a semantic ID'),
+            ),
+          ),
+        );
+      });
 
-      expect(scene.steps.length, 1);
-      expect(scene.steps[0], isA<InteractionStep>());
-
-      final step = scene.steps[0] as InteractionStep;
-      expect(step.interaction, isA<TapByLabelInteraction>());
-
-      final tapLabel = step.interaction as TapByLabelInteraction;
-      expect(tapLabel.label, 'Email');
-      expect(tapLabel.matchIndex, 0);
-    });
-
-    test('parses tap_label step with map and match_index', () {
-      const yaml = '''
+      test('throws for non-namespaced label (plain text like "Login")', () {
+        const yaml = '''
 name: test_scene
 steps:
-  - tap_label:
-      label: "Submit"
-      match_index: 1
+  - tap_label: "Login"
 ''';
 
-      final scene = SceneParser.parse(yaml);
-      final step = scene.steps[0] as InteractionStep;
-      final tapLabel = step.interaction as TapByLabelInteraction;
+        expect(
+          () => SceneParser.parse(yaml),
+          throwsA(
+            isA<SceneParseException>().having(
+              (e) => e.message,
+              'message',
+              contains('Use tap_text for visible text matching'),
+            ),
+          ),
+        );
+      });
+    });
 
-      expect(tapLabel.label, 'Submit');
-      expect(tapLabel.matchIndex, 1);
+    group('tap_text (visible text matching)', () {
+      test('parses tap_text with string text', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_text: "Login"
+''';
+
+        final scene = SceneParser.parse(yaml);
+
+        expect(scene.steps.length, 1);
+        expect(scene.steps[0], isA<InteractionStep>());
+
+        final step = scene.steps[0] as InteractionStep;
+        expect(step.interaction, isA<TapByTextInteraction>());
+
+        final tapText = step.interaction as TapByTextInteraction;
+        expect(tapText.text, 'Login');
+        expect(tapText.occurrence, 0);
+        expect(tapText.within, isNull);
+      });
+
+      test('parses tap_text with extended form', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_text:
+      text: "Submit"
+      occurrence: 1
+      within: "screen:auth.login"
+''';
+
+        final scene = SceneParser.parse(yaml);
+        final step = scene.steps[0] as InteractionStep;
+        final tapText = step.interaction as TapByTextInteraction;
+
+        expect(tapText.text, 'Submit');
+        expect(tapText.occurrence, 1);
+        expect(tapText.within, 'screen:auth.login');
+      });
+
+      test('allows any text string (no namespace requirement)', () {
+        const yaml = '''
+name: test_scene
+steps:
+  - tap_text: "Email"
+  - tap_text: "Click here to continue"
+  - tap_text: "OK"
+''';
+
+        final scene = SceneParser.parse(yaml);
+        expect(scene.steps.length, 3);
+
+        final texts = scene.steps.map((s) {
+          final step = s as InteractionStep;
+          final tapText = step.interaction as TapByTextInteraction;
+          return tapText.text;
+        }).toList();
+
+        expect(texts, ['Email', 'Click here to continue', 'OK']);
+      });
     });
 
     test('parses barriers configuration', () {

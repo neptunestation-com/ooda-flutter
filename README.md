@@ -56,12 +56,12 @@ setup:
 steps:
   - checkpoint: initial_screen
     description: Login form before interaction
-  - tap_label: "Email"              # Tap by semantics label (recommended)
+  - tap_label: "auth.email_field"   # Tap by semantic ID (STRICT, namespaced)
   - wait: visual_stability
   - input_text: "user@example.com"
-  - tap_label: "Password"           # No need to hardcode coordinates
+  - tap_label: "auth.password_field"
   - input_text: "password123"
-  - tap_label: "Login"              # Works with buttons too
+  - tap_label: "auth.submit_button"
   - wait: visual_stability
   - checkpoint: after_login
     description: State after login attempt
@@ -71,14 +71,22 @@ barriers:
     consecutive_matches: 3
 ```
 
-> **New in v0.5.0**: `tap_label` lets you tap elements by their accessibility label instead of coordinates. The framework captures the semantics tree, finds the matching label, and taps the center of that element's bounds.
+> **New in v0.6.0**: `tap_label` is now STRICT—it requires namespaced semantic IDs (containing `.` or starting with `screen:`) and uses exact matching only. Use `tap_text` for visible text matching.
 
-**`tap_label` behavior:**
-- **Substring matching**: Tries exact match first, then falls back to substring match. `tap_label: "Item 5"` matches a label containing "Item 5" (e.g., multiline list item labels)
-- **Visibility filtering**: Only matches nodes whose center is visible on screen. Off-screen elements are ignored—scroll first or use coordinates
-- Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not in the semantics tree—use coordinates for dialog buttons
-- Required form fields may include asterisks in labels (e.g., `"Name *"` not `"Name"`)
-- Matching is case-sensitive
+**`tap_label` (semantic ID - recommended for stable tests):**
+- **STRICT exact match**: No substring fallback—label must match exactly
+- **Namespaced required**: Must contain `.` or start with `screen:` (e.g., `auth.email`, `screen:login`)
+- **Ambiguity fails**: Multiple matches without `occurrence` → error with candidates
+
+**`tap_text` (visible text - for ad-hoc testing):**
+- **Substring matching**: Finds labels containing the search text
+- **Any text allowed**: No namespace requirement
+- **Ambiguity fails**: Multiple matches without `occurrence` → error with candidates
+
+**Common behavior:**
+- **Visibility filtering**: Only matches nodes whose center is on screen
+- **`within`**: Constrains search to subtree (e.g., `within: "screen:auth.login"`)
+- Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not in semantics—use coordinates
 
 ## Requirements
 

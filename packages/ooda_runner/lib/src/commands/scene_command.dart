@@ -291,6 +291,7 @@ class SceneCommand extends Command<int> {
     return switch (interaction) {
       TapInteraction(:final x, :final y) => 'Tap($x, $y)',
       TapByLabelInteraction(:final label) => 'TapLabel: "$label"',
+      TapByTextInteraction(:final text) => 'TapText: "$text"',
       TextInputInteraction(:final text) =>
         'Input: "${text.length > 20 ? '${text.substring(0, 20)}...' : text}"',
       KeyEventInteraction(:final keyCode) => 'Key: $keyCode',
