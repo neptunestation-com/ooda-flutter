@@ -99,6 +99,11 @@ barriers:
     consecutive_matches: 2
 ```
 
+**`tap_label` limitations:**
+- Dialog content (AlertDialog, BottomSheet, DatePicker) uses overlay layers not captured in the semantics tree - use coordinates for dialog buttons
+- Required form fields may include asterisks in labels (e.g., `"Name *"` not `"Name"`)
+- Labels must match exactly (case-sensitive)
+
 ## For New Flutter Projects
 
 Add to `lib/main.dart` to enable semantics capture:
