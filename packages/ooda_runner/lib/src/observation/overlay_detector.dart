@@ -9,15 +9,31 @@ import 'package:image/image.dart' as img;
 /// the Flutter screenshot will differ from the device screenshot.
 ///
 /// Rule: overlay_present = flutter_image != device_image
+///
+/// By default, excludes top 5% and bottom 12% of the image from comparison
+/// to avoid false positives from status bar and navigation bar differences.
 class OverlayDetector {
-  OverlayDetector({this.threshold = 0.01, this.minDiffPercentage = 0.05});
+  OverlayDetector({
+    this.threshold = 0.01,
+    this.minDiffPercentage = 0.05,
+    this.excludeTopPercent = 0.05,
+    this.excludeBottomPercent = 0.12,
+  });
 
-  /// Threshold for considering images different (0.0 to 1.0).
+  /// Threshold for considering pixels different (0.0 to 1.0).
   /// 0.0 = must be identical, 1.0 = always consider same
   final double threshold;
 
   /// Minimum percentage of pixels that must differ to detect overlay.
   final double minDiffPercentage;
+
+  /// Percentage of image height to exclude from top (status bar area).
+  /// Default 5% to skip status bar region.
+  final double excludeTopPercent;
+
+  /// Percentage of image height to exclude from bottom (nav bar area).
+  /// Default 12% to skip navigation bar region.
+  final double excludeBottomPercent;
 
   /// Compare Flutter and device screenshots to detect overlays.
   ///
@@ -69,8 +85,12 @@ class OverlayDetector {
   }
 
   _ImageComparison _compareImages(img.Image flutter, img.Image device) {
+    // Calculate exclusion boundaries
+    final startY = (flutter.height * excludeTopPercent).round();
+    final endY = (flutter.height * (1 - excludeBottomPercent)).round();
+
     int differentPixels = 0;
-    final totalPixels = flutter.width * flutter.height;
+    int comparedPixels = 0;
 
     // Track regions of difference for analysis
     int minDiffX = flutter.width;
@@ -78,8 +98,9 @@ class OverlayDetector {
     int minDiffY = flutter.height;
     int maxDiffY = 0;
 
-    for (int y = 0; y < flutter.height; y++) {
+    for (int y = startY; y < endY; y++) {
       for (int x = 0; x < flutter.width; x++) {
+        comparedPixels++;
         final fp = flutter.getPixel(x, y);
         final dp = device.getPixel(x, y);
 
@@ -93,7 +114,8 @@ class OverlayDetector {
       }
     }
 
-    final diffPercentage = differentPixels / totalPixels;
+    final diffPercentage =
+        comparedPixels > 0 ? differentPixels / comparedPixels : 0.0;
 
     // Calculate confidence based on how concentrated the differences are
     double confidence = 0.0;
@@ -137,6 +159,11 @@ class OverlayDetector {
   }
 
   /// Generate a diff image highlighting differences.
+  ///
+  /// Colors:
+  /// - Red: Pixels that differ (in comparison region)
+  /// - Gray (50% opacity): Pixels that match (in comparison region)
+  /// - Dark gray (25% opacity): Excluded regions (top/bottom)
   Uint8List? generateDiffImage({
     required Uint8List flutterImage,
     required Uint8List deviceImage,
@@ -149,20 +176,31 @@ class OverlayDetector {
       return null;
     }
 
+    // Calculate exclusion boundaries
+    final startY = (flutter.height * excludeTopPercent).round();
+    final endY = (flutter.height * (1 - excludeBottomPercent)).round();
+
     final diff = img.Image(width: flutter.width, height: flutter.height);
 
     for (int y = 0; y < flutter.height; y++) {
       for (int x = 0; x < flutter.width; x++) {
-        final fp = flutter.getPixel(x, y);
         final dp = device.getPixel(x, y);
 
-        if (_pixelsMatch(fp, dp)) {
-          // Same - show grayscale version of device image
+        // Check if in excluded region
+        if (y < startY || y >= endY) {
+          // Excluded region - show dark with low opacity
           final gray = ((dp.r + dp.g + dp.b) ~/ 3).toInt();
-          diff.setPixelRgba(x, y, gray, gray, gray, 128);
+          diff.setPixelRgba(x, y, gray ~/ 2, gray ~/ 2, gray ~/ 2, 64);
         } else {
-          // Different - highlight in red
-          diff.setPixelRgba(x, y, 255, 0, 0, 255);
+          final fp = flutter.getPixel(x, y);
+          if (_pixelsMatch(fp, dp)) {
+            // Same - show grayscale version of device image
+            final gray = ((dp.r + dp.g + dp.b) ~/ 3).toInt();
+            diff.setPixelRgba(x, y, gray, gray, gray, 128);
+          } else {
+            // Different - highlight in red
+            diff.setPixelRgba(x, y, 255, 0, 0, 255);
+          }
         }
       }
     }

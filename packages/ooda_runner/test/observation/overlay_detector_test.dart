@@ -220,4 +220,145 @@ void main() {
       expect(region.toString(), 'DiffRegion(10, 20, 100x50)');
     });
   });
+
+  group('Region exclusion', () {
+    test('excludes top region from comparison', () {
+      // Create 100x100 image with differences only in top 10%
+      final flutter = createSolidPng(100, 100, color: 0xFFFF0000);
+
+      final image = img.Image(width: 100, height: 100);
+      for (int y = 0; y < 100; y++) {
+        for (int x = 0; x < 100; x++) {
+          if (y < 10) {
+            // Top 10% is green (different)
+            image.setPixelRgba(x, y, 0, 255, 0, 255);
+          } else {
+            // Rest is red (same)
+            image.setPixelRgba(x, y, 255, 0, 0, 255);
+          }
+        }
+      }
+      final device = Uint8List.fromList(img.encodePng(image));
+
+      // With 15% top exclusion, the differences should be ignored
+      final detector = OverlayDetector(
+        excludeTopPercent: 0.15,
+        excludeBottomPercent: 0.0,
+      );
+
+      final result = detector.detect(
+        flutterImage: flutter,
+        deviceImage: device,
+      );
+
+      expect(result.overlayPresent, isFalse);
+      expect(result.diffPercentage, equals(0.0));
+    });
+
+    test('excludes bottom region from comparison', () {
+      // Create 100x100 image with differences only in bottom 10%
+      final flutter = createSolidPng(100, 100, color: 0xFFFF0000);
+
+      final image = img.Image(width: 100, height: 100);
+      for (int y = 0; y < 100; y++) {
+        for (int x = 0; x < 100; x++) {
+          if (y >= 90) {
+            // Bottom 10% is green (different)
+            image.setPixelRgba(x, y, 0, 255, 0, 255);
+          } else {
+            // Rest is red (same)
+            image.setPixelRgba(x, y, 255, 0, 0, 255);
+          }
+        }
+      }
+      final device = Uint8List.fromList(img.encodePng(image));
+
+      // With 15% bottom exclusion, the differences should be ignored
+      final detector = OverlayDetector(
+        excludeTopPercent: 0.0,
+        excludeBottomPercent: 0.15,
+      );
+
+      final result = detector.detect(
+        flutterImage: flutter,
+        deviceImage: device,
+      );
+
+      expect(result.overlayPresent, isFalse);
+      expect(result.diffPercentage, equals(0.0));
+    });
+
+    test('detects overlay in middle region despite excluded edges', () {
+      // Create 100x100 image with differences in middle
+      final flutter = createSolidPng(100, 100, color: 0xFFFF0000);
+
+      final image = img.Image(width: 100, height: 100);
+      for (int y = 0; y < 100; y++) {
+        for (int x = 0; x < 100; x++) {
+          if (y >= 40 && y < 60) {
+            // Middle 20% is green (different)
+            image.setPixelRgba(x, y, 0, 255, 0, 255);
+          } else {
+            // Rest is red (same)
+            image.setPixelRgba(x, y, 255, 0, 0, 255);
+          }
+        }
+      }
+      final device = Uint8List.fromList(img.encodePng(image));
+
+      // With 10% top/bottom exclusion, middle differences should be detected
+      final detector = OverlayDetector(
+        excludeTopPercent: 0.10,
+        excludeBottomPercent: 0.10,
+      );
+
+      final result = detector.detect(
+        flutterImage: flutter,
+        deviceImage: device,
+      );
+
+      expect(result.overlayPresent, isTrue);
+      // 20 rows different out of 80 compared rows = 25%
+      expect(result.diffPercentage, closeTo(0.25, 0.01));
+    });
+
+    test('uses default exclusion values', () {
+      final detector = OverlayDetector();
+
+      expect(detector.excludeTopPercent, equals(0.05));
+      expect(detector.excludeBottomPercent, equals(0.12));
+    });
+
+    test('can disable exclusion by setting to zero', () {
+      // Create image with differences in bottom row only
+      final flutter = createSolidPng(100, 100, color: 0xFFFF0000);
+
+      final image = img.Image(width: 100, height: 100);
+      for (int y = 0; y < 100; y++) {
+        for (int x = 0; x < 100; x++) {
+          if (y == 99) {
+            image.setPixelRgba(x, y, 0, 255, 0, 255);
+          } else {
+            image.setPixelRgba(x, y, 255, 0, 0, 255);
+          }
+        }
+      }
+      final device = Uint8List.fromList(img.encodePng(image));
+
+      // With no exclusion, bottom row difference should be detected
+      final detector = OverlayDetector(
+        excludeTopPercent: 0.0,
+        excludeBottomPercent: 0.0,
+        minDiffPercentage: 0.005, // Lower threshold to catch 1% diff
+      );
+
+      final result = detector.detect(
+        flutterImage: flutter,
+        deviceImage: device,
+      );
+
+      expect(result.overlayPresent, isTrue);
+      expect(result.diffPercentage, closeTo(0.01, 0.001));
+    });
+  });
 }
