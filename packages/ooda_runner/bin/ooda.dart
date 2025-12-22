@@ -9,8 +9,15 @@ import 'package:ooda_runner/src/commands/scene_command.dart';
 import 'package:ooda_runner/src/commands/screenshot_command.dart';
 import 'package:ooda_runner/src/commands/update_command.dart';
 import 'package:ooda_runner/src/update_checker.dart';
+import 'package:ooda_runner/src/version.dart';
 
 void main(List<String> arguments) async {
+  // Handle --version flag before anything else
+  if (arguments.contains('--version') || arguments.contains('-v')) {
+    stdout.writeln('ooda $version');
+    exit(0);
+  }
+
   // Start update check in background (don't await - runs concurrently)
   final updateCheckFuture = stdout.hasTerminal ? checkForUpdate() : null;
 
@@ -19,6 +26,7 @@ void main(List<String> arguments) async {
           'ooda',
           'AI-driven Flutter OODA loop - control plane for automated UI testing.',
         )
+        ..argParser.addFlag('version', abbr: 'v', negatable: false, help: 'Print the version.')
         ..addCommand(DevicesCommand())
         ..addCommand(InfoCommand())
         ..addCommand(ObserveCommand())
