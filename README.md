@@ -98,7 +98,12 @@ dart pub global activate --source git \
 ooda devices
 ooda screenshot -d <device_id>
 ooda scene -f scene.yaml
+
+# Update to latest version
+ooda update
 ```
+
+> **Automatic update checking**: When running in a terminal, ooda checks for new releases on startup and notifies you if an update is available.
 
 **As a library dependency**:
 ```yaml
@@ -108,7 +113,7 @@ dependencies:
     git:
       url: https://github.com/neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.1.0  # Pin to a version tag
+      ref: v0.2.0  # Pin to a version tag
 ```
 
 Or with SSH:
@@ -118,7 +123,7 @@ dependencies:
     git:
       url: git@github.com:neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.1.0
+      ref: v0.2.0
 ```
 
 ```dart
@@ -153,21 +158,25 @@ The `ooda` CLI tool is the main entry point. Run `ooda info --commands` for deta
 
 | Command      | Purpose                                                             |
 |--------------|---------------------------------------------------------------------|
+| `--version`  | Print ooda version                                                  |
 | `devices`    | List connected Android devices                                      |
 | `screenshot` | Capture device screenshot                                           |
 | `scene`      | Execute scene YAML, capture observations                            |
 | `run`        | Start Flutter app with OODA control                                 |
 | `observe`    | Capture observation from running app                                |
 | `info`       | Show documentation (`--commands`, `--scene-yaml`, `--observations`) |
+| `update`     | Update ooda to latest version                                       |
 
 **Quick examples:**
 ```bash
+ooda --version                            # Print version
 ooda devices                              # List devices
 ooda screenshot -o screen.png             # Take screenshot
 ooda scene -s login.yaml -p ./my_app      # Run scene
 ooda run -p ./my_app -i                   # Run app interactively
 ooda observe --start-app -p ./my_app      # Start app and capture observation
 ooda info --commands                      # Show all command options
+ooda update                               # Update to latest version
 ```
 
 ### Running Example Apps
