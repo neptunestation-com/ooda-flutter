@@ -10,32 +10,24 @@ steps:
   - checkpoint: initial
     description: Dialogs screen before any dialogs
 
-  # Tap "Show AlertDialog" button (first button)
-  # Button center at approximately y=390 on 1080x2340 screen
-  - tap:
-      x: 540
-      y: 390
+  # Tap "Show AlertDialog" button by label
+  - tap_label: "Show AlertDialog"
 
   - wait: visual_stability
 
   - checkpoint: alert_dialog_open
     description: AlertDialog is visible (overlay detected)
 
-  # Dismiss by tapping OK button (right side of dialog)
-  - tap:
-      x: 620
-      y: 850
+  # Dismiss by tapping OK button
+  - tap_label: "OK"
 
   - wait: visual_stability
 
   - checkpoint: alert_dialog_dismissed
     description: After dismissing AlertDialog
 
-  # Tap "Show BottomSheet" button (second button)
-  # Button center at approximately y=510 on 1080x2340 screen
-  - tap:
-      x: 540
-      y: 510
+  # Tap "Show BottomSheet" button
+  - tap_label: "Show BottomSheet"
 
   - wait: visual_stability
 
@@ -43,20 +35,15 @@ steps:
     description: BottomSheet is visible
 
   # Dismiss by tapping Close button
-  - tap:
-      x: 540
-      y: 2150
+  - tap_label: "Close"
 
   - wait: visual_stability
 
   - checkpoint: bottom_sheet_dismissed
     description: After dismissing BottomSheet
 
-  # Tap "Show DatePicker" button (third button)
-  # Button center at approximately y=630 on 1080x2340 screen
-  - tap:
-      x: 540
-      y: 630
+  # Tap "Show DatePicker" button
+  - tap_label: "Show DatePicker"
 
   - wait: visual_stability
 
@@ -64,9 +51,7 @@ steps:
     description: DatePicker is visible
 
   # Dismiss by tapping Cancel button
-  - tap:
-      x: 270
-      y: 1680
+  - tap_label: "Cancel"
 
   - wait: visual_stability
 

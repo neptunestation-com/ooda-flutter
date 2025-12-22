@@ -22,10 +22,8 @@ steps:
 
   - wait: visual_stability
 
-  # Tap submit button
-  - tap:
-      x: 540
-      y: 1200
+  # Tap submit button by label
+  - tap_label: "Submit"
 
   - wait: visual_stability
 
@@ -42,10 +40,8 @@ steps:
 
   - wait: visual_stability
 
-  # Tap name field
-  - tap:
-      x: 540
-      y: 350
+  # Tap name field by label
+  - tap_label: "Name"
 
   - wait: visual_stability
 
