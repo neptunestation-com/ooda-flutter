@@ -62,6 +62,7 @@ QUICK START
 
 COMMANDS
 --------
+  --version, -v        Print ooda version
   devices              List connected Android devices
   screenshot           Capture device screenshot
   scene                Execute scene YAML, capture observations
@@ -72,6 +73,11 @@ COMMANDS
     --commands         Show detailed command options
     --scene-yaml       Show scene YAML format
     --observations     Show observation file structure
+
+UPDATE CHECKING
+---------------
+When running in a terminal, ooda checks for new releases on startup
+and notifies you if an update is available. Run 'ooda update' to upgrade.
 
 SCENE YAML FORMAT (use --scene-yaml for full reference)
 -------------------------------------------------------
@@ -235,6 +241,13 @@ USING WITH AI PROMPTS
 CLI COMMAND REFERENCE
 =====================
 
+VERSION
+-------
+Print the ooda version.
+
+  ooda --version
+  ooda -v
+
 DEVICES
 -------
 List connected Android devices.
@@ -373,6 +386,17 @@ Examples:
   ooda update --ssh              # Update via SSH (requires SSH keys)
   ooda update --ref v0.2.0       # Install specific version
   ooda update --dry-run          # Preview update command
+
+AUTOMATIC UPDATE CHECKING
+-------------------------
+When running in a terminal, ooda checks for new releases on startup.
+If a newer version is available, you'll see a notification:
+
+  A new version of ooda is available: 0.1.0 -> 0.2.0
+  Run `ooda update` to update.
+
+This check runs in the background and doesn't slow down commands.
+It's skipped when output is piped or redirected.
 ''');
   }
 }
