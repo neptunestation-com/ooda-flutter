@@ -117,18 +117,21 @@ Located in `examples/ooda_showcase/scenes/`:
 ### Build & Test
 
 ```bash
-dart pub get                        # Get dependencies
+dart pub get                        # Get dependencies (uses Dart 3.10+ pub workspaces)
 dart pub global activate melos      # Install melos (one-time)
 dart pub global run melos bootstrap # Bootstrap workspace
 
-# Run tests
-dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
+# Run tests (uses melos script from pubspec.yaml)
+dart pub global run melos run test
 
 # Static analysis
-dart pub global run melos exec -- dart analyze .
+dart pub global run melos run analyze
 
 # Format code
-dart pub global run melos exec -- dart format .
+dart pub global run melos run format
+
+# Clean build artifacts
+dart pub global run melos run clean
 ```
 
 ### Package Structure
@@ -173,9 +176,23 @@ await controller.tap(540, 400);
 ### Tests
 
 ```bash
-# All tests
-dart pub global run melos exec --scope="ooda_shared,ooda_runner" -- dart test
+# All tests via melos
+dart pub global run melos run test
 
-# Single test file
+# Single test file (direct)
 dart test packages/ooda_runner/test/scenes/scene_parser_test.dart
+
+# Tests for a specific package
+dart test packages/ooda_runner/test/
+dart test packages/ooda_shared/test/
 ```
+
+### Architecture
+
+**Data Flow**: Scene YAML → `SceneParser` → `SceneExecutor` → (`InteractionController` for actions, `ObservationBundle` for checkpoints) → Output to `obs/` directory
+
+**Two-Camera Model**: `DeviceCamera` (ADB framebuffer) + `FlutterCamera` (VM service) → `OverlayDetector` compares to detect system overlays
+
+**Barrier System**: Barriers block execution until conditions are met. `FlutterSession` manages app lifecycle and waits for barriers like `AppReadyBarrier` before proceeding.
+
+**VM Service Integration**: `VmServiceClient` connects to the running Flutter app's Dart VM service to capture Flutter-only screenshots, widget trees, and semantics data.
