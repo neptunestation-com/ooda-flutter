@@ -130,7 +130,7 @@ dependencies:
     git:
       url: https://github.com/neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.5.0  # Pin to a version tag
+      ref: v0.6.0  # Pin to a version tag
 ```
 
 Or with SSH:
@@ -140,7 +140,7 @@ dependencies:
     git:
       url: git@github.com:neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.5.0
+      ref: v0.6.0
 ```
 
 ```dart
