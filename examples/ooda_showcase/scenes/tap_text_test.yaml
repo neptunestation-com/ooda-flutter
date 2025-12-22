@@ -26,8 +26,10 @@ steps:
   - input_text: "secret123"
   - wait: visual_stability
 
-  # Tap the Login button by visible text
-  - tap_text: "Login"
+  # Tap the Login button by visible text (occurrence: 1 to select button, not title)
+  - tap_text:
+      text: "Login"
+      occurrence: 1
   - wait: visual_stability
 
   - checkpoint: after_login
