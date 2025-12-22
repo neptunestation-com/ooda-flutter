@@ -13,7 +13,8 @@ import 'package:ooda_runner/src/version.dart';
 
 void main(List<String> arguments) async {
   // Handle --version flag before anything else
-  if (arguments.contains('--version') || arguments.contains('-v')) {
+  // Note: Only --version, not -v (which is used for --verbose in subcommands)
+  if (arguments.contains('--version')) {
     stdout.writeln('ooda $version');
     exit(0);
   }
@@ -26,7 +27,7 @@ void main(List<String> arguments) async {
           'ooda',
           'AI-driven Flutter OODA loop - control plane for automated UI testing.',
         )
-        ..argParser.addFlag('version', abbr: 'v', negatable: false, help: 'Print the version.')
+        ..argParser.addFlag('version', negatable: false, help: 'Print the version.')
         ..addCommand(DevicesCommand())
         ..addCommand(InfoCommand())
         ..addCommand(ObserveCommand())
