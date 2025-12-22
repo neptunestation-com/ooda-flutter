@@ -71,7 +71,7 @@ barriers:
     consecutive_matches: 3
 ```
 
-> **New in v0.3.0**: `tap_label` lets you tap elements by their accessibility label instead of coordinates. The framework captures the semantics tree, finds the matching label, and taps the center of that element's bounds.
+> **New in v0.4.0**: `tap_label` lets you tap elements by their accessibility label instead of coordinates. The framework captures the semantics tree, finds the matching label, and taps the center of that element's bounds.
 
 **`tap_label` behavior:**
 - **Visibility filtering**: Only matches nodes whose center is visible on screen. Off-screen elements (e.g., scrolled-out ListView items) are ignored—scroll first or use coordinates.
@@ -121,7 +121,7 @@ dependencies:
     git:
       url: https://github.com/neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.3.0  # Pin to a version tag
+      ref: v0.4.0  # Pin to a version tag
 ```
 
 Or with SSH:
@@ -131,7 +131,7 @@ dependencies:
     git:
       url: git@github.com:neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.3.0
+      ref: v0.4.0
 ```
 
 ```dart
