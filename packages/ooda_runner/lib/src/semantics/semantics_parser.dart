@@ -35,6 +35,7 @@ class SemanticsNode {
   const SemanticsNode({
     required this.id,
     required this.bounds,
+    this.identifier,
     this.label,
     this.value,
     this.actions = const {},
@@ -48,6 +49,9 @@ class SemanticsNode {
 
   /// The bounding rectangle in logical pixels.
   final SemanticsRect bounds;
+
+  /// The semantic identifier (e.g., "auth.method_picker.email").
+  final String? identifier;
 
   /// The accessibility label (e.g., "Email").
   final String? label;
@@ -106,6 +110,19 @@ class SemanticsParser {
     final results = <SemanticsNode>[];
     _findByLabel(root, label, results, exactMatch: true);
     return results;
+  }
+
+  /// Find all nodes with an exactly matching identifier.
+  static List<SemanticsNode> findByIdentifier(SemanticsNode root, String identifier) {
+    final results = <SemanticsNode>[];
+    _findByIdentifier(root, identifier, results);
+    return results;
+  }
+
+  /// Find the first node with a matching identifier.
+  static SemanticsNode? findFirstByIdentifier(SemanticsNode root, String identifier) {
+    final matches = findByIdentifier(root, identifier);
+    return matches.isNotEmpty ? matches.first : null;
   }
 
   /// Find all nodes whose label contains the search string.
@@ -180,6 +197,19 @@ class SemanticsParser {
     }
   }
 
+  static void _findByIdentifier(
+    SemanticsNode node,
+    String identifier,
+    List<SemanticsNode> results,
+  ) {
+    if (node.identifier == identifier) {
+      results.add(node);
+    }
+    for (final child in node.children) {
+      _findByIdentifier(child, identifier, results);
+    }
+  }
+
   /// Parse a node and its children starting at the given line index.
   /// Returns the parsed node and the next line index to process.
   static (SemanticsNode?, int) _parseNode(
@@ -200,6 +230,7 @@ class SemanticsParser {
     // Parse properties until we hit the next node or a child
     int lineIndex = startIndex + 1;
     SemanticsRect? bounds;
+    String? identifier;
     String? label;
     String? value;
     final actions = <String>{};
@@ -262,6 +293,14 @@ class SemanticsParser {
         actions.addAll(_parseCommaSeparated(content, 'actions:'));
       } else if (content.startsWith('flags:')) {
         flags.addAll(_parseCommaSeparated(content, 'flags:'));
+      } else if (content.startsWith('identifier:')) {
+        // Parse identifier (typically a single quoted value)
+        final afterPrefix = content.substring('identifier:'.length).trim();
+        if (afterPrefix.startsWith('"') && afterPrefix.endsWith('"') && afterPrefix.length > 1) {
+          identifier = afterPrefix.substring(1, afterPrefix.length - 1);
+        } else if (afterPrefix.isNotEmpty) {
+          identifier = afterPrefix;
+        }
       }
 
       lineIndex++;
@@ -297,6 +336,7 @@ class SemanticsParser {
       SemanticsNode(
         id: nodeId,
         bounds: bounds ?? SemanticsRect.zero,
+        identifier: identifier,
         label: label,
         value: value,
         actions: actions,
@@ -457,6 +497,7 @@ class SemanticsParser {
         content.startsWith('value:') ||
         content.startsWith('actions:') ||
         content.startsWith('flags:') ||
+        content.startsWith('identifier:') ||
         content.startsWith('Rect.fromLTRB') ||
         content.startsWith('textDirection:') ||
         content.startsWith('indexInParent:') ||

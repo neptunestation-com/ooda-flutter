@@ -295,8 +295,8 @@ class SceneExecutor {
       searchRoot = withinNode;
     }
 
-    // STRICT: exact match only (no substring fallback)
-    final allMatches = SemanticsParser.findByLabel(searchRoot, interaction.label);
+    // STRICT: exact match only by semantic identifier
+    final allMatches = SemanticsParser.findByIdentifier(searchRoot, interaction.label);
 
     // Filter to visible nodes (center within screen bounds)
     final screenWidth = _screenDimensions?.width ?? 1080;
