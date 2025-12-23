@@ -219,16 +219,51 @@ await controller.tap(540, 400);
 
 ### Semantic ID Conventions
 
-For `tap_label` to work, Flutter widgets need `Semantics` wrappers with namespaced labels:
+For `tap_label` to work, Flutter widgets need `Semantics` wrappers with `identifier`:
 
 ```dart
 Semantics(
-  identifier: 'auth.email_field',  // Namespace.element format
-  child: TextField(...),
+  identifier: 'auth.email_field',  // tap_label matches THIS (exact match)
+  label: 'Email address',           // tap_text matches this (substring)
+  button: true,                     // or textField: true for inputs
+  child: InkWell(
+    onTap: ...,
+    child: ...,
+  ),
 )
 ```
 
 The example apps use this pattern: `<screen>.<element>` (e.g., `login.email`, `settings.theme_toggle`).
+
+**Critical: Avoid nested Semantics widgets**
+
+Flutter merges semantics from children into parents. This causes `identifier` to be lost:
+
+```dart
+// BAD: identifier gets merged into parent, tap_label fails
+Semantics(
+  label: 'screen:auth',
+  container: true,
+  child: Semantics(
+    identifier: 'auth.submit',  // Lost! Merged into parent
+    child: Button(...),
+  ),
+)
+
+// GOOD: Each control is a standalone semantic node
+Column(
+  children: [
+    Semantics(
+      identifier: 'auth.submit',
+      label: 'Submit',
+      button: true,
+      child: InkWell(...),
+    ),
+  ],
+)
+```
+
+**Use InkWell over GestureDetector** for tap targets. InkWell provides more reliable tap detection with ADB input events.
 
 ### Debugging Tips
 
@@ -250,11 +285,6 @@ The example apps use this pattern: `<screen>.<element>` (e.g., `login.email`, `s
 - Screenshots are canonicalized to 1080x1920 for comparison
 - Top 5% and bottom 12% are excluded (status bar, nav bar)
 - If device has unusual aspect ratio, overlay detection may need adjustment
-
-**Device-specific issues:**
-- Some devices (e.g., Samsung Galaxy S25 with Android 16) don't respond to ADB tap injection on standard Flutter buttons
-- Workaround: Use full-screen GestureDetector with colored Container instead of ElevatedButton/OutlinedButton
-- See `examples/gestures_app` for a working pattern
 
 ### Debugging Strategy
 
