@@ -290,6 +290,18 @@ Semantics(
 // AVOID: GestureDetector and ElevatedButton can miss ADB taps
 ```
 
+**Multi-step scene flows work reliably:**
+Scenes can chain multiple screens together without issues:
+```yaml
+# Example: login → action → logout flow
+- tap_label: "auth.method_picker.otp"
+- input_text: "123456"
+- tap_label: "auth.otp_verify.submit"      # → signed_in
+- tap_label: "auth.signed_in.logout"       # → logout_confirm
+- tap_label: "auth.logout_confirm.confirm" # → method_picker
+- checkpoint: back_at_start
+```
+
 ### Debugging Tips
 
 **ADB issues:**
