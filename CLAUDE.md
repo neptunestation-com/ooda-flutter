@@ -235,35 +235,60 @@ Semantics(
 
 The example apps use this pattern: `<screen>.<element>` (e.g., `login.email`, `settings.theme_toggle`).
 
-**Critical: Avoid nested Semantics widgets**
+**Critical: No root Semantics containers**
 
-Flutter merges semantics from children into parents. This causes `identifier` to be lost:
+Flutter merges semantics from children into parents. Root containers cause `identifier` to be lost:
 
 ```dart
-// BAD: identifier gets merged into parent, tap_label fails
+// BAD: container: true causes children to merge
 Semantics(
   label: 'screen:auth',
-  container: true,
+  container: true,  // DON'T DO THIS
   child: Semantics(
     identifier: 'auth.submit',  // Lost! Merged into parent
     child: Button(...),
   ),
 )
 
-// GOOD: Each control is a standalone semantic node
-Column(
-  children: [
-    Semantics(
-      identifier: 'auth.submit',
-      label: 'Submit',
-      button: true,
-      child: InkWell(...),
-    ),
-  ],
+// BAD: explicitChildNodes doesn't help either
+Semantics(
+  label: 'screen:auth',
+  explicitChildNodes: true,  // STILL CAUSES PROBLEMS
+  child: Column(children: [...]),
+)
+
+// GOOD: No root container, each control is standalone
+Padding(
+  child: Column(
+    children: [
+      Semantics(
+        identifier: 'auth.submit',
+        label: 'Submit',
+        button: true,
+        child: InkWell(...),
+      ),
+    ],
+  ),
 )
 ```
 
-**Use InkWell over GestureDetector** for tap targets. InkWell provides more reliable tap detection with ADB input events.
+**Use InkWell for tappable buttons:**
+
+```dart
+// GOOD: InkWell works reliably with ADB taps
+Semantics(
+  identifier: 'auth.submit',
+  label: 'Submit',
+  button: true,
+  child: InkWell(
+    onTap: _submit,
+    borderRadius: BorderRadius.circular(8),
+    child: Container(...),
+  ),
+)
+
+// AVOID: GestureDetector and ElevatedButton can miss ADB taps
+```
 
 ### Debugging Tips
 
