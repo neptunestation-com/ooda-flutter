@@ -71,7 +71,7 @@ barriers:
     consecutive_matches: 3
 ```
 
-> **New in v0.6.0**: `tap_label` is now STRICT—it requires namespaced semantic IDs (containing `.` or starting with `screen:`) and uses exact matching only. Use `tap_text` for visible text matching.
+> **New in v0.6.1**: `tap_label` now correctly searches by the `identifier` field from Flutter's `Semantics` widget. Previously it incorrectly searched by `label`. Semantic IDs must be namespaced (containing `.` or starting with `screen:`). Use `tap_text` for visible text matching.
 
 **`tap_label` (semantic ID - recommended for stable tests):**
 - **STRICT exact match**: No substring fallback—label must match exactly
@@ -130,7 +130,7 @@ dependencies:
     git:
       url: https://github.com/neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.6.0  # Pin to a version tag
+      ref: v0.6.1  # Pin to a version tag
 ```
 
 Or with SSH:
@@ -140,7 +140,7 @@ dependencies:
     git:
       url: git@github.com:neptunestation-com/ooda-flutter.git
       path: packages/ooda_runner
-      ref: v0.6.0
+      ref: v0.6.1
 ```
 
 ```dart
