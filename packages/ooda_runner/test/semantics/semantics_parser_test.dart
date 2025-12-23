@@ -51,6 +51,20 @@ SemanticsNode#22
         expect(node!.value, equals('user@example.com'));
       });
 
+      test('parses node with identifier', () {
+        const dump = '''
+SemanticsNode#22
+  Rect.fromLTRB(16.0, 16.0, 344.0, 72.0)
+  identifier: "auth.method_picker.email"
+  label: "Continue with Email"
+''';
+        final node = SemanticsParser.parse(dump);
+
+        expect(node, isNotNull);
+        expect(node!.identifier, equals('auth.method_picker.email'));
+        expect(node.label, equals('Continue with Email'));
+      });
+
       test('parses nested tree structure', () {
         const dump = '''
 SemanticsNode#0
@@ -164,6 +178,122 @@ SemanticsNode#0
         final matches = SemanticsParser.findByLabel(root, 'NonExistent');
 
         expect(matches, isEmpty);
+      });
+    });
+
+    group('findByIdentifier', () {
+      test('finds node by exact identifier match', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ └─SemanticsNode#1
+   │ Rect.fromLTRB(0.0, 0.0, 360.0, 780.0)
+   │
+   ├─SemanticsNode#22
+   │   Rect.fromLTRB(16.0, 16.0, 344.0, 72.0)
+   │   identifier: "auth.login.email"
+   │   label: "Email"
+   │
+   └─SemanticsNode#24
+       Rect.fromLTRB(16.0, 88.0, 344.0, 144.0)
+       identifier: "auth.login.password"
+       label: "Password"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final matches = SemanticsParser.findByIdentifier(root, 'auth.login.email');
+
+        expect(matches, hasLength(1));
+        expect(matches[0].id, equals(22));
+        expect(matches[0].identifier, equals('auth.login.email'));
+        expect(matches[0].label, equals('Email'));
+      });
+
+      test('returns empty list when identifier not found', () {
+        const dump = '''
+SemanticsNode#0
+  Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+  identifier: "auth.login.email"
+  label: "Email"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final matches = SemanticsParser.findByIdentifier(root, 'auth.login.password');
+
+        expect(matches, isEmpty);
+      });
+
+      test('does not match by label when searching by identifier', () {
+        const dump = '''
+SemanticsNode#0
+  Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+  label: "auth.login.email"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        // Label matches but identifier is null - should not find
+        final matches = SemanticsParser.findByIdentifier(root, 'auth.login.email');
+
+        expect(matches, isEmpty);
+      });
+
+      test('finds node in nested tree', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ └─SemanticsNode#1
+   │ Rect.fromLTRB(0.0, 0.0, 360.0, 780.0)
+   │
+   └─SemanticsNode#2
+     │ Rect.fromLTRB(0.0, 0.0, 360.0, 780.0)
+     │
+     └─SemanticsNode#3
+         Rect.fromLTRB(16.0, 16.0, 344.0, 72.0)
+         identifier: "deep.nested.control"
+         label: "Deep Control"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final matches = SemanticsParser.findByIdentifier(root, 'deep.nested.control');
+
+        expect(matches, hasLength(1));
+        expect(matches[0].id, equals(3));
+      });
+    });
+
+    group('findFirstByIdentifier', () {
+      test('returns first matching node', () {
+        const dump = '''
+SemanticsNode#0
+ │ Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+ │
+ ├─SemanticsNode#22
+ │   Rect.fromLTRB(16.0, 16.0, 344.0, 72.0)
+ │   identifier: "auth.login.submit"
+ │   label: "Submit"
+ │
+ └─SemanticsNode#24
+     Rect.fromLTRB(16.0, 88.0, 344.0, 144.0)
+     identifier: "auth.login.cancel"
+     label: "Cancel"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final node = SemanticsParser.findFirstByIdentifier(root, 'auth.login.submit');
+
+        expect(node, isNotNull);
+        expect(node!.id, equals(22));
+        expect(node.identifier, equals('auth.login.submit'));
+      });
+
+      test('returns null when identifier not found', () {
+        const dump = '''
+SemanticsNode#0
+  Rect.fromLTRB(0.0, 0.0, 1080.0, 2340.0)
+  identifier: "auth.login.email"
+  label: "Email"
+''';
+        final root = SemanticsParser.parse(dump)!;
+        final node = SemanticsParser.findFirstByIdentifier(root, 'nonexistent.id');
+
+        expect(node, isNull);
       });
     });
 
