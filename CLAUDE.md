@@ -243,9 +243,28 @@ The example apps use this pattern: `<screen>.<element>` (e.g., `login.email`, `s
 **tap_label not finding element:**
 - Verify semantic ID is namespaced (contains `.` or starts with `screen:`)
 - Check that `SemanticsBinding.instance.ensureSemantics()` is called in main()
-- Use `ooda observe` to capture semantics.json and verify the label exists
+- Use `ooda observe` to capture semantics.json and verify the ID exists in `identifier:` field
+- `tap_label` searches the `identifier` field, NOT the `label` field
 
 **Overlay false positives:**
 - Screenshots are canonicalized to 1080x1920 for comparison
 - Top 5% and bottom 12% are excluded (status bar, nav bar)
 - If device has unusual aspect ratio, overlay detection may need adjustment
+
+**Device-specific issues:**
+- Some devices (e.g., Samsung Galaxy S25 with Android 16) don't respond to ADB tap injection on standard Flutter buttons
+- Workaround: Use full-screen GestureDetector with colored Container instead of ElevatedButton/OutlinedButton
+- See `examples/gestures_app` for a working pattern
+
+### Debugging Strategy
+
+When taps or interactions aren't working, **question all layers of the stack**:
+
+1. **Device layer**: Does `adb shell input tap X Y` work at all? Test on a simple app
+2. **Flutter layer**: Does the widget respond to manual taps? Try different widget types
+3. **OODA layer**: Is ooda-flutter finding the element? Check semantics.json
+4. **Semantic layer**: Is `tap_label` vs `tap_text` behaving correctly? Test both
+
+**Differential diagnosis is key**: If `tap_text` works but `tap_label` doesn't, the bug is in semantic ID lookup, not in tap injection. If neither works, the bug is lower in the stack.
+
+**Don't exhaust variations at one layer** before checking other layers. A bug in ooda-flutter can't be fixed by changing Flutter widget code.
