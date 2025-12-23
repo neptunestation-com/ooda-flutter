@@ -164,8 +164,14 @@ melos run analyze                # Static analysis
 melos run format                 # Format code
 melos run clean                  # Clean build artifacts
 
+# If melos not in PATH, use full path:
+$HOME/.pub-cache/bin/melos run test
+
 # Single test file
 dart test packages/ooda_runner/test/scenes/scene_parser_test.dart
+
+# Tests matching a pattern
+dart test packages/ooda_runner/test/ -n "SceneParser"
 
 # Tests for a specific package
 dart test packages/ooda_runner/test/
@@ -210,3 +216,36 @@ final devices = await DeviceManager(adb).listDevices();
 final controller = InteractionController(adb, devices.first.id);
 await controller.tap(540, 400);
 ```
+
+### Semantic ID Conventions
+
+For `tap_label` to work, Flutter widgets need `Semantics` wrappers with namespaced labels:
+
+```dart
+Semantics(
+  identifier: 'auth.email_field',  // Namespace.element format
+  child: TextField(...),
+)
+```
+
+The example apps use this pattern: `<screen>.<element>` (e.g., `login.email`, `settings.theme_toggle`).
+
+### Debugging Tips
+
+**ADB issues:**
+- `adb devices` should show your device as "device" (not "offline" or "unauthorized")
+- Authorize USB debugging on device if prompted
+
+**VM service connection fails:**
+- Ensure app was started with `flutter run` (not `flutter run --release`)
+- Check that only one Flutter app is running on the device
+
+**tap_label not finding element:**
+- Verify semantic ID is namespaced (contains `.` or starts with `screen:`)
+- Check that `SemanticsBinding.instance.ensureSemantics()` is called in main()
+- Use `ooda observe` to capture semantics.json and verify the label exists
+
+**Overlay false positives:**
+- Screenshots are canonicalized to 1080x1920 for comparison
+- Top 5% and bottom 12% are excluded (status bar, nav bar)
+- If device has unusual aspect ratio, overlay detection may need adjustment
